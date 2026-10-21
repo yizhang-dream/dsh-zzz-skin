@@ -83,14 +83,18 @@ CSS 白名单还禁掉了 `@import`、远程 URL、越界路径、内联 JS。�
 
 ## 选择器锚点
 
-动效挂在 skin-center 的 L2 语义属性上，不靠猜测 class：
+动效挂在稳定锚点上，不靠猜测哈希类名。v3 起按三层使用：
 
-| 属性 | 值 | 对应区域 |
+| 层 | 属性 | 实际取值（从 skin-center 源码与实机 DOM 读出） |
 |---|---|---|
-| `data-dsh-surface` | `root` / `sidebar` / `conversation` / `composer` / `settings` / `session-header` | 八个外壳区域 |
-| `data-dsh-part` | `message-row` / `nav-item` / `thinking` / `streaming-indicator` | 区域内元件 |
+| 外壳 | `data-dsh-surface` | `root` / `sidebar` / `conversation` / `session-header` / `composer` / `details` / `overlay` / `settings` |
+| 元件 | `data-dsh-part` | `message-row` / `message-body` / `scrollport` / `composer-input` / `composer-chip` / `queue-dock` / `turn-tail` / `resize-handle` / `new-session` / `sidebar-entry` |
+| 语义槽 | `data-slot` | `sidebar.brand.name` / `sidebar.panellist` / `conversation.header` / `conversation.composer.bar` 等 29 个 |
+| 通用 | `role` | `menu` / `menuitem` / `dialog` / `tab` / `tablist` / `switch` / `tooltip` / `treeitem` / `textbox` |
+| 状态 | `data-phase` / `data-state` / `aria-*` | `hero` / `running` / `aria-current` / `aria-checked` / `aria-selected` |
 
-这些属性由 skin-center 的兼容适配器从稳定锚点（`data-slot` 出口等）打标，比 CSS-module 哈希类名可靠得多。
+⚠️ 早期版本写的 `data-dsh-part="nav-item"`、`"thinking"`、`"streaming-indicator"` **在宿主里不存在**，那些规则从来没生效过。v3 已全部换成上表里的真值。
+
 
 ## 第三方插件着色
 
@@ -239,3 +243,85 @@ dsh-open --print    :: 只打印链接
 - `scrollport` / `lever` / `resize-handle` —— 滚动口与拖拽
 
 猜类名会静默失效，改之前先探一遍 DOM。
+
+---
+
+## v3：从一张图到五张图，从换色到动效系统
+
+v2 的问题被一句话点破：**只是取色，而且只对着一张截图**。v3 换方法：拿五张不同界面的实机截图（设置页 / 主菜单 / 装备页 / 剧情对话 / 战斗 HUD）分别取样，先抽**几何规律**，再抽**动效语言**，最后逐区域装配。
+
+### 五张图给出的规则
+
+| 来源 | 看到的 | 抽出的规则 |
+|---|---|---|
+| 设置页 | 选中导航是实心黄绿胶囊 + 黑字，未选是纯黑胶囊 | **R1 选中 = 色块反转**，不是描边发光 |
+| 设置页 | 面板 28px 大圆角 + 一圈 `#222` 细描边 | **R2 双层描边面板** |
+| 设置页 | 每个设置行是独立圆角块，没有分割线 | **R3 独立块行** |
+| 设置页 | 背景有巨型字形水印，底部有居中细滚动条 | **R4 水印层** / **R5 滚动指示条** |
+| 主菜单 | 底部 dock 选中项上抬并加方块底；标题两侧三横线 | **R6 dock 抬升** / **R7 均衡器条** |
+| 装备页 | 选中 = 黄环 + 白外光 + 轻微放大；属性条是细渐变条 | **R8 选中环** / **R9 属性条** |
+| 战斗 HUD | 伤害数字上浮；血条分段 | **R10 数字上浮** / **R11 分段条** |
+| 剧情 | 电视框 CRT + 逐字 | **R12 逐字机** |
+
+取样值（不是设计值）：
+
+```
+选中黄绿  #D4CF01   设置页 Input 胶囊，hue 59° 饱和度 1.00
+金色环    #EFDA27   装备页物品格选中环
+描边灰    #222222   面板外圈
+面板      #0A0A0C   设置行 / 菜单底
+画布      #0C0E23   深蓝紫
+```
+
+### 12 式动效原语，装到具体区域
+
+| 原语 | 时长 / 缓动 | 装在哪 |
+|---|---|---|
+| P1 开机（CRT 横线张开） | 560ms `(.3,.9,.3,1)` | 根容器首屏 |
+| P2 阶梯入 | 300–340ms，每格 +45ms | 消息行、会话列表、菜单项 |
+| P3 侧推入 | 180ms `(.16,1.3,.3,1)` | 菜单、弹层 |
+| P4 扫光 | 620ms 单次 | 新建会话 hover、运行中卡片 |
+| P5 故障撕裂 / 抖动 | 180–200ms `steps(2)` | 错误态、危险操作 |
+| P6 呼吸 | 2.2s 循环 | 运行中的工具卡（黄环起伏 = R8） |
+| P7 方块光标 | 1.06s `steps(1)` | 回合尾巴 |
+| P8 dock 抬升 | 220ms | 输入区工具按钮 |
+| P9 数字滚动 | 260ms | 费用 / 用量数字 |
+| P10 准星聚焦 | 220ms | 输入框（四角括号，不是四边描边） |
+| P11 水印视差 | 24s 交替 | 侧栏 ZENLESS / 设置页 SYSTEM |
+| P12 均衡器 | 6s 交替 | 区块标题 / 会话头 |
+
+### 逐区域装配表
+
+| 区域 | 做了什么 |
+|---|---|
+| 侧栏 | 品牌粗斜体；导航选中反转黄绿；悬停左侧 2px 黄条；会话行错峰推入；竖向 ZENLESS 水印 |
+| 新建会话 | 黄绿实心 + 黑字胶囊，hover 斜带扫光，按下 0.975 硬缩 |
+| 会话区 | 进入时 1.035 景别推近；消息行阶梯入场；回合尾巴方块光标 |
+| 输入区 | 卡片底 `#050507` + 1px 灰边；聚焦四角准星 + 黄边；光标黄色；chip 斜切角 |
+| 菜单 / 弹窗 | 菜单逐项推入、悬停整行反转黄绿黑字；弹窗幽灵层偏右上；遮罩轻微故障后稳定 |
+| 设置 | 22px 双层描边面板；背景 SYSTEM 水印；开关选中黄绿；标签页选中黄绿 |
+| 工具卡 | 运行中黄环呼吸；错误态抖动 + 左侧红线 |
+| 用量卡 | 属性条黄→青渐变；数字等宽 + 滚动；轨道分段刻度 |
+
+### 两个真 bug（v3 修掉）
+
+**① 整页空白。** 宿主 `.pI_x6G_frame{height:100%}` 的百分比链在一个 `display:contents` 包装层处断掉，计算高度变 0，于是除了背景什么都看不见。修复是一行兜底：
+
+```css
+[data-dsh-frame] { height: 100dvh; min-height: 100dvh; }
+```
+
+**② 辉光盖住了 UI。** v2 把两团径向光晕塞进 `body::after`，而那一层的 `z-index` 顶到 2147483000——于是紫雾盖在所有文字和面板上方。v3 把光晕移回 `body::before`（内容之下），`body::after` 只留很淡的网格 / 扫描线 / 噪点。
+
+### 离线验证台
+
+实机调试受插件干扰，另建了一个干净对照页：`.playwright-mcp/zzz-harness.html`——加载真实的 `app.css` + `vendor.css` + 本皮肤，DOM 用实机导出的结构和语义属性复刻，用来单独判断「是皮肤的问题还是宿主插件的问题」。
+
+```bash
+cd .playwright-mcp && python -m http.server 8971
+# http://127.0.0.1:8971/zzz-harness.html
+```
+
+### 仍未解决
+
+宿主侧栏（第三方 sidebar 插件，`hHd-Xa_*` 类名，样式由插件在 body 里注入）在无头 Chrome 截图里对背景 / 圆角 / 描边的改动作不出反应，即使内联 `!important` 也不生效；文字颜色、`position`、水印等属性则正常。判断是该插件的渲染层问题，不是皮肤 CSS 失效——干净对照页里同样规则全部生效。需要在真实浏览器里用肉眼确认一次。

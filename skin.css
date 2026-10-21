@@ -35,7 +35,7 @@ body[data-ds-dark-theme] {
   --dsw-alias-bg-mask-3: rgba(8, 9, 20, 0.75);
   --dsw-alias-bg-mask-drop: rgba(8, 9, 20, 0.9);
   --dsw-alias-bg-mask-photo: rgba(8, 9, 20, 0.62);
-  --dsw-alias-bg-document-selection: rgba(251, 200, 39, 0.24);
+  --dsw-alias-bg-document-selection: rgba(212, 207, 1, 0.26);
 
   /* 面板：近中性黑，靠 1px 内高光分层 */
   --dsw-alias-bg-layer-1: #08080a;
@@ -44,7 +44,7 @@ body[data-ds-dark-theme] {
   --dsw-alias-bg-module-platform: #151517;
   --dsw-alias-bg-document-preview: #0f0f10;
   --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.055);
-  --dsw-alias-bg-multi-select: rgba(242, 52, 58, 0.16);
+  --dsw-alias-bg-multi-select: rgba(212, 207, 1, 0.18);
 
   /* 文字 */
   --dsw-alias-label-primary: #f2f2f4;
@@ -70,24 +70,24 @@ body[data-ds-dark-theme] {
   --dsw-alias-border-inverted: rgba(0, 0, 0, 0.24);
   --dsw-alias-border-inverted2: rgba(0, 0, 0, 0.36);
 
-  /* 品牌：信号红（游戏里出现频率最高的强调色） */
-  --dsw-alias-brand-primary: #f2343a;
-  --dsw-alias-brand-primary-invert: #ffffff;
-  --dsw-alias-brand-primary-new-colorprimary-new-color: #f2343a;
-  --dsw-alias-brand-text: #ff6b70;
+  /* 品牌：黄绿 #D4CF01（设置页选中胶囊取样）。红只留给危险/返回。 */
+  --dsw-alias-brand-primary: #d4cf01;
+  --dsw-alias-brand-primary-invert: #0a0b14;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #d4cf01;
+  --dsw-alias-brand-text: #e8e45a;
   --dsw-alias-link: #28d1e4;
 
   /* 按钮 */
-  --dsw-alias-button-primary-fill: #f2343a;
-  --dsw-alias-button-primary-hover: #d92429;
-  --dsw-alias-button-primary-dimmed: rgba(242, 52, 58, 0.42);
-  --dsw-alias-button-contrast-fill: #fbc827;
+  --dsw-alias-button-primary-fill: #d4cf01;
+  --dsw-alias-button-primary-hover: #e2dd12;
+  --dsw-alias-button-primary-dimmed: rgba(212, 207, 1, 0.42);
+  --dsw-alias-button-contrast-fill: #f2f2f4;
   --dsw-alias-button-elevated-fill: #1d1d20;
   --dsw-alias-button-floating-fill: rgba(21, 21, 23, 0.94);
   --dsw-alias-button-floating-hover: rgba(29, 29, 32, 0.97);
-  --dsw-alias-button-ghost-active-fill: rgba(242, 52, 58, 0.16);
-  --dsw-alias-button-ghost-active-border: rgba(242, 52, 58, 0.5);
-  --dsw-alias-button-ghost-active-hover: rgba(242, 52, 58, 0.24);
+  --dsw-alias-button-ghost-active-fill: rgba(212, 207, 1, 0.16);
+  --dsw-alias-button-ghost-active-border: rgba(212, 207, 1, 0.5);
+  --dsw-alias-button-ghost-active-hover: rgba(212, 207, 1, 0.24);
   --dsw-alias-button-info-fill: rgba(40, 209, 228, 0.16);
   --dsw-alias-button-info-hover: rgba(40, 209, 228, 0.26);
   --dsw-alias-button-tool-bar-fill: #1d1d20;
@@ -97,7 +97,7 @@ body[data-ds-dark-theme] {
   /* 交互态 */
   --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, 0.06);
   --dsw-alias-interactive-bg-active: rgba(255, 255, 255, 0.11);
-  --dsw-alias-interactive-bg-hover-accent: rgba(242, 52, 58, 0.14);
+  --dsw-alias-interactive-bg-hover-accent: rgba(212, 207, 1, 0.14);
   --dsw-alias-interactive-bg-hover-danger: rgba(242, 52, 58, 0.2);
   --dsw-alias-interactive-bg-hover-solid: #26262a;
 
@@ -119,7 +119,7 @@ body[data-ds-dark-theme] {
   --dsw-alias-markdown-code-block: #08080a;
   --dsw-alias-markdown-code-block-banner: #151517;
   --dsw-alias-markdown-inline-code: rgba(251, 200, 39, 0.13);
-  --dsw-alias-markdown-code-segment-selected: rgba(242, 52, 58, 0.2);
+  --dsw-alias-markdown-code-segment-selected: rgba(212, 207, 1, 0.2);
   --dsw-alias-markdown-code-segment-unselected: rgba(255, 255, 255, 0.055);
   --dsw-alias-markdown-citation: #28d1e4;
   --dsw-alias-markdown-tag: rgba(255, 255, 255, 0.095);

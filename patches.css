@@ -1,38 +1,84 @@
 /* ═══════════════════════════════════════════════════════════════════════
- * 新艾利都 · L3 补丁层
+ * 新艾利都 · L3 补丁层  v3
  *
- * 分两部分：
- *   A. 质感层 —— 还原实机画面的「动态质感」
- *      · 45° 交叉网格（面板织物感，实机截图放大可见）
- *      · CRT 扫描线（缓慢下滚）
- *      · 胶片噪点（SVG feTurbulence，内联 data URI）
- *      · 暗角 + 边缘色散
- *      · 紫/青光晕（主菜单背景那种呼吸感）
- *   B. 动效层 —— 六招镜头语言
+ * v3 的出发点：v2 只对着一张截图取色，做的是「换皮」。
+ * 这一版从 5 张不同界面的实机截图（设置 / 主菜单 / 装备 / 剧情 / 战斗 HUD）
+ * 反推**几何规律**与**动效语言**，再逐页装配到 DSH 的每个区域。
  *
- * 三条纪律：
- *   · 只动 transform / opacity / filter，不触发布局
- *   · prefers-reduced-motion 时全部停掉
- *   · 全部 pointer-events: none
+ * 截图证据 → 规则：
+ *   设置页  选中导航 = 实心黄绿 #D4CF01 + 黑字；未选 = 纯黑胶囊
+ *            → 选中态是「色块反转」，不是描边发光        [R1]
+ *   设置页  面板 28px 大圆角 + 一圈浅灰描边 (#222)
+ *            → 双层描边面板                              [R2]
+ *   设置页  每个设置行是独立圆角块，不靠分割线
+ *            → 独立块行                                  [R3]
+ *   设置页  背景有巨型字形水印 + 底部居中细滚动条
+ *            → 水印层 / 滚动指示条                        [R4][R5]
+ *   主菜单  底部 dock 选中项抬升并加方块底；标题两侧三横线
+ *            → dock 抬升 / 均衡器条                       [R6][R7]
+ *   装备页  选中 = 黄环 + 白外光 + 轻微放大；属性条是细渐变条
+ *            → 选中环 / 属性条                            [R8][R9]
  *
- * 选择器锚点用 skin-center 的 L2 语义属性（data-dsh-surface / part）。
+ * 纪律：
+ *   · 只动 transform / opacity / filter / color / background / box-shadow
+ *   · 不改 display / width / height（唯一例外是 §1 的宿主布局修复）
+ *   · prefers-reduced-motion 全停
+ *   · 叠层（纹理、辉光）一律 pointer-events: none
  * ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
+  /* 调色：取样值，不是设计值 */
+  --zzz-yellow: #d4cf01; /* 选中/主导航（设置页 Input 胶囊） */
+  --zzz-gold: #efda27; /* 金色环/角标（装备页选中环） */
+  --zzz-red: #f2343a; /* 危险/返回/关闭 */
+  --zzz-cyan: #28d1e4; /* 信息/链接 */
+  --zzz-ink: #0a0b14; /* 黄底上的字 */
+  --zzz-line: #222222; /* 面板描边灰 */
+  --zzz-canvas: #0c0e23; /* 画布深蓝紫 */
+  --zzz-panel: #0a0a0c; /* 面板近黑 */
+  --zzz-panel-2: #121216;
+
+  /* 缓动：ZZZ 的动都是「先冲出再回弹」，不是线性飘 */
   --zzz-ease-snap: cubic-bezier(0.16, 1.16, 0.3, 1);
   --zzz-ease-crt: cubic-bezier(0.3, 0.9, 0.3, 1);
   --zzz-ease-cam: cubic-bezier(0.22, 1, 0.36, 1);
   --zzz-ease-pop: cubic-bezier(0.16, 1.3, 0.3, 1);
+  --zzz-ease-hard: cubic-bezier(0.2, 0.9, 0.1, 1);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
- * A. 质感层
+ * §1 可靠性补丁（不是设计，是让页面能显示）
+ *
+ * 宿主 .pI_x6G_frame{height:100%} 的百分比链在一个 display:contents
+ * 包装层处断掉，计算高度变成 0 → 整页空白只剩背景。
+ * 这里用视口高度兜底，等价于宿主自己的移动端规则。
+ * ═══════════════════════════════════════════════════════════════════════ */
+[data-dsh-frame] {
+  height: 100dvh;
+  min-height: 100dvh;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §2 分层：画布 / 辉光 / 纹理
+ *
+ * v2 把两团辉光塞进了 body::after（z-index 顶到最大），它们于是盖在
+ * 整个 UI 上方，把文字和面板全洗成紫雾。v3 把辉光放回**内容之下**，
+ * 只留很淡的网格+扫描线在上面。
  * ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── A1. 画布：深蓝紫径向 + 双色光晕 ──────────────────────────────────
- * 实机主菜单：上方偏洋红、下方偏青蓝，中间压暗。
- * 用 body::before 做底，z-index 0，不挡内容。
- */
+html {
+  background-color: var(--zzz-canvas);
+}
+body {
+  background-color: transparent;
+}
+
+/* 面板底：宿主的 frame 自带不透明底，要透出来才能看见辉光 */
+[data-dsh-frame] {
+  background: transparent;
+}
+
+/* 辉光层：在内容之下（z-index 0，frame 是 position:relative 的后续兄弟） */
 body::before {
   content: "";
   position: fixed;
@@ -40,277 +86,605 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(62% 46% at 78% 2%, rgba(150, 52, 196, 0.34) 0%, transparent 66%),
-    radial-gradient(50% 40% at 10% 100%, rgba(32, 150, 182, 0.22) 0%, transparent 68%),
-    radial-gradient(120% 90% at 50% 40%, rgba(12, 14, 35, 0) 40%, rgba(6, 7, 18, 0.55) 100%);
-  animation: zzz-aura 18s ease-in-out infinite alternate;
+    radial-gradient(58% 44% at 82% -6%, rgba(150, 52, 196, 0.30) 0%, transparent 64%),
+    radial-gradient(46% 38% at 4% 104%, rgba(32, 150, 182, 0.20) 0%, transparent 66%),
+    radial-gradient(120% 92% at 50% 42%, transparent 44%, rgba(4, 5, 14, 0.42) 100%);
+  animation: zzz-aura 20s ease-in-out infinite alternate;
 }
-
 @keyframes zzz-aura {
-  from { opacity: 0.82; transform: scale(1); }
-  to   { opacity: 1;    transform: scale(1.035); }
+  from { opacity: 0.78; transform: scale(1); }
+  to   { opacity: 1;    transform: scale(1.04); }
 }
 
-/* ── A2. 全域质感叠层：交叉网格 + 扫描线 + 噪点 + 暗角 ────────────────
- * 一个固定全屏元素承载四层，alpha 都压得很低（2%~4%），
- * 肉眼看是「有织物感」，但不会影响读字。
- */
+/* 纹理层：45° 网 + 扫描线 + 噪点。只叠在最上面做「屏幕」质感，
+ * 强度压到几乎只在放大时才看得见。 */
 body::after {
   content: "";
   position: fixed;
-  inset: -10%;
+  inset: -6%;
   z-index: 2147483000;
   pointer-events: none;
-  opacity: 0.78;
-
+  opacity: 0.46;
   background-image:
-    /* ① 45° 网线 */
-    repeating-linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.012) 0 1px,
-      transparent 1px 5px
-    ),
-    /* ② -45° 网线（两向交叉成菱形） */
-    repeating-linear-gradient(
-      -45deg,
-      rgba(255, 255, 255, 0.009) 0 1px,
-      transparent 1px 5px
-    ),
-    /* ③ 扫描线：3px 周期 */
-    repeating-linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.011) 0 1px,
-      transparent 1px 3px
-    ),
-    /* ④ 噪点：SVG feTurbulence，碎粒感 */
-    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.10'/%3E%3C/svg%3E"),
-    /* ⑤ 洋红辉光（右上，模拟主菜单的氛围光） */
-    radial-gradient(
-      46% 34% at 86% 0%,
-      rgba(168, 62, 214, 0.30) 0%,
-      rgba(120, 44, 160, 0.10) 42%,
-      transparent 72%
-    ),
-    /* ⑥ 青辉光（左下） */
-    radial-gradient(
-      40% 30% at 2% 100%,
-      rgba(36, 168, 200, 0.18) 0%,
-      transparent 70%
-    ),
-    /* ⑦ 暗角 */
-    radial-gradient(
-      120% 88% at 50% 46%,
-      transparent 52%,
-      rgba(4, 5, 12, 0.28) 88%,
-      rgba(2, 3, 8, 0.48) 100%
-    );
-
-  background-size: auto, auto, auto, 180px 180px, auto, auto, cover;
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.010) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.009) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.075'/%3E%3C/svg%3E");
+  background-size: auto, auto, auto, 180px 180px;
   animation: zzz-scan-drift 26s linear infinite;
-  will-change: transform;
 }
-
 @keyframes zzz-scan-drift {
   from { transform: translate3d(0, 0, 0); }
   to   { transform: translate3d(0, 3px, 0); }
 }
 
-/* ── A3. 面板质感：1px 内高光 + 外描边 ────────────────────────────────
- * 实机面板是近黑色的，靠一圈极细的内高光把「板」托起来。
- */
+/* ═══════════════════════════════════════════════════════════════════════
+ * §3 几何：实机面板的形状语言
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* R2 双层描边面板：外圈 #222 细线 + 内圈 1px 高光 */
+[data-dsh-surface="settings"],
+[role="dialog"] {
+  background-color: var(--zzz-panel);
+  border: 1px solid var(--zzz-line);
+  border-radius: 22px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 36px 90px rgba(0, 0, 0, 0.72);
+}
+
+/* 侧栏与主区之间：一条 1px 灰线，不用阴影 */
+[data-pane="sidebar"],
 [data-dsh-surface="sidebar"] {
-  background-color: var(--dsw-specific-sidebar-fill, #08080a);
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.025);
+  background-color: #050507;
+}
+[data-dsh-surface="sidebar"] {
+  background-color: transparent;
+}
+[data-pane="sidebar"] {
+  border-right: 1px solid var(--zzz-line);
+  position: relative;
+  overflow: hidden;
 }
 
-[data-dsh-surface="session-header"] {
-  background-color: rgba(12, 14, 35, 0.72);
-  border-bottom: 1px solid var(--dsw-alias-border-l1);
-  backdrop-filter: blur(16px) saturate(1.3);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.02);
+/* R4 巨型字形水印：只出现在侧栏，作为「墙纸」 */
+[data-pane="sidebar"]::after {
+  content: "ZENLESS";
+  position: absolute;
+  left: -18px;
+  bottom: 92px;
+  z-index: 0;
+  pointer-events: none;
+  font-size: 74px;
+  line-height: 0.82;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  color: rgba(255, 255, 255, 0.028);
+  transform: rotate(-90deg);
+  transform-origin: left bottom;
+  animation: zzz-watermark 24s ease-in-out infinite alternate;
+}
+@keyframes zzz-watermark {
+  from { transform: rotate(-90deg) translateY(0); }
+  to   { transform: rotate(-90deg) translateY(-10px); }
 }
 
-[data-dsh-surface="composer"] {
-  background-color: var(--dsw-specific-input-major, #0c0c0e);
-  border: 1px solid var(--dsw-alias-border-l1);
-  border-radius: var(--dsw-radius-lg);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.055),
-    0 12px 32px rgba(0, 0, 0, 0.45);
+/* R3 独立块行：设置/菜单里的行各自成块，靠间距分隔而不是分割线 */
+[role="menuitem"] {
+  border-radius: 10px;
+  margin: 2px 6px;
+  background-color: rgba(255, 255, 255, 0.022);
+}
+[role="menu"] {
+  background-color: var(--zzz-panel);
+  border: 1px solid var(--zzz-line);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.7);
 }
 
-/* 输入框聚焦：红光内描边（实机选中态就是红色） */
-[data-dsh-surface="composer"] textarea,
-[data-dsh-surface="composer"] [contenteditable="true"] {
-  border-radius: var(--dsw-radius-md);
-  transition: box-shadow 180ms ease;
-}
-[data-dsh-surface="composer"] textarea:focus,
-[data-dsh-surface="composer"] [contenteditable="true"]:focus {
-  outline: none;
-  box-shadow:
-    0 0 0 1.5px var(--dsw-alias-brand-primary),
-    0 0 24px -6px var(--dsw-alias-brand-primary);
-}
-
-/* ── A4. 卡片：硬边 + 内高光，不用大圆角软影 ────────────────────────── */
-[data-dsh-part="message-row"] > * {
-  border-radius: var(--dsw-radius-md);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
-}
-
-/* 按钮一律胶囊（实机全部是胶囊） */
+/* 胶囊：实机所有按钮/输入都是胶囊或 10px 圆角块 */
 button {
   border-radius: 999px;
 }
-
-/* 代码块：纯黑底 + 硬边 */
 pre,
 pre code {
-  border-radius: var(--dsw-radius-md);
-  border: 1px solid var(--dsw-alias-border-l1);
-  background-color: var(--dsw-alias-markdown-code-block);
+  border-radius: 10px;
+  border: 1px solid var(--zzz-line);
+  background-color: #060608;
+}
+[data-dsh-part="foot-card"],
+[data-dsh-usage-foot-card] {
+  border-radius: 12px;
+  border: 1px solid var(--zzz-line);
+  background-color: rgba(6, 6, 8, 0.9);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
- * B. 动效层（六招镜头语言）
+ * §4 动效原语
  * ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── B1. CRT 开关机 ────────────────────────────────────────────────── */
-@keyframes zzz-crt-on {
+/* P1 开机：CRT 横线张开 */
+@keyframes zzz-power-on {
   0%   { transform: scale(0.02, 0.004); filter: brightness(9) saturate(0); opacity: 0; }
   18%  { transform: scale(0.92, 0.008); filter: brightness(6) saturate(0.4); opacity: 1; }
   42%  { transform: scale(1, 0.016);  filter: brightness(3) saturate(0.8); }
-  68%  { transform: scale(1, 1.045);  filter: brightness(1.35); }
-  84%  { transform: scale(1, 0.985);  filter: brightness(1.05); }
+  68%  { transform: scale(1, 1.045);  filter: brightness(1.3); }
   100% { transform: scale(1, 1);      filter: brightness(1); }
 }
-
-[data-dsh-surface="root"] {
-  animation: zzz-crt-on 560ms var(--zzz-ease-crt) both;
-  transform-origin: 50% 45%;
-}
-
-/* 开机瞬间的横向亮线 */
-@keyframes zzz-crt-line {
+@keyframes zzz-power-line {
   0%   { opacity: 0; }
   14%  { opacity: 0.95; }
-  46%  { opacity: 0.7; }
+  46%  { opacity: 0.55; }
   100% { opacity: 0; }
+}
+
+/* P2 阶梯入：从右下 6px 处推入，末段轻微过冲 */
+@keyframes zzz-rise {
+  0%   { opacity: 0; transform: translate3d(0, 8px, 0); }
+  62%  { opacity: 1; transform: translate3d(0, -1.5px, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* P3 侧推入：菜单/弹窗从右侧压进来 */
+@keyframes zzz-slide-in {
+  0%   { opacity: 0; transform: translate3d(14px, 0, 0) scale(0.985); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* P4 扫光：一条斜带横穿，用于 hover / running */
+@keyframes zzz-sweep {
+  0%   { transform: translateX(-130%) skewX(-18deg); }
+  100% { transform: translateX(230%) skewX(-18deg); }
+}
+
+/* P5 故障撕裂 */
+@keyframes zzz-tear {
+  0%   { clip-path: inset(0 0 0 0); transform: translateX(0); }
+  22%  { clip-path: inset(18% 0 52% 0); transform: translateX(-7px); }
+  46%  { clip-path: inset(56% 0 14% 0); transform: translateX(9px); }
+  70%  { clip-path: inset(6% 0 74% 0); transform: translateX(-4px); }
+  100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+}
+@keyframes zzz-jitter {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(1.2px, -0.8px); }
+  50%      { transform: translate(-1.2px, 0.8px); }
+  75%      { transform: translate(0.8px, 0.8px); }
+}
+
+/* P6 呼吸：运行中的东西边缘光起伏 */
+@keyframes zzz-breathe {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.34), 0 0 0 rgba(212, 207, 1, 0); }
+  50%      { box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.72), 0 0 18px -4px rgba(212, 207, 1, 0.34); }
+}
+
+/* P7 光标：实机选择框是方块闪，不是细线 */
+@keyframes zzz-caret {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* P8 dock 抬升：选中项向上抬 2px 并加方块底 */
+@keyframes zzz-dock-lift {
+  0%   { transform: translateY(0) scale(1); }
+  55%  { transform: translateY(-3px) scale(1.06); }
+  100% { transform: translateY(-2px) scale(1); }
+}
+
+/* P9 数字滚动 */
+@keyframes zzz-odometer {
+  0%   { transform: translateY(6px); opacity: 0; }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §5 逐页装配
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 5.0 启动 ──────────────────────────────────────────────────────── */
+[data-dsh-surface="root"] {
+  animation: zzz-power-on 560ms var(--zzz-ease-crt) both;
+  transform-origin: 50% 45%;
 }
 html::after {
   content: "";
   position: fixed;
   left: 0; right: 0; top: 50%;
-  height: 3px;
+  height: 2px;
   z-index: 2147483001;
   pointer-events: none;
   background: #fff;
-  box-shadow: 0 0 26px 9px #fff, 0 0 70px 24px rgba(251, 200, 39, 0.55);
-  animation: zzz-crt-line 620ms var(--zzz-ease-crt) 1 both;
+  box-shadow: 0 0 22px 7px #fff, 0 0 64px 20px rgba(212, 207, 1, 0.45);
+  animation: zzz-power-line 600ms var(--zzz-ease-crt) 1 both;
 }
 
-/* ── B2. 错峰入场 ──────────────────────────────────────────────────── */
-@keyframes zzz-snap-in {
-  0%   { opacity: 0; transform: translateY(16px) scale(0.97); }
-  60%  { opacity: 1; transform: translateY(-3px) scale(1.012); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+/* ── 5.1 侧栏 ──────────────────────────────────────────────────────── */
+/* 品牌字：粗斜体 + 收紧字距（实机标题字形） */
+[data-slot="sidebar.brand.name"] {
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+[data-slot="sidebar.brand.mark"] {
+  filter: drop-shadow(0 0 8px rgba(212, 207, 1, 0.42));
 }
 
-[data-dsh-part="message-row"] {
-  animation: zzz-snap-in 420ms var(--zzz-ease-snap) both;
+/* R1 选中反转：导航行选中 = 实心黄绿 + 黑字（设置页 Input 胶囊） */
+[data-dsh-part="sidebar-entry"],
+[data-dsh-part="entry"] {
+  border-radius: 10px;
+  font-style: italic;
+  font-weight: 700;
+  transition:
+    background-color 110ms var(--zzz-ease-hard),
+    color 110ms var(--zzz-ease-hard),
+    box-shadow 160ms ease;
 }
-[data-dsh-part="message-row"]:nth-child(1) { animation-delay: 0ms; }
-[data-dsh-part="message-row"]:nth-child(2) { animation-delay: 55ms; }
-[data-dsh-part="message-row"]:nth-child(3) { animation-delay: 110ms; }
-[data-dsh-part="message-row"]:nth-child(4) { animation-delay: 165ms; }
-[data-dsh-part="message-row"]:nth-child(5) { animation-delay: 220ms; }
-[data-dsh-part="message-row"]:nth-child(6) { animation-delay: 275ms; }
-[data-dsh-part="message-row"]:nth-child(n + 7) { animation-delay: 330ms; }
+[data-dsh-part="sidebar-entry"]:hover,
+[data-dsh-part="entry"]:hover {
+  background-color: rgba(255, 255, 255, 0.055);
+  box-shadow: inset 2px 0 0 var(--zzz-yellow);
+}
+[data-dsh-part="sidebar-entry"][aria-current],
+[data-dsh-part="sidebar-entry"][aria-selected="true"],
+[data-dsh-part="sidebar-entry"][data-active="true"],
+[data-dsh-part="entry"][aria-current],
+[data-dsh-part="entry"][aria-selected="true"],
+[data-dsh-part="entry"][data-active="true"] {
+  background-color: var(--zzz-yellow);
+  color: var(--zzz-ink);
+  box-shadow: 0 0 22px -6px rgba(212, 207, 1, 0.7);
+}
+[data-dsh-part="sidebar-entry"][aria-current] *,
+[data-dsh-part="entry"][aria-current] * {
+  color: var(--zzz-ink) !important;
+  fill: var(--zzz-ink);
+}
 
-/* ── B3. 景别推近 ──────────────────────────────────────────────────── */
-@keyframes zzz-cam-push {
-  0%   { transform: scale(1); }
-  42%  { transform: scale(1.045); }
-  100% { transform: scale(1); }
+/* 会话列表行：进入时阶梯浮现 */
+[role="treeitem"] {
+  border-radius: 8px;
+  animation: zzz-rise 300ms var(--zzz-ease-snap) both;
+  transition: background-color 120ms ease, transform 140ms var(--zzz-ease-snap);
 }
+[role="treeitem"]:hover {
+  background-color: rgba(255, 255, 255, 0.045);
+  transform: translateX(2px);
+}
+[role="treeitem"]:nth-child(1) { animation-delay: 20ms; }
+[role="treeitem"]:nth-child(2) { animation-delay: 60ms; }
+[role="treeitem"]:nth-child(3) { animation-delay: 100ms; }
+[role="treeitem"]:nth-child(4) { animation-delay: 140ms; }
+[role="treeitem"]:nth-child(5) { animation-delay: 180ms; }
+[role="treeitem"]:nth-child(n + 6) { animation-delay: 220ms; }
+
+/* 新建会话：主行动 = 黄绿实心 + 黑字（与选中态同一套语言），
+ * hover 扫光，按下硬缩。 */
+[data-dsh-part="new-session"] {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  background-image: linear-gradient(160deg, #e2dd12 0%, #c9c401 100%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--zzz-ink) !important;
+  font-style: italic;
+  font-weight: 800;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 6px 20px -8px rgba(212, 207, 1, 0.8);
+  transition: box-shadow 150ms ease, transform 110ms var(--zzz-ease-snap);
+}
+[data-dsh-part="new-session"] * {
+  color: var(--zzz-ink) !important;
+  fill: var(--zzz-ink);
+}
+[data-dsh-part="new-session"]::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: 0;
+  width: 42%;
+  height: 180%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  opacity: 0;
+}
+[data-dsh-part="new-session"]:hover::after {
+  animation: zzz-sweep 620ms var(--zzz-ease-hard) 1;
+  opacity: 1;
+}
+[data-dsh-part="new-session"]:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 8px 28px -8px rgba(212, 207, 1, 0.95);
+}
+[data-dsh-part="new-session"]:active {
+  transform: scale(0.975);
+}
+
+/* R7 均衡器条：区块标题两侧的三横线 */
+[data-slot="sidebar.panellist"]::before,
+[data-slot="sidebar.workspaces"]::before,
+[data-slot="conversation.header"]::before {
+  content: "";
+  display: block;
+  height: 9px;
+  margin: 0 2px 6px;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.16) 0 1px,
+    transparent 1px 4px
+  );
+  mask-image: linear-gradient(90deg, #000 0 34%, transparent 34% 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 0 34%, transparent 34% 100%);
+  animation: zzz-eq 6s ease-in-out infinite alternate;
+}
+@keyframes zzz-eq {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+
+/* ── 5.2 会话区 ───────────────────────────────────────────────────── */
+/* 景别推近：切进会话时整体 1.045 再回落 */
 [data-dsh-surface="conversation"] {
-  animation: zzz-cam-push 300ms var(--zzz-ease-cam) 380ms both;
+  animation: zzz-cam-push 320ms var(--zzz-ease-cam) 120ms both;
   transform-origin: 50% 40%;
 }
-
-/* ── B4. 双层弹窗 ──────────────────────────────────────────────────── */
-@keyframes zzz-ghost-in {
-  from { opacity: 0; transform: translate(40px, -16px) scale(0.94); filter: blur(4px); }
-  to   { opacity: 0.5; transform: translate(30px, -12px) scale(0.97); filter: blur(2.4px); }
-}
-@keyframes zzz-win-snap {
-  0%   { opacity: 0; transform: scale(0.9) translateY(8px); }
-  62%  { opacity: 1; transform: scale(1.014) translateY(-1px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+@keyframes zzz-cam-push {
+  0%   { transform: scale(1); }
+  44%  { transform: scale(1.035); }
+  100% { transform: scale(1); }
 }
 
-[data-dsh-surface="settings"] {
-  position: relative;
-  animation: zzz-win-snap 260ms var(--zzz-ease-pop) both;
+/* 消息行阶梯入场 */
+[data-dsh-part="message-row"] {
+  animation: zzz-rise 340ms var(--zzz-ease-snap) both;
+}
+[data-dsh-part="message-row"]:nth-child(1) { animation-delay: 0ms; }
+[data-dsh-part="message-row"]:nth-child(2) { animation-delay: 45ms; }
+[data-dsh-part="message-row"]:nth-child(3) { animation-delay: 90ms; }
+[data-dsh-part="message-row"]:nth-child(4) { animation-delay: 135ms; }
+[data-dsh-part="message-row"]:nth-child(5) { animation-delay: 180ms; }
+[data-dsh-part="message-row"]:nth-child(n + 6) { animation-delay: 225ms; }
+
+/* 回合尾巴：方块光标（P7） */
+[data-dsh-part="turn-tail"] {
+  animation: zzz-caret 1.06s steps(1) infinite;
+}
+
+/* 输入区：准星式聚焦环——四角括号，不是四边描边 */
+[data-dsh-part="composer-input"] {
+  caret-color: var(--zzz-yellow);
+  border-radius: 10px;
+}
+[data-dsh-part="composer-input"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+  background-image:
+    linear-gradient(var(--zzz-yellow), var(--zzz-yellow)),
+    linear-gradient(var(--zzz-yellow), var(--zzz-yellow)),
+    linear-gradient(var(--zzz-yellow), var(--zzz-yellow)),
+    linear-gradient(var(--zzz-yellow), var(--zzz-yellow));
+  background-repeat: no-repeat;
+  background-size: 12px 1.5px, 12px 1.5px, 1.5px 12px, 1.5px 12px;
+  background-position: left top, right bottom, left top, right bottom;
+  animation: zzz-reticle 220ms var(--zzz-ease-snap) 1 both;
+}
+@keyframes zzz-reticle {
+  from { background-size: 22px 1.5px, 22px 1.5px, 1.5px 22px, 1.5px 22px; opacity: 0.4; }
+  to   { background-size: 12px 1.5px, 12px 1.5px, 1.5px 12px, 1.5px 12px; opacity: 1; }
+}
+
+/* 输入卡片：底部一条黄线，聚焦时展开 */
+[data-slot="conversation.composer.bar"] {
+  border: 1px solid var(--zzz-line);
+  border-radius: 16px;
+  background-color: #050507;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 160ms ease, box-shadow 200ms ease;
+}
+[data-slot="conversation.composer.bar"]:focus-within {
+  border-color: rgba(212, 207, 1, 0.55);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 30px 76px rgba(0, 0, 0, 0.78);
+    0 0 0 1px rgba(212, 207, 1, 0.18),
+    0 0 28px -10px rgba(212, 207, 1, 0.55);
 }
-[data-dsh-surface="settings"]::before {
+
+/* 附件 chip：斜切角（装备页物品格的刀口） */
+[data-dsh-part="composer-chip"] {
+  border-radius: 6px;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  border: 1px solid var(--zzz-line);
+  background-color: rgba(255, 255, 255, 0.035);
+}
+
+/* 排队区：从下方滑入 */
+[data-dsh-part="queue-dock"] {
+  animation: zzz-rise 260ms var(--zzz-ease-snap) both;
+}
+
+/* 设置页背景巨型水印（R4）：只在这块面板里出现，不抢内容 */
+[data-dsh-surface="settings"]::after {
+  content: "SYSTEM";
+  position: absolute;
+  right: 8px;
+  bottom: -14px;
+  z-index: -1;
+  pointer-events: none;
+  font-size: 96px;
+  line-height: 1;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.05em;
+  color: rgba(255, 255, 255, 0.022);
+}
+
+/* 右侧详情栏：和主区同一块面板，左侧一条灰线 */
+[data-dsh-surface="details"] {
+  background-color: #08080a;
+  border-left: 1px solid var(--zzz-line);
+}
+
+/* 用量条轨道：分段刻度（战斗 HUD 血条的分段感） */
+.cm-peak-track,
+.cm-peak-track > div {
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.16) 0 1px,
+    transparent 1px 9px
+  );
+}
+
+/* ── 5.3 弹层 / 菜单 / 设置 ────────────────────────────────────────── */[role="menu"] {
+  animation: zzz-slide-in 180ms var(--zzz-ease-pop) both;
+}
+[role="menuitem"] {
+  animation: zzz-rise 220ms var(--zzz-ease-snap) both;
+  transition: background-color 100ms var(--zzz-ease-hard), color 100ms var(--zzz-ease-hard);
+}
+[role="menuitem"]:nth-child(1) { animation-delay: 0ms; }
+[role="menuitem"]:nth-child(2) { animation-delay: 22ms; }
+[role="menuitem"]:nth-child(3) { animation-delay: 44ms; }
+[role="menuitem"]:nth-child(4) { animation-delay: 66ms; }
+[role="menuitem"]:nth-child(n + 5) { animation-delay: 88ms; }
+[role="menuitem"]:hover,
+[role="menuitem"]:focus-visible {
+  background-color: var(--zzz-yellow);
+  color: var(--zzz-ink);
+  outline: none;
+}
+[role="menuitem"]:hover *,
+[role="menuitem"]:focus-visible * {
+  color: var(--zzz-ink);
+  fill: var(--zzz-ink);
+}
+
+/* 弹窗：双层（幽灵层从右后推入 → 实层落下） */
+[role="dialog"] {
+  position: relative;
+  animation: zzz-win-snap 260ms var(--zzz-ease-pop) both;
+}
+@keyframes zzz-win-snap {
+  0%   { opacity: 0; transform: scale(0.94) translateY(6px); }
+  62%  { opacity: 1; transform: scale(1.008) translateY(-1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+[role="dialog"]::before {
   content: "";
   position: absolute;
   inset: -1px;
+  z-index: -1;
   border-radius: inherit;
   background: inherit;
-  border: 1px solid rgba(242, 52, 58, 0.3);
-  opacity: 0.42;
-  transform: translate(30px, -12px) scale(0.97);
-  filter: blur(2.4px);
-  z-index: -1;
+  border: 1px solid rgba(212, 207, 1, 0.28);
+  transform: translate(22px, -10px) scale(0.985);
+  filter: blur(2px);
+  opacity: 0.4;
   pointer-events: none;
-  animation: zzz-ghost-in 150ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 
-/* ── B5. 故障撕裂 ──────────────────────────────────────────────────── */
-@keyframes zzz-tear-x {
-  0%   { clip-path: inset(0 0 0 0); transform: translateX(0); }
-  25%  { clip-path: inset(22% 0 48% 0); transform: translateX(-9px); }
-  50%  { clip-path: inset(52% 0 18% 0); transform: translateX(11px); }
-  75%  { clip-path: inset(8% 0 72% 0); transform: translateX(-5px); }
-  100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
+/* 遮罩：轻微故障撕裂后稳定 */
+[data-dsh-surface="overlay"] {
+  animation: zzz-overlay-in 200ms var(--zzz-ease-crt) both;
 }
-[data-dsh-part="entry"]:active {
-  animation: zzz-tear-x 190ms steps(2) 1;
+@keyframes zzz-overlay-in {
+  0%   { opacity: 0; transform: scale(1.02); filter: blur(3px); }
+  100% { opacity: 1; transform: scale(1);    filter: blur(0); }
 }
 
-/* ── B6. 字体抖动 ──────────────────────────────────────────────────── */
-@keyframes zzz-jitter {
-  0%   { transform: translate(0, 0); }
-  25%  { transform: translate(1.5px, -1px); }
-  50%  { transform: translate(-1.5px, 1px); }
-  75%  { transform: translate(1px, 1px); }
-  100% { transform: translate(-1px, -1px); }
+/* 设置页：行块化（R3）+ 选中反转（R1） */
+[data-dsh-surface="settings"] [role="switch"] {
+  border-radius: 999px;
+  transition: background-color 110ms var(--zzz-ease-hard);
 }
-[data-dsh-part="thinking"],
-[data-dsh-part="streaming-indicator"] {
+[data-dsh-surface="settings"] [role="switch"][aria-checked="true"] {
+  background-color: var(--zzz-yellow);
+}
+
+/* 标签页：黄绿滑块 */
+[role="tab"] {
+  font-style: italic;
+  font-weight: 700;
+  transition: color 110ms var(--zzz-ease-hard);
+}
+[role="tab"][aria-selected="true"] {
+  color: var(--zzz-yellow);
+}
+[role="tablist"] {
+  position: relative;
+}
+
+/* 提示气泡 */
+[role="tooltip"] {
+  background-color: #0a0a0c;
+  border: 1px solid var(--zzz-line);
+  border-radius: 8px;
+  animation: zzz-tip-in 140ms var(--zzz-ease-pop) both;
+}
+@keyframes zzz-tip-in {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
+/* R8 选中/运行 = 黄环（装备页物品格）。运行中的卡片边缘呼吸。 */
+[data-dsh-surface="conversation"] [data-state="running"],
+[data-dsh-surface="conversation"] [data-status="running"],
+[data-dsh-surface="conversation"] [aria-busy="true"] {
+  border-radius: 10px;
+  animation: zzz-breathe 2.2s ease-in-out infinite;
+}
+[data-dsh-surface="conversation"] [data-state="error"],
+[data-dsh-surface="details"] [data-state="error"] {
+  animation: zzz-jitter 180ms steps(2) 3;
+  box-shadow: inset 2px 0 0 var(--zzz-red);
+}
+
+/* 思考中：轻微抖动 */
+[data-dsh-surface="conversation"] [data-state="thinking"],
+[data-dsh-surface="conversation"] [data-thinking="true"] {
   display: inline-block;
-  animation: zzz-jitter 180ms steps(2) infinite;
+  animation: zzz-jitter 200ms steps(2) infinite;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
- * C. 第三方插件着色对齐
- * ═══════════════════════════════════════════════════════════════════════ */
+/* ── 5.5 底部用量卡 ───────────────────────────────────────────────── */
+/* R9 属性条：细条 + 黄→青渐变 */
+[data-dsh-usage-foot-card] [role="progressbar"] > *,
 .cm-peak-strip,
 .cm-peak-classic,
 .cm-style-peak-sample {
   background-image: linear-gradient(
     to right,
-    var(--dsw-static-amber-400, #fbc827) 0 50%,
-    var(--dsw-static-blue-400, #28d1e4) 50%
+    var(--zzz-gold) 0 50%,
+    var(--zzz-cyan) 50%
   ) !important;
 }
+[data-dsh-usage-foot-card] {
+  animation: zzz-rise 320ms var(--zzz-ease-snap) 180ms both;
+}
+/* P9 数字滚动：数值节点每次更新重新触发 */
+.cm-num,
+[data-dsh-usage-foot-card] output,
+[data-dsh-usage-foot-card] [data-value] {
+  font-variant-numeric: tabular-nums;
+  animation: zzz-odometer 260ms var(--zzz-ease-snap) both;
+}
+
+/* ── 5.6 拖拽把手 ─────────────────────────────────────────────────── */
+[data-dsh-part="resize-handle"] {
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+[data-dsh-part="resize-handle"]:hover {
+  background-color: rgba(212, 207, 1, 0.5);
+  box-shadow: 0 0 14px -2px rgba(212, 207, 1, 0.7);
+}
+
+/* ── 5.7 第三方插件着色对齐 ───────────────────────────────────────── */
 .cm-footer,
 .cm-peak-chip,
 .cm-peak-label {
@@ -318,97 +692,43 @@ html::after {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
- * D. 减少动态：停掉一切运动，保留静态质感
+ * §6 减少动态
  * ═══════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   [data-dsh-surface="root"],
   [data-dsh-surface="conversation"],
+  [data-dsh-surface="overlay"],
   [data-dsh-surface="settings"],
-  [data-dsh-surface="settings"]::before,
+  [role="dialog"],
+  [role="menu"],
+  [role="menuitem"],
+  [role="treeitem"],
+  [role="tooltip"],
   [data-dsh-part="message-row"],
-  [data-dsh-part="thinking"],
-  [data-dsh-part="streaming-indicator"],
+  [data-dsh-part="turn-tail"],
+  [data-dsh-part="queue-dock"],
+  [data-dsh-part="new-session"]::after,
+  [data-dsh-part="composer-input"]:focus-visible,
+  [data-dsh-usage-foot-card],
+  [data-pane="sidebar"]::after,
+  [data-slot="sidebar.panellist"]::before,
+  [data-slot="sidebar.workspaces"]::before,
+  [data-slot="conversation.header"]::before,
   body::before,
   body::after,
-  html::after,
-  [data-dsh-part="entry"]:active {
+  html::after {
     animation: none !important;
   }
-  [data-dsh-part="message-row"] { opacity: 1; transform: none; }
+  [data-dsh-part="message-row"],
+  [role="treeitem"],
+  [role="menuitem"] {
+    opacity: 1;
+    transform: none;
+  }
+  [data-dsh-surface="conversation"] [data-state="running"],
+  [data-dsh-surface="conversation"] [aria-busy="true"] {
+    animation: none !important;
+    box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.5);
+  }
   html::after { display: none; }
-  [data-dsh-surface="settings"]::before { opacity: 0.18; }
-  body::before { opacity: 0.82; }
-  body::after { opacity: 0.9; }
-}
-
-
-/* ── A5. 导航与主按钮：把游戏里的「红胶囊 + 黄高亮」搬过来 ──────────── */
-[data-dsh-part="entry"] {
-  border-radius: var(--dsw-radius-sm);
-  transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
-}
-[data-dsh-part="entry"]:hover {
-  background-color: rgba(255, 255, 255, 0.055);
-  box-shadow: inset 2px 0 0 rgba(242, 52, 58, 0.55);
-}
-[data-dsh-part="entry"][aria-current],
-[data-dsh-part="entry"][data-active="true"] {
-  background-color: rgba(242, 52, 58, 0.13);
-  box-shadow:
-    inset 2px 0 0 var(--dsw-alias-brand-primary),
-    0 0 18px -6px rgba(242, 52, 58, 0.6);
-}
-
-/* 新建会话：主行动，红胶囊 + 外发光（实机主按钮就是这个调性） */
-[data-dsh-part="new-session"] {
-  border-radius: 999px;
-  background-image: linear-gradient(160deg, #e02a30 0%, #c81f25 100%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #ffffff;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 6px 20px -6px rgba(242, 52, 58, 0.75);
-  transition: box-shadow 160ms ease, filter 160ms ease;
-}
-[data-dsh-part="new-session"]:hover {
-  filter: brightness(1.07);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.26),
-    0 8px 28px -6px rgba(242, 52, 58, 0.9);
-}
-[data-dsh-part="new-session"] svg,
-[data-dsh-part="new-session"] * {
-  color: #ffffff;
-}
-
-/* 输入框：只在键盘聚焦时给红光（自动聚焦不亮，避免一进页面就一圈红） */
-[data-dsh-part="composer-input"]:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 1.5px rgba(242, 52, 58, 0.85),
-    0 0 26px -8px rgba(242, 52, 58, 0.7);
-}
-/* 容器整体：留一条极淡的边界，让它从画布里「立」起来 */
-[data-dsh-surface="composer"]:focus-within {
-  border-color: rgba(242, 52, 58, 0.35);
-}
-
-/* 底部卡片：轻微内高光，和画布分层 */
-[data-dsh-part="foot-card"] {
-  border-radius: var(--dsw-radius-md);
-  border: 1px solid var(--dsw-alias-border-l1);
-  background-color: rgba(8, 8, 10, 0.72);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
-}
-
-/* ── A6. 让底层光晕透出来 ────────────────────────────────────────────
- * 宿主给 root / body 都刷了不透明底色，body::before 的光晕被盖住。
- * 把这两层设透明，只留 html 的底色，光晕就能显形。
- */
-html {
-  background-color: var(--dsw-alias-bg-base, #0c0e23);
-}
-body,
-[data-dsh-surface="root"] {
-  background-color: transparent;
 }
