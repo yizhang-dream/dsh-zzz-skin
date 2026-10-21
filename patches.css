@@ -152,11 +152,11 @@ body::after {
 [data-pane="sidebar"]::after {
   content: "ZENLESS";
   position: absolute;
-  left: -18px;
+  left: -26px;
   bottom: 76px;
   z-index: 0;
   pointer-events: none;
-  font-size: 108px;
+  font-size: 96px;
   line-height: 0.82;
   font-weight: 900;
   font-style: italic;
