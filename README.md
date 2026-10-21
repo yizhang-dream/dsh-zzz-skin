@@ -132,3 +132,27 @@ node /tmp/verify_remote.mjs "$(cat ~/.dsh/dsh-web.cookie)" /tmp/shot.png
 - **CRT 开机只在首屏播一次**。切会话不重播——宿主的过渡钩子不暴露。
 - **双层弹窗是近似的**。用 `::before` 造幽灵层，不是宿主真的渲染两层。
 - **`dsh-cost-meter` 那条进度条**已用 CSS 覆盖成 ZZZ 配色，没有卸载——它还带费用统计、余额查询、峰谷提醒等一整套功能。
+
+## 拿登录链接
+
+DSH web 有鉴权，`?token=` 每次服务启动轮换。两个脚本解决：
+
+**lab-ts 上**（`~/apps/dsh-url.sh`）：
+
+```bash
+bash ~/apps/dsh-url.sh            # 打印 http://100.112.92.62:3081/?token=...
+bash ~/apps/dsh-url.sh host:port  # 换对外地址
+```
+
+**本机**（`~/bin/dsh-open.sh`，副本在 `tools/`）：
+
+```bash
+bash ~/bin/dsh-open.sh            # 取链接并在浏览器打开
+bash ~/bin/dsh-open.sh --print    # 只打印
+```
+
+原理：从 `journalctl --user -u dsh-web` 里捞最新 `token=`，拼到对外地址上。
+用这个链接访问一次，就会种下绑定 `100.112.92.62:3081` 的 30 天 cookie。
+
+**注意**：服务重启后（`systemctl --user restart dsh-web`）token 会换，
+旧链接立即失效。启动到能响应大约要 40 秒，期间访问会拿到 502。
