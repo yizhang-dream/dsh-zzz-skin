@@ -340,6 +340,24 @@ cd .playwright-mcp && python -m http.server 8971
 
 对照图见 `answers.离命塔.cn/2026-10-22-dsh-vs-zzz-compare.html`。
 
+
+### v3.3 找到「侧栏不响应样式」的真因（提交见下）
+
+症状：侧栏整块对皮肤改动毫无反应——背景、圆角、描边不改，连内联 `!important` 也不生效；而设置弹窗里同样规则一切正常。
+
+排查过程与结论：
+
+1. 先怀疑选择器/权重：扫了全部 213 个样式表，匹配 `[data-dsh-part="new-session"]` 的最高权重规则就是皮肤自己的（0-2-1），没有对手。
+2. 再怀疑 `@layer`、`all: unset`、shadow DOM、iframe——逐个排除。
+3. 关键一步是**不信 `getComputedStyle`**：它对 `background-image` / `font-style` / `animation-name` 返回空串，但对 `borderTopLeftRadius`、`fontWeight`、`color` 返回皮肤值。说明规则**是生效的**，只是有的属性读不出来。
+4. 用逐个开关样式表 + 元素截图做二分，最后定位到 `[data-dsh-surface="root"]` 的 CRT 开机动画：它当时在 `@keyframes` 里动 `filter: brightness()`，动画结束后整棵子树停留在一个合成层里，**该层的位图不再失效**——侧栏就一直显示首帧的旧位图。
+
+修复：`zzz-power-on` 去掉 `filter`，只动 `transform` / `opacity`，且末帧写 `transform: none`（不留持久合成层）。`zzz-cam-push` / `zzz-rise` / `zzz-win-snap` / `zzz-slide-in` 的末帧同样改成 `none`。
+
+修复后侧栏、黄色主按钮、导航、底部用量条、ZENLESS 水印全部正常显示。
+
+**教训**：装饰性入场动画不要在 `@keyframes` 里动 `filter`（尤其配 `animation-fill-mode: both`）；末帧要用 `none` 而不是恒等变换，否则会留下一个不失效的合成层，把子树钉在旧位图上。
+
 ### 仍未解决
 
 宿主侧栏（第三方 sidebar 插件，`hHd-Xa_*` 类名，样式由插件在 body 里注入）在无头 Chrome 截图里对背景 / 圆角 / 描边的改动作不出反应，即使内联 `!important` 也不生效；文字颜色、`position`、水印等属性则正常。判断是该插件的渲染层问题，不是皮肤 CSS 失效——干净对照页里同样规则全部生效。需要在真实浏览器里用肉眼确认一次。
