@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.linxin666.org/dsh-skin/v2.json",
+  "skinManifestVersion": 2,
+  "id": "zzz-zenless",
+  "name": "新艾利都",
+  "nameEn": "New Eridu",
+  "author": "flower-moon",
+  "tagline": "深紫夜 · 警示黄 · CRT 开机 · 六招镜头语言",
+  "description": "《绝区零》新艾利都主题：深紫夜底与警示黄/信号红双强调，107 个 --dsw-* 语义令牌全量重映射；身份层复刻游戏界面的镜头语言——CRT 开关机、错峰入场、景别推近、双层弹窗、故障撕裂、字体抖动。依据游戏实机截图取样，浅深两档均通过正文对比度校验。",
+  "tags": [
+    "zenless",
+    "zzz",
+    "game",
+    "dark",
+    "crt",
+    "motion",
+    "hoyoverse"
+  ],
+  "accent": "#FFD84D",
+  "order": 10,
+  "version": "0.1.0",
+  "license": "MIT",
+  "preview": {
+    "light": "preview/light.svg",
+    "dark": "preview/dark.svg"
+  },
+  "contributes": {
+    "stylesheet": "skin.css",
+    "patches": "patches.css"
+  }
+}

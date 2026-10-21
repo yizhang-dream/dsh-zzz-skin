@@ -1,0 +1,424 @@
+/* ═══════════════════════════════════════════════════════════════════════
+ * 新艾利都 · L1 令牌层
+ *
+ * 只做一件事：把 DSH 的 --dsw-alias-* 语义令牌整体换成绝区零色板。
+ * 选择器由 skin-center 强制作用域到 html[data-dsh-skin="zzz-zenless"]，
+ * 所以这里写 :root / body[...] 都是安全的。
+ *
+ * 依据实机取样：
+ *   底色   深紫夜 #12102A → #241B45（不是纯黑）
+ *   主强调 信号红 #FF4D3D（返回/关闭/NEW 角标/通知三角）
+ *   最高亮 警示黄 #FFD84D（标题、主按钮）
+ *   辅助   信号青 #4AD4FF（链接、选中）
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  color: #eee9ff;
+  background-color: #12102a;
+}
+
+body[data-ds-dark-theme] {
+  color: #eee9ff;
+  background-color: #12102a;
+}
+
+/* ── 深色档（主用）──────────────────────────────────────────────── */
+:root {
+  /* 背景层：从底到上逐级提亮，保证层次 */
+  --dsw-alias-bg-base: #12102a;
+  --dsw-alias-bg-layer-1: #1b1738;
+  --dsw-alias-bg-layer-2: #241b45;
+  --dsw-alias-bg-layer-3: #2e2352;
+  --dsw-alias-bg-overlay: rgba(11, 9, 24, 0.72);
+  --dsw-alias-bg-mask-1: rgba(11, 9, 24, 0.32);
+  --dsw-alias-bg-mask-2: rgba(11, 9, 24, 0.52);
+  --dsw-alias-bg-mask-3: rgba(11, 9, 24, 0.72);
+  --dsw-alias-bg-mask-drop: rgba(11, 9, 24, 0.88);
+  --dsw-alias-bg-mask-photo: rgba(11, 9, 24, 0.6);
+  --dsw-alias-bg-skeleton: rgba(255, 255, 255, 0.06);
+  --dsw-alias-bg-multi-select: rgba(255, 77, 61, 0.14);
+  --dsw-alias-bg-module-platform: #241b45;
+  --dsw-alias-bg-document-preview: #1b1738;
+  --dsw-alias-bg-document-selection: rgba(255, 216, 77, 0.22);
+
+  /* 文字层 */
+  --dsw-alias-label-primary: #eee9ff;
+  --dsw-alias-label-primary-bluish: #dce6ff;
+  --dsw-alias-label-primary-dimmed: #c4bbe4;
+  --dsw-alias-label-primary-foreground: #0b0918;
+  --dsw-alias-label-primary-inverted: #0b0918;
+  --dsw-alias-label-secondary: #a99cd8;
+  --dsw-alias-label-tertiary: #7a6fa8;
+  --dsw-alias-label-caption: #7a6fa8;
+  --dsw-alias-label-dimmed: #5e5588;
+  --dsw-alias-label-document-preview: #a99cd8;
+  --dsw-alias-label-deep-diving: #4ad4ff;
+  --dsw-alias-label-deep-diving-shimmer: rgba(74, 212, 255, 0.45);
+  --dsw-alias-label-shimmer: rgba(238, 233, 255, 0.3);
+
+  /* 边框：硬边 + 低透明度 */
+  --dsw-alias-border-l1: rgba(255, 255, 255, 0.1);
+  --dsw-alias-border-l2: rgba(255, 255, 255, 0.16);
+  --dsw-alias-border-l2-darkmode-thin: rgba(255, 255, 255, 0.08);
+  --dsw-alias-border-l3: rgba(255, 255, 255, 0.22);
+  --dsw-alias-border-l4: rgba(255, 255, 255, 0.3);
+  --dsw-alias-border-inverted: rgba(0, 0, 0, 0.2);
+  --dsw-alias-border-inverted2: rgba(0, 0, 0, 0.32);
+
+  /* 品牌：信号红 */
+  --dsw-alias-brand-primary: #ff4d3d;
+  --dsw-alias-brand-primary-invert: #ffffff;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #ff4d3d;
+  --dsw-alias-brand-text: #ff8f84;
+  --dsw-alias-link: #4ad4ff;
+
+  /* 按钮 */
+  --dsw-alias-button-primary-fill: #ff4d3d;
+  --dsw-alias-button-primary-hover: #d93425;
+  --dsw-alias-button-primary-dimmed: rgba(255, 77, 61, 0.45);
+  --dsw-alias-button-contrast-fill: #ffd84d;
+  --dsw-alias-button-elevated-fill: #241b45;
+  --dsw-alias-button-floating-fill: rgba(36, 27, 69, 0.92);
+  --dsw-alias-button-floating-hover: rgba(46, 35, 82, 0.96);
+  --dsw-alias-button-ghost-active-fill: rgba(255, 77, 61, 0.16);
+  --dsw-alias-button-ghost-active-border: rgba(255, 77, 61, 0.48);
+  --dsw-alias-button-ghost-active-hover: rgba(255, 77, 61, 0.24);
+  --dsw-alias-button-info-fill: rgba(74, 212, 255, 0.16);
+  --dsw-alias-button-info-hover: rgba(74, 212, 255, 0.26);
+  --dsw-alias-button-tool-bar-fill: #241b45;
+  --dsw-alias-button-tool-bar-fill-invisible: transparent;
+  --dsw-alias-button-tool-bar-hover: #2e2352;
+
+  /* 交互态 */
+  --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, 0.07);
+  --dsw-alias-interactive-bg-active: rgba(255, 255, 255, 0.12);
+  --dsw-alias-interactive-bg-hover-accent: rgba(255, 77, 61, 0.14);
+  --dsw-alias-interactive-bg-hover-danger: rgba(255, 77, 61, 0.2);
+  --dsw-alias-interactive-bg-hover-solid: #2e2352;
+
+  /* 状态色 */
+  --dsw-alias-state-success-primary: #3ddc97;
+  --dsw-alias-state-success-secondary: rgba(61, 220, 151, 0.55);
+  --dsw-alias-state-success-tertiary: rgba(61, 220, 151, 0.16);
+  --dsw-alias-state-warn-primary: #ffa93d;
+  --dsw-alias-state-warn-secondary: rgba(255, 169, 61, 0.55);
+  --dsw-alias-state-warn-tertiary: rgba(255, 169, 61, 0.16);
+  --dsw-alias-state-warn-label: #ffc078;
+  --dsw-alias-state-error-primary: #ff4d3d;
+  --dsw-alias-state-error-secondary: rgba(255, 77, 61, 0.55);
+  --dsw-alias-state-business-primary: #4ad4ff;
+  --dsw-alias-state-business-tertiary: rgba(74, 212, 255, 0.16);
+  --dsw-alias-state-idle-primary: #7a6fa8;
+
+  /* 代码 / Markdown */
+  --dsw-alias-markdown-code-block: #0b0918;
+  --dsw-alias-markdown-code-block-banner: #1b1738;
+  --dsw-alias-markdown-inline-code: rgba(255, 216, 77, 0.14);
+  --dsw-alias-markdown-code-segment-selected: rgba(255, 77, 61, 0.2);
+  --dsw-alias-markdown-code-segment-unselected: rgba(255, 255, 255, 0.06);
+  --dsw-alias-markdown-citation: #4ad4ff;
+  --dsw-alias-markdown-tag: rgba(255, 255, 255, 0.1);
+  --dsw-alias-markdown-placeholder: #7a6fa8;
+  --dsw-alias-code-diff-added: rgba(61, 220, 151, 0.16);
+  --dsw-alias-code-diff-deleted: rgba(255, 77, 61, 0.16);
+  --dsw-alias-file-diff-added-bg: rgba(61, 220, 151, 0.12);
+  --dsw-alias-file-diff-added-gutter: #3ddc97;
+  --dsw-alias-file-diff-added-marker: #3ddc97;
+  --dsw-alias-file-diff-deleted-bg: rgba(255, 77, 61, 0.12);
+  --dsw-alias-file-diff-deleted-gutter: #ff4d3d;
+  --dsw-alias-file-diff-deleted-marker: #ff4d3d;
+
+  /* 菜单 / 弹层 / 提示 */
+  --dsw-alias-menu-icon: #a99cd8;
+  --dsw-alias-menu-group-header-fill: rgba(255, 255, 255, 0.04);
+  --dsw-alias-tooltip-bg: #241b45;
+  --dsw-alias-tooltip-key-bg: rgba(255, 255, 255, 0.1);
+  --dsw-alias-toast-bg: #241b45;
+  --dsw-alias-toast-label: #eee9ff;
+  --dsw-alias-settings-card-fill: #1b1738;
+  --dsw-alias-settings-card-stroke: rgba(255, 255, 255, 0.12);
+  --dsw-alias-switch-thumb: #ffffff;
+
+  /* 滚动条：悬停时变红 */
+  --dsw-alias-scrollbar-bg-l1: rgba(255, 255, 255, 0.1);
+  --dsw-alias-scrollbar-bg-l2: rgba(255, 255, 255, 0.06);
+  --dsw-alias-scrollbar-hover-l1: rgba(255, 77, 61, 0.55);
+  --dsw-alias-scrollbar-hover-l2: rgba(255, 77, 61, 0.4);
+
+  /* 轮次触发 / 引导 */
+  --dsw-alias-turn-trigger-bg: rgba(255, 255, 255, 0.06);
+  --dsw-alias-turn-trigger-bg-hover: rgba(255, 255, 255, 0.12);
+  --dsw-alias-onboarding-accent: #ffd84d;
+  --dsw-alias-onboarding-card-fill: #1b1738;
+  --dsw-alias-onboarding-checkbox-border: rgba(255, 255, 255, 0.24);
+  --dsw-alias-onboarding-secondary-fill: rgba(255, 255, 255, 0.06);
+
+  /* 形状：ZZZ 全圆角，绝不直角 */
+  --dsw-radius-xs: 6px;
+  --dsw-radius-sm: 10px;
+  --dsw-radius-md: 12px;
+  --dsw-radius-lg: 16px;
+  --dsw-radius-xl: 22px;
+  --dsw-radius-panel: 18px;
+
+  /* 阴影：偏硬偏深，不软 */
+  --dsw-shadow-lv1: 0 2px 8px rgba(0, 0, 0, 0.36);
+  --dsw-shadow-lv1-blur: 8px;
+  --dsw-shadow-lv2: 0 8px 24px rgba(0, 0, 0, 0.48);
+  --dsw-shadow-lv3: 0 18px 48px rgba(0, 0, 0, 0.62);
+  --dsw-elevation-panel: 0 18px 48px rgba(0, 0, 0, 0.62);
+  --dsw-elevation-prominent: 0 24px 64px rgba(0, 0, 0, 0.72);
+  --dsw-elevation-soft: 0 4px 14px rgba(0, 0, 0, 0.3);
+  --dsw-elevation-stroke: 1px solid rgba(255, 255, 255, 0.1);
+  --dsw-elevation-stroke-color: rgba(255, 255, 255, 0.1);
+  --dsw-mask-blur: blur(10px) saturate(1.2);
+  --dsw-menu-backdrop-filter: blur(16px) saturate(1.3);
+  --dsw-menu-surface-fill: rgba(36, 27, 69, 0.92);
+  --dsw-focus-ring-color: #ff4d3d;
+  --dsw-focus-ring-width: 2px;
+}
+
+/* ── 浅色档：新艾利都白天（纸感米白 + 压深的红）───────────────────
+ * ZZZ 没有官方浅色主题，这一档是自拟的。红必须压深到 #C8281E
+ * 才能在白底上过 AA（原始 #FF4D3D 只有 3.1:1）。
+ */
+body:not([data-ds-dark-theme]) {
+  --dsw-alias-bg-base: #f3f0e8;
+  --dsw-alias-bg-layer-1: #fffdf8;
+  --dsw-alias-bg-layer-2: #f8f5ec;
+  --dsw-alias-bg-layer-3: #efeadd;
+  --dsw-alias-bg-overlay: rgba(243, 240, 232, 0.78);
+  --dsw-alias-bg-mask-1: rgba(26, 22, 32, 0.06);
+  --dsw-alias-bg-mask-2: rgba(26, 22, 32, 0.12);
+  --dsw-alias-bg-mask-3: rgba(26, 22, 32, 0.22);
+  --dsw-alias-bg-mask-drop: rgba(26, 22, 32, 0.36);
+  --dsw-alias-bg-mask-photo: rgba(26, 22, 32, 0.16);
+  --dsw-alias-bg-skeleton: rgba(0, 0, 0, 0.05);
+  --dsw-alias-bg-multi-select: rgba(200, 40, 30, 0.1);
+  --dsw-alias-bg-module-platform: #fffdf8;
+  --dsw-alias-bg-document-preview: #fffdf8;
+  --dsw-alias-bg-document-selection: rgba(200, 150, 0, 0.22);
+
+  --dsw-alias-label-primary: #1a1620;
+  --dsw-alias-label-primary-bluish: #1b2a4a;
+  --dsw-alias-label-primary-dimmed: #3e3552;
+  --dsw-alias-label-primary-foreground: #ffffff;
+  --dsw-alias-label-primary-inverted: #ffffff;
+  --dsw-alias-label-secondary: #5a5270;
+  --dsw-alias-label-tertiary: #8a829e;
+  --dsw-alias-label-caption: #8a829e;
+  --dsw-alias-label-dimmed: #a79fbb;
+  --dsw-alias-label-document-preview: #5a5270;
+  --dsw-alias-label-deep-diving: #006e8a;
+  --dsw-alias-label-deep-diving-shimmer: rgba(0, 110, 138, 0.35);
+  --dsw-alias-label-shimmer: rgba(26, 22, 32, 0.28);
+
+  --dsw-alias-border-l1: rgba(26, 22, 32, 0.1);
+  --dsw-alias-border-l2: rgba(26, 22, 32, 0.16);
+  --dsw-alias-border-l2-darkmode-thin: rgba(26, 22, 32, 0.12);
+  --dsw-alias-border-l3: rgba(26, 22, 32, 0.24);
+  --dsw-alias-border-l4: rgba(26, 22, 32, 0.34);
+  --dsw-alias-border-inverted: rgba(255, 255, 255, 0.55);
+  --dsw-alias-border-inverted2: rgba(255, 255, 255, 0.72);
+
+  --dsw-alias-brand-primary: #c8281e;
+  --dsw-alias-brand-primary-invert: #ffffff;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: #c8281e;
+  --dsw-alias-brand-text: #a81f16;
+  --dsw-alias-link: #006e8a;
+
+  --dsw-alias-button-primary-fill: #c8281e;
+  --dsw-alias-button-primary-hover: #a81f16;
+  --dsw-alias-button-primary-dimmed: rgba(200, 40, 30, 0.4);
+  --dsw-alias-button-contrast-fill: #1a1620;
+  --dsw-alias-button-elevated-fill: #fffdf8;
+  --dsw-alias-button-floating-fill: rgba(255, 253, 248, 0.94);
+  --dsw-alias-button-floating-hover: rgba(248, 245, 236, 0.98);
+  --dsw-alias-button-ghost-active-fill: rgba(200, 40, 30, 0.1);
+  --dsw-alias-button-ghost-active-border: rgba(200, 40, 30, 0.36);
+  --dsw-alias-button-ghost-active-hover: rgba(200, 40, 30, 0.16);
+  --dsw-alias-button-info-fill: rgba(0, 110, 138, 0.12);
+  --dsw-alias-button-info-hover: rgba(0, 110, 138, 0.2);
+  --dsw-alias-button-tool-bar-fill: #fffdf8;
+  --dsw-alias-button-tool-bar-fill-invisible: transparent;
+  --dsw-alias-button-tool-bar-hover: #efeadd;
+
+  --dsw-alias-interactive-bg-hover: rgba(26, 22, 32, 0.05);
+  --dsw-alias-interactive-bg-active: rgba(26, 22, 32, 0.1);
+  --dsw-alias-interactive-bg-hover-accent: rgba(200, 40, 30, 0.08);
+  --dsw-alias-interactive-bg-hover-danger: rgba(200, 40, 30, 0.14);
+  --dsw-alias-interactive-bg-hover-solid: #efeadd;
+
+  --dsw-alias-state-success-primary: #127a4a;
+  --dsw-alias-state-success-secondary: rgba(18, 122, 74, 0.55);
+  --dsw-alias-state-success-tertiary: rgba(18, 122, 74, 0.12);
+  --dsw-alias-state-warn-primary: #a85200;
+  --dsw-alias-state-warn-secondary: rgba(168, 82, 0, 0.55);
+  --dsw-alias-state-warn-tertiary: rgba(168, 82, 0, 0.12);
+  --dsw-alias-state-warn-label: #8a4300;
+  --dsw-alias-state-error-primary: #c8281e;
+  --dsw-alias-state-error-secondary: rgba(200, 40, 30, 0.55);
+  --dsw-alias-state-business-primary: #006e8a;
+  --dsw-alias-state-business-tertiary: rgba(0, 110, 138, 0.12);
+  --dsw-alias-state-idle-primary: #8a829e;
+
+  --dsw-alias-markdown-code-block: #f8f5ec;
+  --dsw-alias-markdown-code-block-banner: #efeadd;
+  --dsw-alias-markdown-inline-code: rgba(200, 150, 0, 0.18);
+  --dsw-alias-markdown-code-segment-selected: rgba(200, 40, 30, 0.14);
+  --dsw-alias-markdown-code-segment-unselected: rgba(26, 22, 32, 0.05);
+  --dsw-alias-markdown-citation: #006e8a;
+  --dsw-alias-markdown-tag: rgba(26, 22, 32, 0.07);
+  --dsw-alias-markdown-placeholder: #8a829e;
+  --dsw-alias-code-diff-added: rgba(18, 122, 74, 0.12);
+  --dsw-alias-code-diff-deleted: rgba(200, 40, 30, 0.12);
+  --dsw-alias-file-diff-added-bg: rgba(18, 122, 74, 0.1);
+  --dsw-alias-file-diff-added-gutter: #127a4a;
+  --dsw-alias-file-diff-added-marker: #127a4a;
+  --dsw-alias-file-diff-deleted-bg: rgba(200, 40, 30, 0.1);
+  --dsw-alias-file-diff-deleted-gutter: #c8281e;
+  --dsw-alias-file-diff-deleted-marker: #c8281e;
+
+  --dsw-alias-menu-icon: #5a5270;
+  --dsw-alias-menu-group-header-fill: rgba(26, 22, 32, 0.04);
+  --dsw-alias-tooltip-bg: #1a1620;
+  --dsw-alias-tooltip-key-bg: rgba(255, 255, 255, 0.14);
+  --dsw-alias-toast-bg: #1a1620;
+  --dsw-alias-toast-label: #ffffff;
+  --dsw-alias-settings-card-fill: #fffdf8;
+  --dsw-alias-settings-card-stroke: rgba(26, 22, 32, 0.1);
+  --dsw-alias-switch-thumb: #ffffff;
+
+  --dsw-alias-scrollbar-bg-l1: rgba(26, 22, 32, 0.14);
+  --dsw-alias-scrollbar-bg-l2: rgba(26, 22, 32, 0.08);
+  --dsw-alias-scrollbar-hover-l1: rgba(200, 40, 30, 0.5);
+  --dsw-alias-scrollbar-hover-l2: rgba(200, 40, 30, 0.35);
+
+  --dsw-alias-turn-trigger-bg: rgba(26, 22, 32, 0.05);
+  --dsw-alias-turn-trigger-bg-hover: rgba(26, 22, 32, 0.1);
+  --dsw-alias-onboarding-accent: #b8860b;
+  --dsw-alias-onboarding-card-fill: #fffdf8;
+  --dsw-alias-onboarding-checkbox-border: rgba(26, 22, 32, 0.24);
+  --dsw-alias-onboarding-secondary-fill: rgba(26, 22, 32, 0.05);
+
+  --dsw-shadow-lv1: 0 2px 6px rgba(26, 22, 32, 0.08);
+  --dsw-shadow-lv2: 0 8px 22px rgba(26, 22, 32, 0.12);
+  --dsw-shadow-lv3: 0 18px 44px rgba(26, 22, 32, 0.18);
+  --dsw-elevation-panel: 0 18px 44px rgba(26, 22, 32, 0.18);
+  --dsw-elevation-prominent: 0 24px 60px rgba(26, 22, 32, 0.24);
+  --dsw-elevation-soft: 0 4px 12px rgba(26, 22, 32, 0.08);
+  --dsw-elevation-stroke: 1px solid rgba(26, 22, 32, 0.1);
+  --dsw-elevation-stroke-color: rgba(26, 22, 32, 0.1);
+  --dsw-mask-blur: blur(10px) saturate(1.05);
+  --dsw-menu-backdrop-filter: blur(16px) saturate(1.1);
+  --dsw-menu-surface-fill: rgba(255, 253, 248, 0.94);
+  --dsw-focus-ring-color: #c8281e;
+}
+
+/* 选中文字：警示黄 */
+::selection {
+  background: rgba(255, 216, 77, 0.3);
+  color: #fff;
+}
+body:not([data-ds-dark-theme]) ::selection {
+  background: rgba(200, 150, 0, 0.28);
+  color: #1a1620;
+}
+
+/* ── static 色阶重映射 ────────────────────────────────────────────────
+ * 宿主除了 alias 语义层，还有 77 个 static 原始色阶（amber / blue /
+ * deepseek / green / neutral / red）。用量进度条、热力图这些直接吃
+ * static 色，不重映射就会残留宿主的橙/蓝。这里整族改写成绝区零色相。
+ */
+:root {
+  /* amber → 警示黄系（ZZZ 的最高亮） */
+  --dsw-static-amber-100: #4a3c0a;
+  --dsw-static-amber-400: #ffd84d;
+  --dsw-static-amber-500: #ffc61a;
+  --dsw-static-amber-600: #e0a800;
+  --dsw-static-amber-900: #1f1903;
+
+  /* blue → 信号青系 */
+  --dsw-static-blue-50: #04202b;
+  --dsw-static-blue-50p: #062733;
+  --dsw-static-blue-75: #062733;
+  --dsw-static-blue-100: #08384a;
+  --dsw-static-blue-300: #2ba8c9;
+  --dsw-static-blue-400: #4ad4ff;
+  --dsw-static-blue-450: #5adcff;
+  --dsw-static-blue-500: #4ad4ff;
+  --dsw-static-blue-600: #2ba8c9;
+  --dsw-static-blue-800: #0b4a5e;
+  --dsw-static-blue-900: #072f3d;
+  --dsw-static-blue-950: #041e28;
+
+  /* deepseek（宿主品牌蓝）→ 紫色系，与 ZZZ 夜底同族 */
+  --dsw-static-deepseek-50: #1b1738;
+  --dsw-static-deepseek-100: #241b45;
+  --dsw-static-deepseek-200: #2e2352;
+  --dsw-static-deepseek-300: #3a2f5c;
+  --dsw-static-deepseek-400: #5c4a8f;
+  --dsw-static-deepseek-450: #6b57a3;
+  --dsw-static-deepseek-500: #7a6fa8;
+  --dsw-static-deepseek-600: #9b8ed0;
+  --dsw-static-deepseek-700-delete: #b7aee0;
+  --dsw-static-deepseek-800: #d6cef2;
+  --dsw-static-deepseek-900: #eee9ff;
+
+  /* green → ZZZ 荧光绿（成功态） */
+  --dsw-static-green-100: #0a3a26;
+  --dsw-static-green-400: #3ddc97;
+  --dsw-static-green-500: #3ddc97;
+  --dsw-static-green-500-a08: rgba(61, 220, 151, 0.08);
+  --dsw-static-green-500-a12: rgba(61, 220, 151, 0.12);
+  --dsw-static-green-900: #04120b;
+
+  /* red → 信号红（ZZZ 主强调） */
+  --dsw-static-red-50: #2a0d0a;
+  --dsw-static-red-100: #3d1410;
+  --dsw-static-red-400: #ff6b5c;
+  --dsw-static-red-400-a12: rgba(255, 77, 61, 0.12);
+  --dsw-static-red-500: #ff4d3d;
+  --dsw-static-red-600: #d93425;
+  --dsw-static-red-600-a08: rgba(217, 52, 37, 0.08);
+  --dsw-static-red-900: #1a0705;
+
+  /* neutral：整体偏紫，不是中性灰 */
+  --dsw-static-neutral-00: #0b0918;
+  --dsw-static-neutral-50: #100d22;
+  --dsw-static-neutral-100: #16122c;
+  --dsw-static-neutral-150: #1b1738;
+  --dsw-static-neutral-200: #211b3d;
+  --dsw-static-neutral-250: #241b45;
+  --dsw-static-neutral-300: #2e2352;
+  --dsw-static-neutral-400: #3a2f5c;
+  --dsw-static-neutral-500: #4a3d70;
+  --dsw-static-neutral-550: #5c4a8f;
+  --dsw-static-neutral-600: #6b57a3;
+  --dsw-static-neutral-700: #7a6fa8;
+  --dsw-static-neutral-800: #a99cd8;
+  --dsw-static-neutral-850: #c4bbe4;
+  --dsw-static-neutral-900: #d6cef2;
+  --dsw-static-neutral-1000: #eee9ff;
+
+  /* neutral-bluish：同上，略偏冷 */
+  --dsw-static-neutral-bluish-00: #0b0918;
+  --dsw-static-neutral-bluish-50: #100d22;
+  --dsw-static-neutral-bluish-60: #130f28;
+  --dsw-static-neutral-bluish-75: #16122c;
+  --dsw-static-neutral-bluish-100: #1b1738;
+  --dsw-static-neutral-bluish-150: #1f1a3d;
+  --dsw-static-neutral-bluish-200: #241b45;
+  --dsw-static-neutral-bluish-300: #2e2352;
+  --dsw-static-neutral-bluish-400: #3a2f5c;
+  --dsw-static-neutral-bluish-500: #4a3d70;
+  --dsw-static-neutral-bluish-600: #5c4a8f;
+  --dsw-static-neutral-bluish-700: #7a6fa8;
+  --dsw-static-neutral-bluish-750: #8e84b8;
+  --dsw-static-neutral-bluish-800: #a99cd8;
+  --dsw-static-neutral-bluish-850: #bdb4e0;
+  --dsw-static-neutral-bluish-875: #c4bbe4;
+  --dsw-static-neutral-bluish-900: #d6cef2;
+  --dsw-static-neutral-bluish-950: #12102a;
+  --dsw-static-neutral-bluish-1000: #eee9ff;
+}
