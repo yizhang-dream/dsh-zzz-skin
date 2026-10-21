@@ -334,7 +334,11 @@ cd .playwright-mcp && python -m http.server 8971
 
 原来设置页只有「借来的行样式」，这轮按实机补齐整页结构：左导航整列 `#070709` + 右灰线、导航项铺满整行做 10px 胶囊、选中 `[aria-current="true"]` 反转成实心黄绿 + 黑字、右侧每个设置行/组变成独立圆角块（组内行去重边框）。
 
-实测：导航底色 `rgb(7,7,9)`、选中 `rgb(212,207,1)`/`rgb(10,11,20)`、行圆角 10px 宽 564px、行标题 700。对照图见 `answers.离命塔.cn/2026-10-22-dsh-vs-zzz-compare.html`。
+实测：导航底色 `rgb(7,7,9)`、选中 `rgb(212,207,1)`/`rgb(10,11,20)`、行圆角 10px 宽 564px、行标题 700。
+
+控件同轮改深色描边胶囊：`[class*="_selector"]` 透明黑底 + 1px 16% 白边 + 粗斜体；`[class*="_themeCube"][aria-pressed="true"]` 黄边 + 黄字 + 10% 黄底 + 外发光。实测 selector `rgba(0,0,0,.5)` / `1px rgba(255,255,255,.16)`，选中 cube `1px rgb(212,207,1)`。
+
+对照图见 `answers.离命塔.cn/2026-10-22-dsh-vs-zzz-compare.html`。
 
 ### 仍未解决
 

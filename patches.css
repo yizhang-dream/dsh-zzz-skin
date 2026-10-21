@@ -782,6 +782,32 @@ button[aria-label*="删除"]:active {
   font-weight: 700;
 }
 
+/* 控件：深色描边胶囊（实机设置页右侧那些下拉与分段键） */
+[data-dsh-surface="settings"] [class*="_selector"] {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  font-style: italic;
+  font-weight: 700;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+[data-dsh-surface="settings"] [class*="_selector"]:hover {
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-yellow);
+}
+[data-dsh-surface="settings"] [class*="_themeCube"] {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  font-style: italic;
+  font-weight: 700;
+}
+[data-dsh-surface="settings"] [class*="_themeCube"][aria-pressed="true"] {
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-yellow);
+  background-color: rgba(212, 207, 1, 0.10);
+  box-shadow: 0 0 20px -8px rgba(212, 207, 1, 0.8);
+}
+
 /* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
 /* R8 选中/运行 = 黄环（装备页物品格）。运行中的卡片边缘呼吸。 */
 [data-dsh-surface="conversation"] [data-state="running"],
