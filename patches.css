@@ -710,6 +710,78 @@ button[aria-label*="删除"]:active {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── 5.3b 设置页整页结构（对照实机：左导航胶囊 + 右独立行块）──────── */
+
+/* 左导航栏：一整列黑底，右侧一条灰线 */
+[data-dsh-surface="settings"] nav {
+  background-color: #070709;
+  border-right: 1px solid var(--zzz-line);
+  padding: 10px 8px;
+}
+
+/* 导航项：整行铺满 + 胶囊 + 粗斜体（实机 Settings 左侧那列） */
+[data-dsh-surface="settings"] nav button[type="button"] {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: background-color 110ms var(--zzz-ease-hard), color 110ms var(--zzz-ease-hard);
+}
+[data-dsh-surface="settings"] nav button[type="button"]:hover {
+  background-color: rgba(255, 255, 255, 0.055);
+}
+
+/* R1：选中 = 实心黄绿 + 黑字（与侧栏导航同一套语言） */
+[data-dsh-surface="settings"] nav button[aria-current="true"] {
+  background-color: var(--zzz-yellow);
+  color: var(--zzz-ink);
+  box-shadow: 0 0 22px -6px rgba(212, 207, 1, 0.7);
+}
+[data-dsh-surface="settings"] nav button[aria-current="true"] * {
+  color: var(--zzz-ink);
+  fill: var(--zzz-ink);
+  opacity: 1;
+}
+
+/* 栏目标题：加粗加斜，拉开与条目的层级 */
+[data-dsh-surface="settings"] nav > div:first-child {
+  padding: 4px 12px 10px;
+  font-size: 15px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+
+/* R3：每个设置行是独立圆角块，不靠分割线 */
+[data-dsh-surface="settings"] [class*="_row"],
+[data-dsh-surface="settings"] [class*="_group"] {
+  background-color: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+/* 组内的行不再套一层框，避免双重边框 */
+[data-dsh-surface="settings"] [class*="_group"] [class*="_row"] {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+/* 行/组的标题：加粗（实机设置行标题是粗体） */
+[data-dsh-surface="settings"] [class*="_row"] > :first-child,
+[data-dsh-surface="settings"] [class*="_group"] > :first-child {
+  font-weight: 700;
+}
+
 /* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
 /* R8 选中/运行 = 黄环（装备页物品格）。运行中的卡片边缘呼吸。 */
 [data-dsh-surface="conversation"] [data-state="running"],
