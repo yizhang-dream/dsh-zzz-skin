@@ -1,21 +1,23 @@
 /* ═══════════════════════════════════════════════════════════════════════
- * 新艾利都 · L3 补丁层（自由选择器，高敏感）
+ * 新艾利都 · L3 补丁层
  *
- * 这里放的是「让界面像游戏」的东西，不是滤镜：
- *   ① CRT 开关机   ② 错峰入场   ③ 景别推近
- *   ④ 双层弹窗     ⑤ 故障撕裂   ⑥ 字体抖动
- * 外加结构改造：圆角、硬边、输入框红光、按钮胶囊。
+ * 分两部分：
+ *   A. 质感层 —— 还原实机画面的「动态质感」
+ *      · 45° 交叉网格（面板织物感，实机截图放大可见）
+ *      · CRT 扫描线（缓慢下滚）
+ *      · 胶片噪点（SVG feTurbulence，内联 data URI）
+ *      · 暗角 + 边缘色散
+ *      · 紫/青光晕（主菜单背景那种呼吸感）
+ *   B. 动效层 —— 六招镜头语言
  *
  * 三条纪律：
- *   - 只动 transform / opacity / filter，不触发布局
- *   - prefers-reduced-motion 时全部停掉（不是隐藏）
- *   - 全部 pointer-events: none，不挡交互
+ *   · 只动 transform / opacity / filter，不触发布局
+ *   · prefers-reduced-motion 时全部停掉
+ *   · 全部 pointer-events: none
  *
- * 选择器锚点来自 skin-center 的 L2 语义属性契约
- * （contracts/semantic-attrs-v1.md）：data-dsh-surface / data-dsh-part。
+ * 选择器锚点用 skin-center 的 L2 语义属性（data-dsh-surface / part）。
  * ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── 缓动常量 ───────────────────────────────────────────────────────── */
 :root {
   --zzz-ease-snap: cubic-bezier(0.16, 1.16, 0.3, 1);
   --zzz-ease-crt: cubic-bezier(0.3, 0.9, 0.3, 1);
@@ -23,37 +25,153 @@
   --zzz-ease-pop: cubic-bezier(0.16, 1.3, 0.3, 1);
 }
 
-/* ═══════════ ① CRT 开关机 ═══════════
- * 首屏进入时整页从一条横线「刷」地展开，像老电视开机。
- * 只播一次（靠 animation-fill-mode: both + 无重播钩子）。
+/* ═══════════════════════════════════════════════════════════════════════
+ * A. 质感层
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── A1. 画布：深蓝紫径向 + 双色光晕 ──────────────────────────────────
+ * 实机主菜单：上方偏洋红、下方偏青蓝，中间压暗。
+ * 用 body::before 做底，z-index 0，不挡内容。
  */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 42% at 74% 6%, rgba(138, 48, 176, 0.22) 0%, transparent 68%),
+    radial-gradient(46% 36% at 16% 96%, rgba(30, 140, 170, 0.16) 0%, transparent 70%),
+    radial-gradient(120% 90% at 50% 40%, rgba(12, 14, 35, 0) 40%, rgba(6, 7, 18, 0.55) 100%);
+  animation: zzz-aura 18s ease-in-out infinite alternate;
+}
+
+@keyframes zzz-aura {
+  from { opacity: 0.82; transform: scale(1); }
+  to   { opacity: 1;    transform: scale(1.035); }
+}
+
+/* ── A2. 全域质感叠层：交叉网格 + 扫描线 + 噪点 + 暗角 ────────────────
+ * 一个固定全屏元素承载四层，alpha 都压得很低（2%~4%），
+ * 肉眼看是「有织物感」，但不会影响读字。
+ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: 2147483000;
+  pointer-events: none;
+  opacity: 0.78;
+
+  background-image:
+    /* ① 45° 网线 */
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.012) 0 1px,
+      transparent 1px 5px
+    ),
+    /* ② -45° 网线（两向交叉成菱形） */
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.009) 0 1px,
+      transparent 1px 5px
+    ),
+    /* ③ 扫描线：3px 周期 */
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.011) 0 1px,
+      transparent 1px 3px
+    ),
+    /* ④ 噪点：SVG feTurbulence，碎粒感 */
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.10'/%3E%3C/svg%3E"),
+    /* ⑤ 暗角 */
+    radial-gradient(
+      120% 88% at 50% 46%,
+      transparent 52%,
+      rgba(4, 5, 12, 0.28) 88%,
+      rgba(2, 3, 8, 0.48) 100%
+    );
+
+  background-size: auto, auto, auto, 180px 180px, cover;
+  animation: zzz-scan-drift 26s linear infinite;
+  will-change: transform;
+}
+
+@keyframes zzz-scan-drift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, 3px, 0); }
+}
+
+/* ── A3. 面板质感：1px 内高光 + 外描边 ────────────────────────────────
+ * 实机面板是近黑色的，靠一圈极细的内高光把「板」托起来。
+ */
+[data-dsh-surface="sidebar"] {
+  background-color: var(--dsw-specific-sidebar-fill, #08080a);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.025);
+}
+
+[data-dsh-surface="session-header"] {
+  background-color: rgba(12, 14, 35, 0.72);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.02);
+}
+
+[data-dsh-surface="composer"] {
+  background-color: var(--dsw-specific-input-major, #0c0c0e);
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: var(--dsw-radius-lg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+/* 输入框聚焦：红光内描边（实机选中态就是红色） */
+[data-dsh-surface="composer"] textarea,
+[data-dsh-surface="composer"] [contenteditable="true"] {
+  border-radius: var(--dsw-radius-md);
+  transition: box-shadow 180ms ease;
+}
+[data-dsh-surface="composer"] textarea:focus,
+[data-dsh-surface="composer"] [contenteditable="true"]:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 1.5px var(--dsw-alias-brand-primary),
+    0 0 24px -6px var(--dsw-alias-brand-primary);
+}
+
+/* ── A4. 卡片：硬边 + 内高光，不用大圆角软影 ────────────────────────── */
+[data-dsh-part="message-row"] > * {
+  border-radius: var(--dsw-radius-md);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* 按钮一律胶囊（实机全部是胶囊） */
+button {
+  border-radius: 999px;
+}
+
+/* 代码块：纯黑底 + 硬边 */
+pre,
+pre code {
+  border-radius: var(--dsw-radius-md);
+  border: 1px solid var(--dsw-alias-border-l1);
+  background-color: var(--dsw-alias-markdown-code-block);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * B. 动效层（六招镜头语言）
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── B1. CRT 开关机 ────────────────────────────────────────────────── */
 @keyframes zzz-crt-on {
-  0% {
-    transform: scale(0.02, 0.004);
-    filter: brightness(9) saturate(0);
-    opacity: 0;
-  }
-  18% {
-    transform: scale(0.92, 0.008);
-    filter: brightness(6) saturate(0.4);
-    opacity: 1;
-  }
-  42% {
-    transform: scale(1, 0.016);
-    filter: brightness(3) saturate(0.8);
-  }
-  68% {
-    transform: scale(1, 1.045);
-    filter: brightness(1.35);
-  }
-  84% {
-    transform: scale(1, 0.985);
-    filter: brightness(1.05);
-  }
-  100% {
-    transform: scale(1, 1);
-    filter: brightness(1);
-  }
+  0%   { transform: scale(0.02, 0.004); filter: brightness(9) saturate(0); opacity: 0; }
+  18%  { transform: scale(0.92, 0.008); filter: brightness(6) saturate(0.4); opacity: 1; }
+  42%  { transform: scale(1, 0.016);  filter: brightness(3) saturate(0.8); }
+  68%  { transform: scale(1, 1.045);  filter: brightness(1.35); }
+  84%  { transform: scale(1, 0.985);  filter: brightness(1.05); }
+  100% { transform: scale(1, 1);      filter: brightness(1); }
 }
 
 [data-dsh-surface="root"] {
@@ -63,51 +181,28 @@
 
 /* 开机瞬间的横向亮线 */
 @keyframes zzz-crt-line {
-  0% {
-    opacity: 0;
-  }
-  14% {
-    opacity: 0.95;
-  }
-  46% {
-    opacity: 0.7;
-  }
-  100% {
-    opacity: 0;
-  }
+  0%   { opacity: 0; }
+  14%  { opacity: 0.95; }
+  46%  { opacity: 0.7; }
+  100% { opacity: 0; }
 }
-body::after {
+html::after {
   content: "";
   position: fixed;
-  left: 0;
-  right: 0;
-  top: 50%;
+  left: 0; right: 0; top: 50%;
   height: 3px;
   z-index: 2147483001;
   pointer-events: none;
   background: #fff;
-  box-shadow:
-    0 0 24px 8px #fff,
-    0 0 60px 20px rgba(255, 216, 77, 0.55);
+  box-shadow: 0 0 26px 9px #fff, 0 0 70px 24px rgba(251, 200, 39, 0.55);
   animation: zzz-crt-line 620ms var(--zzz-ease-crt) 1 both;
 }
 
-/* ═══════════ ② 错峰入场 ═══════════
- * 消息行逐格弹入。用 nth-child 造阶梯延迟，不需要 JS。
- */
+/* ── B2. 错峰入场 ──────────────────────────────────────────────────── */
 @keyframes zzz-snap-in {
-  0% {
-    opacity: 0;
-    transform: translateY(16px) scale(0.97);
-  }
-  60% {
-    opacity: 1;
-    transform: translateY(-3px) scale(1.012);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  0%   { opacity: 0; transform: translateY(16px) scale(0.97); }
+  60%  { opacity: 1; transform: translateY(-3px) scale(1.012); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 [data-dsh-part="message-row"] {
@@ -121,60 +216,34 @@ body::after {
 [data-dsh-part="message-row"]:nth-child(6) { animation-delay: 275ms; }
 [data-dsh-part="message-row"]:nth-child(n + 7) { animation-delay: 330ms; }
 
-/* ═══════════ ③ 景别推近 ═══════════
- * 对话区进入时轻微 scale，模拟镜头推近。幅度很小（4.5%），
- * 只在容器上做，不动字体渲染。
- */
+/* ── B3. 景别推近 ──────────────────────────────────────────────────── */
 @keyframes zzz-cam-push {
-  0% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.045);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0%   { transform: scale(1); }
+  42%  { transform: scale(1.045); }
+  100% { transform: scale(1); }
 }
 [data-dsh-surface="conversation"] {
   animation: zzz-cam-push 300ms var(--zzz-ease-cam) 380ms both;
   transform-origin: 50% 40%;
 }
 
-/* ═══════════ ④ 双层弹窗 ═══════════
- * ZZZ 的弹窗先飘出一层影子，实层再落定，影子随后变暗。
- * 用 ::before 造幽灵层：不占布局、不拦截事件。
- */
+/* ── B4. 双层弹窗 ──────────────────────────────────────────────────── */
 @keyframes zzz-ghost-in {
-  from {
-    opacity: 0;
-    transform: translate(40px, -16px) scale(0.94);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 0.5;
-    transform: translate(30px, -12px) scale(0.97);
-    filter: blur(2.4px);
-  }
+  from { opacity: 0; transform: translate(40px, -16px) scale(0.94); filter: blur(4px); }
+  to   { opacity: 0.5; transform: translate(30px, -12px) scale(0.97); filter: blur(2.4px); }
 }
 @keyframes zzz-win-snap {
-  0% {
-    opacity: 0;
-    transform: scale(0.9) translateY(8px);
-  }
-  62% {
-    opacity: 1;
-    transform: scale(1.014) translateY(-1px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  0%   { opacity: 0; transform: scale(0.9) translateY(8px); }
+  62%  { opacity: 1; transform: scale(1.014) translateY(-1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 [data-dsh-surface="settings"] {
   position: relative;
   animation: zzz-win-snap 260ms var(--zzz-ease-pop) both;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 30px 76px rgba(0, 0, 0, 0.78);
 }
 [data-dsh-surface="settings"]::before {
   content: "";
@@ -182,7 +251,7 @@ body::after {
   inset: -1px;
   border-radius: inherit;
   background: inherit;
-  border: 1px solid rgba(255, 77, 61, 0.3);
+  border: 1px solid rgba(242, 52, 58, 0.3);
   opacity: 0.42;
   transform: translate(30px, -12px) scale(0.97);
   filter: blur(2.4px);
@@ -191,107 +260,53 @@ body::after {
   animation: zzz-ghost-in 150ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
 }
 
-/* ═══════════ ⑤ 故障撕裂 ═══════════
- * 用于「切换」类动作：clip-path 四条横带 + steps 抖动。
- * 挂在一个常驻伪元素上，靠 hover/focus 触发一次。
- */
+/* ── B5. 故障撕裂 ──────────────────────────────────────────────────── */
 @keyframes zzz-tear-x {
-  0% {
-    clip-path: inset(0 0 0 0);
-    transform: translateX(0);
-  }
-  25% {
-    clip-path: inset(22% 0 48% 0);
-    transform: translateX(-9px);
-  }
-  50% {
-    clip-path: inset(52% 0 18% 0);
-    transform: translateX(11px);
-  }
-  75% {
-    clip-path: inset(8% 0 72% 0);
-    transform: translateX(-5px);
-  }
-  100% {
-    clip-path: inset(0 0 0 0);
-    transform: translateX(0);
-  }
+  0%   { clip-path: inset(0 0 0 0); transform: translateX(0); }
+  25%  { clip-path: inset(22% 0 48% 0); transform: translateX(-9px); }
+  50%  { clip-path: inset(52% 0 18% 0); transform: translateX(11px); }
+  75%  { clip-path: inset(8% 0 72% 0); transform: translateX(-5px); }
+  100% { clip-path: inset(0 0 0 0); transform: translateX(0); }
 }
-
-[data-dsh-surface="sidebar"] [data-dsh-part="nav-item"]:active {
+[data-dsh-part="entry"]:active {
   animation: zzz-tear-x 190ms steps(2) 1;
 }
 
-/* ═══════════ ⑥ 字体抖动 ═══════════
- * 加载/思考态文字轻微抖动，steps(2) 造出「卖力」的机械感。
- */
+/* ── B6. 字体抖动 ──────────────────────────────────────────────────── */
 @keyframes zzz-jitter {
-  0% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(1.5px, -1px);
-  }
-  50% {
-    transform: translate(-1.5px, 1px);
-  }
-  75% {
-    transform: translate(1px, 1px);
-  }
-  100% {
-    transform: translate(-1px, -1px);
-  }
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(1.5px, -1px); }
+  50%  { transform: translate(-1.5px, 1px); }
+  75%  { transform: translate(1px, 1px); }
+  100% { transform: translate(-1px, -1px); }
 }
-
 [data-dsh-part="thinking"],
 [data-dsh-part="streaming-indicator"] {
   display: inline-block;
   animation: zzz-jitter 180ms steps(2) infinite;
 }
 
-/* ═══════════ 结构改造 ═══════════ */
-
-/* 侧栏：深底 + 右侧硬边 */
-[data-dsh-surface="sidebar"] {
-  background: var(--dsw-alias-bg-layer-1);
-  border-right: 1px solid var(--dsw-alias-border-l1);
+/* ═══════════════════════════════════════════════════════════════════════
+ * C. 第三方插件着色对齐
+ * ═══════════════════════════════════════════════════════════════════════ */
+.cm-peak-strip,
+.cm-peak-classic,
+.cm-style-peak-sample {
+  background-image: linear-gradient(
+    to right,
+    var(--dsw-static-amber-400, #fbc827) 0 50%,
+    var(--dsw-static-blue-400, #28d1e4) 50%
+  ) !important;
+}
+.cm-footer,
+.cm-peak-chip,
+.cm-peak-label {
+  color: var(--dsw-alias-label-secondary) !important;
 }
 
-/* 输入区：圆角 + 聚焦时红光描边 */
-[data-dsh-surface="composer"] textarea,
-[data-dsh-surface="composer"] [contenteditable="true"] {
-  border-radius: var(--dsw-radius-lg);
-  transition:
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-}
-[data-dsh-surface="composer"] textarea:focus,
-[data-dsh-surface="composer"] [contenteditable="true"]:focus {
-  outline: none;
-  box-shadow:
-    0 0 0 1.5px var(--dsw-alias-brand-primary),
-    0 0 22px -4px var(--dsw-alias-brand-primary);
-}
-
-/* 按钮一律胶囊 */
-button {
-  border-radius: 999px;
-}
-
-/* 代码块：深底 + 硬边 */
-pre,
-pre code {
-  border-radius: var(--dsw-radius-md);
-  border: 1px solid var(--dsw-alias-border-l1);
-}
-
-/* 会话头：底部一条硬分隔 */
-[data-dsh-surface="session-header"] {
-  border-bottom: 1px solid var(--dsw-alias-border-l1);
-  backdrop-filter: blur(12px) saturate(1.2);
-}
-
-/* ═══════════ 减少动态：全部停掉，只留静态结构 ═══════════ */
+/* ═══════════════════════════════════════════════════════════════════════
+ * D. 减少动态：停掉一切运动，保留静态质感
+ * ═══════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   [data-dsh-surface="root"],
   [data-dsh-surface="conversation"],
@@ -300,45 +315,75 @@ pre code {
   [data-dsh-part="message-row"],
   [data-dsh-part="thinking"],
   [data-dsh-part="streaming-indicator"],
+  body::before,
   body::after,
-  [data-dsh-surface="sidebar"] [data-dsh-part="nav-item"]:active {
+  html::after,
+  [data-dsh-part="entry"]:active {
     animation: none !important;
   }
-  [data-dsh-part="message-row"] {
-    opacity: 1;
-    transform: none;
-  }
-  body::after {
-    display: none;
-  }
-  [data-dsh-surface="settings"]::before {
-    opacity: 0.18;
-  }
+  [data-dsh-part="message-row"] { opacity: 1; transform: none; }
+  html::after { display: none; }
+  [data-dsh-surface="settings"]::before { opacity: 0.18; }
+  body::before { opacity: 0.82; }
+  body::after { opacity: 0.9; }
 }
 
-/* ═══════════ 第三方插件着色对齐 ═══════════
- * dsh-cost-meter 的峰谷条写死了 #ff9800 / #4d79e8（橙+蓝），
- * 与绝区零色板冲突。这里按类名精确覆盖成警示黄 + 信号青。
- * 只改颜色，不动它的布局与行为。
- */
-.cm-peak-strip,
-.cm-peak-classic,
-.cm-style-peak-sample {
-  background-image: linear-gradient(
-    to right,
-    var(--dsw-static-amber-400, #ffd84d) 0 50%,
-    var(--dsw-static-blue-400, #4ad4ff) 50%
-  ) !important;
+
+/* ── A5. 导航与主按钮：把游戏里的「红胶囊 + 黄高亮」搬过来 ──────────── */
+[data-dsh-part="entry"] {
+  border-radius: var(--dsw-radius-sm);
+  transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+[data-dsh-part="entry"]:hover {
+  background-color: rgba(255, 255, 255, 0.055);
+  box-shadow: inset 2px 0 0 rgba(242, 52, 58, 0.55);
+}
+[data-dsh-part="entry"][aria-current],
+[data-dsh-part="entry"][data-active="true"] {
+  background-color: rgba(242, 52, 58, 0.13);
+  box-shadow:
+    inset 2px 0 0 var(--dsw-alias-brand-primary),
+    0 0 18px -6px rgba(242, 52, 58, 0.6);
 }
 
-/* 费用数字与标签跟随主题 */
-.cm-footer,
-.cm-peak-chip,
-.cm-peak-label {
-  color: var(--dsw-alias-label-secondary) !important;
+/* 新建会话：主行动，红胶囊 + 外发光（实机主按钮就是这个调性） */
+[data-dsh-part="new-session"] {
+  border-radius: 999px;
+  background-image: linear-gradient(160deg, #e02a30 0%, #c81f25 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 6px 20px -6px rgba(242, 52, 58, 0.75);
+  transition: box-shadow 160ms ease, filter 160ms ease;
+}
+[data-dsh-part="new-session"]:hover {
+  filter: brightness(1.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    0 8px 28px -6px rgba(242, 52, 58, 0.9);
+}
+[data-dsh-part="new-session"] svg,
+[data-dsh-part="new-session"] * {
+  color: #ffffff;
 }
 
-/* 热力图格子：用黄→红梯度，不用宿主的蓝 */
-.cm-heat-cell {
-  border-radius: 4px;
+/* 输入框：只在键盘聚焦时给红光（自动聚焦不亮，避免一进页面就一圈红） */
+[data-dsh-part="composer-input"]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1.5px rgba(242, 52, 58, 0.85),
+    0 0 26px -8px rgba(242, 52, 58, 0.7);
+}
+/* 容器整体：留一条极淡的边界，让它从画布里「立」起来 */
+[data-dsh-surface="composer"]:focus-within {
+  border-color: rgba(242, 52, 58, 0.35);
+}
+
+/* 底部卡片：轻微内高光，和画布分层 */
+[data-dsh-part="foot-card"] {
+  border-radius: var(--dsw-radius-md);
+  border: 1px solid var(--dsw-alias-border-l1);
+  background-color: rgba(8, 8, 10, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
