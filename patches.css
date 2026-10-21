@@ -812,6 +812,82 @@ button[aria-label*="删除"]:active {
   box-shadow: 0 0 20px -8px rgba(212, 207, 1, 0.8);
 }
 
+/* ── 5.3c 插件市场 / 卡片列表（对齐实机主菜单的图标条与胶囊）────── */
+
+/* 分类胶囊：独立小胶囊，等距排列 */
+[data-dsh-surface="settings"] [class*="_pill"],
+[data-dsh-surface="settings"] [class*="_cats"] button {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background-color: rgba(255, 255, 255, 0.03);
+  padding: 0 10px;
+  white-space: nowrap;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1;
+  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
+}
+[data-dsh-surface="settings"] [class*="_pill"]:hover,
+[data-dsh-surface="settings"] [class*="_cats"] button:hover {
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-yellow);
+}
+[data-dsh-surface="settings"] [class*="_pill"][aria-pressed="true"],
+[data-dsh-surface="settings"] [class*="_pill"][aria-selected="true"],
+[data-dsh-surface="settings"] [class*="_pill"][data-active="true"],
+[data-dsh-surface="settings"] [class*="_cats"] button[aria-pressed="true"],
+[data-dsh-surface="settings"] [class*="_cats"] button[aria-selected="true"] {
+  background-color: var(--zzz-yellow);
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-ink);
+}
+
+/* 顶部标签页：胶囊化，选中反转 */
+[data-dsh-surface="settings"] [class*="_tab"]:not([class*="tabs"]) {
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-style: italic;
+  font-weight: 700;
+  transition: background-color 110ms var(--zzz-ease-hard), color 110ms var(--zzz-ease-hard);
+}
+[data-dsh-surface="settings"] [class*="_tab"]:not([class*="tabs"]):hover {
+  background-color: rgba(255, 255, 255, 0.055);
+}
+[data-dsh-surface="settings"] [class*="_tab"][aria-selected="true"],
+[data-dsh-surface="settings"] [class*="_tab"][data-active="true"] {
+  background-color: var(--zzz-yellow);
+  color: var(--zzz-ink);
+}
+
+/* 卡片：圆角黑块 + 灰边，hover 抬一点（实机物品格） */
+[data-dsh-surface="settings"] [class*="_card"] {
+  border-radius: 14px;
+  border: 1px solid var(--zzz-line);
+  background-color: #0a0a0c;
+  transition: border-color 140ms ease, transform 160ms var(--zzz-ease-snap);
+}
+[data-dsh-surface="settings"] [class*="_card"]:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+/* 卡片标题 / 作者行：粗斜体与次级灰 */
+[data-dsh-surface="settings"] [class*="_card"] h3,
+[data-dsh-surface="settings"] [class*="_card"] h4 {
+  font-style: italic;
+  font-weight: 800;
+}
+
+/* 设置/市场顶栏：一条细底边 + 薄雾，和主菜单顶部资源条同一语汇 */
+[data-dsh-surface="settings"] [class*="_header"] {
+  border-bottom: 1px solid var(--zzz-line);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
+}
+
 /* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
 /* R8 选中/运行 = 黄环（装备页物品格）。运行中的卡片边缘呼吸。 */
 [data-dsh-surface="conversation"] [data-state="running"],
