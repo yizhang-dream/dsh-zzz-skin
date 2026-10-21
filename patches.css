@@ -153,10 +153,10 @@ body::after {
   content: "ZENLESS";
   position: absolute;
   left: -18px;
-  bottom: 92px;
+  bottom: 76px;
   z-index: 0;
   pointer-events: none;
-  font-size: 74px;
+  font-size: 108px;
   line-height: 0.82;
   font-weight: 900;
   font-style: italic;
@@ -521,7 +521,7 @@ html::after {
   bottom: -14px;
   z-index: -1;
   pointer-events: none;
-  font-size: 96px;
+  font-size: 132px;
   line-height: 1;
   font-weight: 900;
   font-style: italic;
@@ -886,6 +886,35 @@ button[aria-label*="删除"]:active {
 [data-dsh-surface="settings"] [class*="_header"] {
   border-bottom: 1px solid var(--zzz-line);
   background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), transparent);
+}
+
+/* ── 5.3d 从角色菜单逐帧截图补的三处（数值 / 徽章 / 圆形槽位）────── */
+
+/* 1. 数值一律黄绿 + 等宽（实机属性面板 HP/ATK/DEF/CRIT 的值都是黄绿） */
+.cm-num,
+[data-dsh-usage-foot-card] output,
+[data-dsh-usage-foot-card] [data-value] {
+  color: var(--zzz-yellow) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 2. 版本/等级一类的徽章：黄绿描边小胶囊，数字与文字同色 */
+[class*="_version"],
+[class*="_badge"] {
+  border: 1px solid rgba(212, 207, 1, 0.55);
+  border-radius: 999px;
+  padding: 0 8px;
+  color: var(--zzz-yellow);
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* 3. 圆形槽位 / 头像：选中环用黄绿（实机驱动盘槽位） */
+[class*="_avatar"],
+[class*="_avatarButton"] {
+  box-shadow:
+    0 0 0 1px rgba(212, 207, 1, 0.45),
+    0 0 14px -4px rgba(212, 207, 1, 0.5);
 }
 
 /* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
