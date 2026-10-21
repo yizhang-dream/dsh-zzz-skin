@@ -86,7 +86,7 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(58% 44% at 82% -6%, rgba(150, 52, 196, 0.30) 0%, transparent 64%),
+    radial-gradient(46% 36% at 84% -8%, rgba(150, 52, 196, 0.24) 0%, transparent 62%),
     radial-gradient(46% 38% at 4% 104%, rgba(32, 150, 182, 0.20) 0%, transparent 66%),
     radial-gradient(120% 92% at 50% 42%, transparent 44%, rgba(4, 5, 14, 0.42) 100%);
   animation: zzz-aura 20s ease-in-out infinite alternate;
@@ -318,6 +318,7 @@ html::after {
   border-radius: 10px;
   font-style: italic;
   font-weight: 700;
+  letter-spacing: -0.01em;
   transition:
     background-color 110ms var(--zzz-ease-hard),
     color 110ms var(--zzz-ease-hard),
@@ -540,7 +541,85 @@ html::after {
   );
 }
 
-/* ── 5.3 弹层 / 菜单 / 设置 ────────────────────────────────────────── */[role="menu"] {
+/* 会话列：抬成一块浮在画布上的面板（设置页那种「黑板上浮」）
+ * 这是和实机差距最大的一处——以前内容列和画布同色，层次是平的。 */
+[data-pane="conversation"] {
+  background-color: #0a0a0c;
+  border: 1px solid var(--zzz-line);
+  border-radius: 22px;
+  margin: 10px 10px 10px 0;
+  overflow: hidden;
+}
+[data-pane="conversation"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ── 5.2b 对话气泡 / 顶部条 / 关闭键（对照剧情与主菜单截图补的）────── */
+
+/* 消息气泡：圆角 + 左上斜切 + 1px 亮边。
+ * 剧情截图里的对话框是切了一角的圆角矩形，不是纯圆角卡片。 */
+[data-dsh-part="message-body"] {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background-color: rgba(255, 255, 255, 0.05);
+  clip-path: polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* 顶部会话条：主菜单那条资源栏的语汇——薄雾底 + 细底边 */
+[data-slot="conversation.header"] {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.028), transparent);
+  border-bottom: 1px solid var(--zzz-line);
+  letter-spacing: 0.01em;
+}
+
+/* 关闭 / 返回：实机是红色圆角键 + 红晕（主菜单左上角那个） */
+button[aria-label*="close" i],
+button[aria-label*="back" i],
+button[aria-label*="返回"],
+button[aria-label*="关闭"] {
+  border-radius: 10px;
+  color: var(--zzz-red);
+}
+button[aria-label*="close" i]:hover,
+button[aria-label*="back" i]:hover,
+button[aria-label*="返回"]:hover,
+button[aria-label*="关闭"]:hover {
+  background-color: rgba(242, 52, 58, 0.16);
+  box-shadow: 0 0 18px -6px rgba(242, 52, 58, 0.85);
+}
+
+/* 危险动作按下：故障撕裂（P5） */
+button[aria-label*="delete" i]:active,
+button[aria-label*="remove" i]:active,
+button[aria-label*="删除"]:active {
+  animation: zzz-tear 190ms steps(2) 1;
+}
+
+/* 输入区工具按钮：dock 抬升（P8，主菜单底部图标条） */
+[data-slot="conversation.composer.bar"] button {
+  transition: transform 180ms var(--zzz-ease-snap), background-color 120ms ease;
+}
+[data-slot="conversation.composer.bar"] button:hover {
+  transform: translateY(-2px);
+}
+[data-slot="conversation.composer.bar"] button:active {
+  animation: zzz-dock-lift 200ms var(--zzz-ease-snap) 1;
+}
+
+/* 滚动口：细滚动条（R5 的近似实现） */
+[data-dsh-part="scrollport"] {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+/* ── 5.3 弹层 / 菜单 / 设置 ────────────────────────────────────────── */
+[role="menu"] {
   animation: zzz-slide-in 180ms var(--zzz-ease-pop) both;
 }
 [role="menuitem"] {
