@@ -156,3 +156,19 @@ bash ~/bin/dsh-open.sh --print    # 只打印
 
 **注意**：服务重启后（`systemctl --user restart dsh-web`）token 会换，
 旧链接立即失效。启动到能响应大约要 40 秒，期间访问会拿到 502。
+
+### Windows cmd 里怎么用
+
+`bash` 在 cmd 里可能被解析成 WSL 的 bash（home 变成 `/root`），脚本会找不到。
+用 `.cmd` 包装绕开：
+
+```
+dsh-open            :: 打开浏览器
+dsh-open --print    :: 只打印链接
+```
+
+包装文件 `C:\Users\zyz\bin\dsh-open.cmd`（副本在 `tools/`）会显式调用
+`C:\Program Files\Git\bin\bash.exe` 并固定 `HOME`，不受 PATH 顺序影响。
+
+注意 `.cmd` 内容必须是纯 ASCII——中文注释在 GBK 代码页下会乱码，
+导致 `if not exist` 这类语句被拆断。
