@@ -40,8 +40,8 @@ body::before {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(58% 42% at 74% 6%, rgba(138, 48, 176, 0.22) 0%, transparent 68%),
-    radial-gradient(46% 36% at 16% 96%, rgba(30, 140, 170, 0.16) 0%, transparent 70%),
+    radial-gradient(62% 46% at 78% 2%, rgba(150, 52, 196, 0.34) 0%, transparent 66%),
+    radial-gradient(50% 40% at 10% 100%, rgba(32, 150, 182, 0.22) 0%, transparent 68%),
     radial-gradient(120% 90% at 50% 40%, rgba(12, 14, 35, 0) 40%, rgba(6, 7, 18, 0.55) 100%);
   animation: zzz-aura 18s ease-in-out infinite alternate;
 }
@@ -84,7 +84,20 @@ body::after {
     ),
     /* ④ 噪点：SVG feTurbulence，碎粒感 */
     url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.10'/%3E%3C/svg%3E"),
-    /* ⑤ 暗角 */
+    /* ⑤ 洋红辉光（右上，模拟主菜单的氛围光） */
+    radial-gradient(
+      46% 34% at 86% 0%,
+      rgba(168, 62, 214, 0.30) 0%,
+      rgba(120, 44, 160, 0.10) 42%,
+      transparent 72%
+    ),
+    /* ⑥ 青辉光（左下） */
+    radial-gradient(
+      40% 30% at 2% 100%,
+      rgba(36, 168, 200, 0.18) 0%,
+      transparent 70%
+    ),
+    /* ⑦ 暗角 */
     radial-gradient(
       120% 88% at 50% 46%,
       transparent 52%,
@@ -92,7 +105,7 @@ body::after {
       rgba(2, 3, 8, 0.48) 100%
     );
 
-  background-size: auto, auto, auto, 180px 180px, cover;
+  background-size: auto, auto, auto, 180px 180px, auto, auto, cover;
   animation: zzz-scan-drift 26s linear infinite;
   will-change: transform;
 }
@@ -386,4 +399,16 @@ html::after {
   border: 1px solid var(--dsw-alias-border-l1);
   background-color: rgba(8, 8, 10, 0.72);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+/* ── A6. 让底层光晕透出来 ────────────────────────────────────────────
+ * 宿主给 root / body 都刷了不透明底色，body::before 的光晕被盖住。
+ * 把这两层设透明，只留 html 的底色，光晕就能显形。
+ */
+html {
+  background-color: var(--dsw-alias-bg-base, #0c0e23);
+}
+body,
+[data-dsh-surface="root"] {
+  background-color: transparent;
 }
