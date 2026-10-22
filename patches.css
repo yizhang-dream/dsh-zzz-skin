@@ -917,6 +917,74 @@ button[aria-label*="删除"]:active {
     0 0 14px -4px rgba(212, 207, 1, 0.5);
 }
 
+/* ── 5.3e 一致性收口：所有标签栏/复选框/统计卡统一到一套语言 ─────────
+ * 这里全是「同一个角色在不同页面写法不同」造成的漂移：
+ * 设置页的标签是 `_tab`，成本页的标签是 `cm-tab`，之前只覆盖了前者，
+ * 于是成本页的选中标签还留着宿主的青色。 */
+
+[role="tab"][aria-selected="true"],
+[class*="-tab"][aria-selected="true"],
+[class*="_tab"][aria-selected="true"] {
+  background-color: var(--zzz-yellow);
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-ink);
+  border-radius: 999px;
+}
+
+/* 复选框：方角描边方块，选中填黄绿 + 黑勾（原生白方块和这套语言不搭） */
+input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+  background-color: transparent;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+input[type="checkbox"]:hover {
+  border-color: var(--zzz-yellow);
+}
+input[type="checkbox"]:checked {
+  background-color: var(--zzz-yellow);
+  border-color: var(--zzz-yellow);
+}
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--zzz-ink);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* 区块小标题：粗斜体（实机每块面板都有这样的标题） */
+[data-dsh-surface="settings"] [class*="_card"] h3,
+[data-dsh-surface="settings"] h3 {
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* 统计卡：与插件卡同一档圆角与描边 */
+.cm-card {
+  border-radius: 14px;
+  border: 1px solid var(--zzz-line);
+  background-color: rgba(255, 255, 255, 0.022);
+}
+
+/* 统计值：实机属性面板那种「大号黄绿数字」 */
+.cm-card-value,
+.cm-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
 /* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
 /* R8 选中/运行 = 黄环（装备页物品格）。运行中的卡片边缘呼吸。 */
 [data-dsh-surface="conversation"] [data-state="running"],
