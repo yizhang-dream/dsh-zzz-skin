@@ -622,6 +622,20 @@ button[aria-label*="删除"]:active {
   scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
 }
 
+/* ── 5.2c 真实会话里补的一笔：步骤行 / 工具标题 ─────────────────────
+ * 实测类名：button.l_V-RG_root > span.l_V-RG_label（"已完成，用时 3秒"）、
+ *           button.O_Ebla_title（工具名）。都挂在 button 里，用子串兜住。 */
+[data-dsh-surface="conversation"] button [class*="_label"],
+[data-dsh-surface="conversation"] button[class*="_title"],
+[data-dsh-surface="conversation"] [class*="_toolName"] {
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+[data-dsh-surface="conversation"] button[class*="_root"][class*="l_V-RG"] span {
+  color: var(--dsw-alias-label-secondary);
+}
+
 /* ── 5.3 弹层 / 菜单 / 设置 ────────────────────────────────────────── */
 [role="menu"] {
   animation: zzz-slide-in 180ms var(--zzz-ease-pop) both;
