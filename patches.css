@@ -1089,7 +1089,15 @@ input[type="checkbox"]:checked::after {
 [data-dsh-surface="conversation"] [data-status="running"],
 [data-dsh-surface="conversation"] [aria-busy="true"] {
   border-radius: 10px;
+  /* 静态环先给一个保底，呼吸动画在此基础上起伏 */
+  box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.45);
   animation: zzz-breathe 2.2s ease-in-out infinite;
+}
+/* 完成的工具卡：中性细环，和运行中的黄环区分开 */
+[data-dsh-surface="conversation"] [data-state="done"],
+[data-dsh-surface="conversation"] [data-state="success"] {
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 [data-dsh-surface="conversation"] [data-state="error"],
 [data-dsh-surface="details"] [data-state="error"] {
