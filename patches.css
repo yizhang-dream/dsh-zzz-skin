@@ -1013,6 +1013,76 @@ input[type="checkbox"]:checked::after {
   border-bottom: 1.5px solid var(--zzz-yellow);
 }
 
+/* ── 5.3f Workshop / 表单页：下拉、输入、卡片标题 ────────────────── */
+
+/* 下拉：与设置页控件同一规格（深色描边胶囊）。排除外层 wrap 与文字 label */
+[data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]) {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  font-style: italic;
+  font-weight: 700;
+  transition: border-color 120ms ease, color 120ms ease;
+}
+[data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]):hover {
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-yellow);
+}
+
+/* 输入框：同一档圆角，聚焦黄边 */
+[data-dsh-surface="settings"] input[type="text"],
+[data-dsh-surface="settings"] input[type="search"],
+[data-dsh-surface="settings"] input:not([type]) {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background-color: rgba(0, 0, 0, 0.45);
+}
+[data-dsh-surface="settings"] input:focus-visible {
+  outline: none;
+  border-color: var(--zzz-yellow);
+  box-shadow: 0 0 0 1px rgba(212, 207, 1, 0.35);
+}
+
+/* 卡片标题：粗斜体（实机每张卡都有一个这样的名字牌） */
+[data-dsh-surface="settings"] [class*="_name"],
+[data-dsh-surface="settings"] [class*="_cardTitle"] {
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* ── 5.3g 主导航里的插件整页（Skill Center / Task Board / SSH 等）────
+ * 这类页面不挂在设置弹窗里，而是直接替换会话列，之前完全没覆盖。 */
+
+[data-pane="conversation"] [class*="_panel"] {
+  background-color: #0a0a0c;
+  border: 1px solid var(--zzz-line);
+  border-radius: 14px;
+}
+[data-pane="conversation"] [class*="_panelHeader"],
+[data-pane="conversation"] [class*="_tabBar"] {
+  border-bottom: 1px solid var(--zzz-line);
+}
+[data-pane="conversation"] [class*="_panelTitle"] {
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+[data-pane="conversation"] [class*="_ghostButton"] {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-style: italic;
+  font-weight: 600;
+}
+[data-pane="conversation"] [class*="_ghostButton"]:hover {
+  border-color: var(--zzz-yellow);
+  color: var(--zzz-yellow);
+}
+[data-pane="conversation"] [class*="_empty"] {
+  color: var(--dsw-alias-label-tertiary);
+  font-style: italic;
+}
+
 /* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
 /* R8 选中/运行 = 黄环（装备页物品格）。运行中的卡片边缘呼吸。 */
 [data-dsh-surface="conversation"] [data-state="running"],
