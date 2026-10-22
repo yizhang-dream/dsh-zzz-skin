@@ -985,6 +985,34 @@ input[type="checkbox"]:checked::after {
   letter-spacing: -0.01em;
 }
 
+/* 空态（hero）：会话面板四角各一个 HUD 角标。
+ * 只用两条边折成一个 L，比叠 8 层渐变稳（渐变层数一多，某些合成状态下
+ * background-size 会失配，整块被涂成实心色条）。 */
+[data-pane="conversation"] {
+  position: relative;
+}
+[data-pane="conversation"]:has([data-phase="hero"])::before,
+[data-pane="conversation"]:has([data-phase="hero"])::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  opacity: 0.4;
+}
+[data-pane="conversation"]:has([data-phase="hero"])::before {
+  left: 14px;
+  top: 14px;
+  border-left: 1.5px solid var(--zzz-yellow);
+  border-top: 1.5px solid var(--zzz-yellow);
+}
+[data-pane="conversation"]:has([data-phase="hero"])::after {
+  right: 14px;
+  bottom: 14px;
+  border-right: 1.5px solid var(--zzz-yellow);
+  border-bottom: 1.5px solid var(--zzz-yellow);
+}
+
 /* ── 5.4 工具卡 / 运行态 ──────────────────────────────────────────── */
 /* R8 选中/运行 = 黄环（装备页物品格）。运行中的卡片边缘呼吸。 */
 [data-dsh-surface="conversation"] [data-state="running"],
