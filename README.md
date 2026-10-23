@@ -456,3 +456,12 @@ cd .playwright-mcp && python -m http.server 8971
 ## 市场对比与上架（2026-10-24）
 
 npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎鲸链路/清宵/薇儿丹蒂/815）：**无绝区零皮肤，市场空白**。IP 皮肤直接用官方美术是社区常态（非商用二创）；保守路线=MC 全程序化 / 清宵自绘可换背景。上架清单：补 preview/light.png 实拍；可官方图+自绘双版本。详见 answers/2026-10-24-dsh-skins-zenless-compare.html。
+
+## v5.9 · 质量对标（2026-10-24 十轮）
+
+对照社区精品（蓝幻想/鲸吟）补齐控件与双档质量：
+
+- **气泡滑块接入**：气泡底色/模糊消费皮肤中心注入的 `--dsh-skin-bubble-alpha`（0–1）与 `--dsh-skin-bubble-blur`（px）——实测 alpha 0/0.5/1 → 底 0.06/0.37/0.68、blur 10↔16 联动；锚点双挂 `[data-dsh-part=message-body]`（旧 UI）+ `[class*="_bubble"]`（新 UI，Sixlwa_bubble）。
+- **输入卡模糊滑块**：composer bar 接 `--dsh-input-card-blur`。
+- **亮色档玻璃**：body:not([data-ds-dark-theme]) 下 centerCol/sidebarCol 换 rgba(243,244,249,.72/.8) 浅玻璃，气泡换白底——亮色档从暗板变合格浅玻璃（实拍验证）。
+- 背景遮挡滑块由 skin-center 统一消费（--dsw-skin-scrim），backgroundMedia 皮肤自动生效，无需自实现。

@@ -1408,3 +1408,41 @@ input[type="checkbox"]:checked::after {
   }
   html::after { display: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §7 质量对标（v5.9，2026-10-24）——对齐社区精品（蓝幻想/鲸鱼妈妈）的控件接入
+ *
+ * 皮肤中心在 body 注入四个 CSS 变量（实测）：--dsh-skin-bubble-alpha（0–1）、
+ * --dsh-skin-bubble-blur（px）、--dsh-input-card-blur（px）、--dsw-skin-scrim（0–1，
+ * 皮肤中心自己消费）。本节把气泡/输入卡接上滑块，并补亮色档玻璃。
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* 1) 气泡不透明度 + 气泡模糊滑块 */
+[data-dsh-part="message-body"],
+[class*="_bubble"] {
+  background-color: rgba(20, 20, 26, calc(0.06 + var(--dsh-skin-bubble-alpha, 0.5) * 0.62));
+  backdrop-filter: blur(var(--dsh-skin-bubble-blur, 10px));
+  -webkit-backdrop-filter: blur(var(--dsh-skin-bubble-blur, 10px));
+}
+
+/* 2) 输入卡模糊滑块 */
+[data-slot="conversation.composer.bar"] {
+  backdrop-filter: blur(var(--dsh-input-card-blur, 10px)) saturate(1.05);
+  -webkit-backdrop-filter: blur(var(--dsh-input-card-blur, 10px)) saturate(1.05);
+}
+
+/* 3) 亮色档玻璃（DSH 亮色 = body 无 data-ds-dark-theme）：暗玻璃换浅玻璃 */
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
+body:not([data-ds-dark-theme]) [data-pane="conversation"] {
+  background-color: rgba(243, 244, 249, 0.72);
+}
+body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol,
+body:not([data-ds-dark-theme]) [data-pane="sidebar"] {
+  background-color: rgba(243, 244, 249, 0.8);
+}
+body:not([data-ds-dark-theme]) [data-dsh-part="message-body"],
+body:not([data-ds-dark-theme]) [class*="_bubble"] {
+  border-color: rgba(24, 26, 46, 0.14);
+  background-color: rgba(255, 255, 255, calc(0.32 + var(--dsh-skin-bubble-alpha, 0.5) * 0.48));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
