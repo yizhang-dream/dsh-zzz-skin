@@ -1779,3 +1779,57 @@ body:not([data-ds-dark-theme]) pre code {
   from { opacity: 0.55; }
   to   { opacity: 1; }
 }
+
+/* ── §9.9 加载转盘（v7.4）：请求等待 = 邦布旁的旋转指示 ─────────────
+ * 游戏加载是圆环+缺口旋转。邦布已在 turn-tail::before——转盘挂其 ::after
+ * （载体纪律：同一伪元素一演出；::before 邦布 / ::after 转盘各自独立）。
+ * 仅在整列处于 busy（首字未出）时转，busy 结束 CSS 动画自然停。*/
+[data-dsh-part="turn-tail"]::after {
+  content: "";
+  position: absolute;
+  left: 58px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(20, 20, 26, 0.25);
+  border-top-color: var(--zzz-accent);
+  animation: zzz-loader-spin 0.8s linear infinite;
+  pointer-events: none;
+}
+@keyframes zzz-loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── §9.10 委托完成横幅（v7.4）：S 评级旁的贴纸横幅 ─────────────────
+ * 游戏「委托完成」结算横幅。载体：centerCol 内新会话按钮所在行不可用，
+ * 挂 conversation.header::before（header::after 已被 HDD 占用——载体纪律）。
+ * 触发：与 S 评级同状态机（turn-tail 且非 busy），演出为左侧滑入贴纸条。*/
+[data-pane="conversation"]:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"])) [data-slot="conversation.header"]::before,
+.pI_x6G_centerCol:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"])) [data-slot="conversation.header"]::before {
+  content: "COMMISSION COMPLETE";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  z-index: 5;
+  transform: translateY(-50%) rotate(-1.5deg);
+  padding: 2px 14px;
+  font-size: 10.5px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.18em;
+  color: #14141a;
+  background: linear-gradient(100deg, var(--zzz-accent) 0%, var(--zzz-accent-soft) 100%);
+  border: 1.5px solid #14141a;
+  box-shadow: 2.5px 2.5px 0 #14141a;
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  animation: zzz-commission 3s var(--zzz-ease-snap, ease-out) forwards;
+  pointer-events: none;
+}
+@keyframes zzz-commission {
+  0%   { opacity: 0; transform: translateY(-50%) translateX(-28px) rotate(-1.5deg); }
+  10%  { opacity: 1; transform: translateY(-50%) translateX(0) rotate(-1.5deg); }
+  82%  { opacity: 1; }
+  100% { opacity: 0; }
+}

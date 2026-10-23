@@ -511,3 +511,9 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **角色切换闪光（§9.7）**：切会话=换人演出。白闪载体挂 .wSkVaW_root::before（避开 centerCol::before=PRESS ANY KEY 的载体冲突），300ms 白幕 0.85→0，与 cam-push 同步。实测 animationName=zzz-swap-flash ✓
 - **Hollow 侵蚀红雾（§9.8）**：错误态（turnErrorRow/data-state=error/role=alert）= 空洞侵蚀红雾从底缘与两角渗入（三层 radial 红雾 3.2s 呼吸）。实测注入错误行→zzz-corrode-breathe 挂载、移除→退场（状态机干净） ✓
 - 载体冲突纪律：同一元素的同一伪元素只能承载一个演出——错误红雾覆盖 S 评级（错误优先），白闪独立载体避让 PRESS ANY KEY。
+
+## v7.4 · 第五批游戏元素（2026-10-24 二十轮）
+
+- **加载转盘（§9.9）**：邦布旁（turn-tail::after，载体纪律 ::before 邦布/::after 转盘）accent 缺口圆环 0.8s 旋转。实测 animationName=zzz-loader-spin、borderTop=accent 色 ✓
+- **委托完成横幅（§9.10）**：会话头左侧「COMMISSION COMPLETE」贴纸横幅（accent 渐变底+黑描边+硬影+斜切，左侧滑入 3s 演出），与 S 评级同状态机（turn-tail 且非 busy）。载体 header::before（::after 被 HDD 占用）。实测 content/animationName=zzz-commission ✓
+- 回合完成现在双演出并行：header 横幅 + 右下 S 评级。
