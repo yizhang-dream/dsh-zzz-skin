@@ -242,9 +242,9 @@ html::before {
 /* 侧栏与主区之间：一条 1px 灰线，不用阴影 */
 [data-pane="sidebar"],
 .pI_x6G_sidebarCol {
-  background-color: rgba(5, 5, 7, 0.86);
-  backdrop-filter: blur(14px) saturate(1.1);
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  background-color: rgba(5, 5, 7, 0.66);
+  backdrop-filter: blur(7px) saturate(1.08);
+  -webkit-backdrop-filter: blur(7px) saturate(1.08);
 }
 [data-dsh-surface="sidebar"] {
   background-color: transparent;
@@ -662,9 +662,9 @@ html::after {
  * 这是和实机差距最大的一处——以前内容列和画布同色，层次是平的。 */
 [data-pane="conversation"],
 .pI_x6G_centerCol {
-  background-color: rgba(10, 10, 12, 0.8);
-  backdrop-filter: blur(16px) saturate(1.12);
-  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  background-color: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(7px) saturate(1.1);
+  -webkit-backdrop-filter: blur(7px) saturate(1.1);
 }
 [data-pane="conversation"]::before,
 .pI_x6G_centerCol::before {
@@ -1425,7 +1425,7 @@ input[type="checkbox"]:checked::after {
 /* 1) 气泡不透明度 + 气泡模糊滑块 */
 [data-dsh-part="message-body"],
 [class*="_bubble"] {
-  background-color: rgba(20, 20, 26, calc(0.06 + var(--dsh-skin-bubble-alpha, 0.5) * 0.62));
+  background-color: rgba(20, 20, 26, calc(0.04 + var(--dsh-skin-bubble-alpha, 0.5) * 0.5));
   backdrop-filter: blur(var(--dsh-skin-bubble-blur, 10px));
   -webkit-backdrop-filter: blur(var(--dsh-skin-bubble-blur, 10px));
 }
