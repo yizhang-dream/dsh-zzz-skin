@@ -1621,3 +1621,67 @@ body:not([data-ds-dark-theme]) pre code {
   78%  { opacity: 1; }
   100% { opacity: 0; transform: scale(0.92) translateY(10px) rotate(-6deg); }
 }
+
+/* ── §9.3 邦布 loading（v7.1）：流式等待 = 邦布探头待机 ─────────────
+ * 纯 CSS 程序绘制：胶囊身体 + 两只耳朵 + 眼睛，挂在 turn-tail（等待首字）。
+ * 已在 §5.2 有方块光标的元素上追加，避免抢布局：作为 ::before 叠加。
+ * 耳朵上下摆 + 身体 squash——邦布标志性待机律动。*/
+[data-dsh-part="turn-tail"] {
+  position: relative;
+  padding-left: 76px;
+  min-height: 44px;
+}
+[data-dsh-part="turn-tail"]::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 40px;
+  height: 30px;
+  margin-top: -15px;
+  background:
+    /* 左耳 */ radial-gradient(circle 5px at 8px 4px, #f7f7fa 2.2px, transparent 3px),
+    /* 右耳 */ radial-gradient(circle 5px at 32px 4px, #f7f7fa 2.2px, transparent 3px),
+    /* 身体 */ linear-gradient(#f2f2f6 0%, #d8d8de 100%);
+  border-radius: 16px 16px 12px 12px;
+  border: 2px solid #14141a;
+  box-shadow: 2px 2px 0 rgba(20, 20, 26, 0.7);
+  animation: zzz-bangboo-bounce 1.4s var(--zzz-ease-snap, ease-in-out) infinite alternate;
+  pointer-events: none;
+}
+/* 眼睛：无法在伪元素内再嵌伪元素——用 box-shadow 内双点近似 */
+@keyframes zzz-bangboo-bounce {
+  from { transform: translateY(0) scaleY(1); }
+  to   { transform: translateY(-4px) scaleY(0.94); }
+}
+
+/* ── §9.4 COMBO 计数（v7.1）：会话数 = 连击数 ─────────────────────
+ * 侧栏会话列表顶部（workspaces 标题）挂「HITS」计数牌——游戏右上连击样式：
+ * 斜体描边大字 + 贴纸微旋转 + 数字滚动（复用 P9 zzz-num-roll）。
+ * 计数值由 ::after 的 attr() 无法读列表长度，改为纯视觉「COMBO」标签牌；
+ * 真实数字挂 usage 卡数字（§5.3d 已有黄绿等宽数字）追加滚动强调。*/
+[data-slot="sidebar.workspaces"]::after {
+  content: "COMBO";
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  font-size: 13px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  color: #14141a;
+  background: repeating-linear-gradient(-45deg, var(--zzz-accent) 0 5px, var(--zzz-accent-soft) 5px 10px);
+  border: 1.5px solid #14141a;
+  padding: 1px 8px;
+  transform: rotate(-3deg);
+  box-shadow: 1.5px 1.5px 0 #14141a;
+  animation: zzz-combo-pulse 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes zzz-combo-pulse {
+  0%, 100% { transform: rotate(-3deg) scale(1); }
+  12% { transform: rotate(-2deg) scale(1.12); }
+  24% { transform: rotate(-3deg) scale(1); }
+}
+[data-dsh-surface="conversation"]:has([aria-busy="true"]) ~ * [data-slot="sidebar.workspaces"]::after,
+[data-dsh-part="queue-dock"] ~ * {}

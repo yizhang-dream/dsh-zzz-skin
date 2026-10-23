@@ -493,3 +493,9 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **S 评级弹卡**：回合完成（turn-tail 存在且非 busy）→ 右下弹出 88px 描边斜体「S」（弹跳入场 scale 2.6→1 回弹，2.6s 后退场）。busy 期间隐藏，状态机互斥。
 - 触发锚点全部来自宿主真实状态流（aria-busy / turn-tail），非定时器装饰；reduced-motion 全停。
 - 实测：busy 时 HDD on + S off；idle 时 S on——两态互斥验证通过。
+
+## v7.1 · 第二批游戏元素（2026-10-24 十七轮）
+
+- **邦布 loading（§9.3）**：纯 CSS 程序绘制（胶囊身体+双耳+描边+硬影），挂 turn-tail（等待首字时探头待机），1.4s squash 律动。实测 animationName=zzz-bangboo-bounce ✓
+- **COMBO 计数牌（§9.4）**：侧栏 workspaces 标题挂游戏右上连击样式「COMBO」贴纸牌（accent 斜纹底+黑描边+微旋转+2.2s 脉冲）。实测 content=COMBO, animationName=zzz-combo-pulse ✓
+- 均为宿主真实锚点（turn-tail / sidebar.workspaces），零定时器装饰。
