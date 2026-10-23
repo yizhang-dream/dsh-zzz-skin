@@ -517,3 +517,9 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **加载转盘（§9.9）**：邦布旁（turn-tail::after，载体纪律 ::before 邦布/::after 转盘）accent 缺口圆环 0.8s 旋转。实测 animationName=zzz-loader-spin、borderTop=accent 色 ✓
 - **委托完成横幅（§9.10）**：会话头左侧「COMMISSION COMPLETE」贴纸横幅（accent 渐变底+黑描边+硬影+斜切，左侧滑入 3s 演出），与 S 评级同状态机（turn-tail 且非 busy）。载体 header::before（::after 被 HDD 占用）。实测 content/animationName=zzz-commission ✓
 - 回合完成现在双演出并行：header 横幅 + 右下 S 评级。
+
+## v7.5 · 第六批游戏元素（2026-10-24 二十一轮）
+
+- **频道噪点帧（§9.11）**：切会话=电视换台雪花。载体 wSkVaW_root::after（::before=白闪，同载体双伪元素分工），SVG feTurbulence 噪点 + mix-blend screen + 260ms steps(2) 两帧横抖退场。实测 animationName=zzz-tv-static、blend=screen ✓
+- **DATA BANK 铭牌（§9.12）**：侧栏底部资料库贴纸（黑底黑描边+硬影+accent 微光+斜切+0.3em 宽字距+5s 呼吸），v3 ZENLESS 竖排水印的继任者。实测 content="DATA BANK"、animationName=zzz-databank ✓
+- 切会话现在是三连演出：白闪 → 噪点帧 → 景别推近。

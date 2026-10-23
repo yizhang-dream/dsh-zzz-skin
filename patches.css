@@ -1833,3 +1833,54 @@ body:not([data-ds-dark-theme]) pre code {
   82%  { opacity: 1; }
   100% { opacity: 0; }
 }
+
+/* ── §9.11 频道噪点帧（v7.5）：切会话瞬态 = 换台雪花 ────────────────
+ * 游戏电视换频道的雪花噪点一闪。载体 wSkVaW_root::after（::before=白闪）——
+ * 与 cam-push/白闪同瞬态触发（切会话内容重建→动画重播），260ms 两帧抖动后退场。*/
+.wSkVaW_root::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.85'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  opacity: 0;
+  animation: zzz-tv-static 260ms steps(2) 1 40ms both;
+  mix-blend-mode: screen;
+}
+@keyframes zzz-tv-static {
+  0%   { opacity: 0; transform: translateX(0); }
+  30%  { opacity: 0.5; transform: translateX(-6px); }
+  60%  { opacity: 0.35; transform: translateX(5px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+/* ── §9.12 DATA BANK 铭牌（v7.5）：侧栏底部资料库贴纸 ───────────────
+ * 游戏侧栏「DATA BANK」资料库标识。载体 sidebarCol::after（::before 空闲；
+ * v3 的 ZENLESS 竖排水印已撤，本铭牌是其继任——底部横排贴纸+呼吸微光。*/
+.pI_x6G_sidebarCol::after,
+[data-pane="sidebar"]::after {
+  content: "DATA BANK";
+  position: absolute;
+  left: 50%;
+  bottom: 42px;
+  transform: translateX(-50%) rotate(-1.5deg);
+  z-index: 2;
+  padding: 2px 12px;
+  font-size: 9.5px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.3em;
+  color: #e8e8ec;
+  background: rgba(16, 16, 22, 0.82);
+  border: 1.5px solid #14141a;
+  box-shadow: 2px 2px 0 rgba(20, 20, 26, 0.75), 0 0 14px -2px color-mix(in srgb, var(--zzz-accent) 45%, transparent);
+  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+  animation: zzz-databank 5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes zzz-databank {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
