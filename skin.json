@@ -21,8 +21,8 @@
   "version": "0.3.0",
   "license": "MIT",
   "preview": {
-    "light": "preview/light.svg",
-    "dark": "preview/dark.svg"
+    "light": "preview/light.jpg",
+    "dark": "preview/dark.jpg"
   },
   "contributes": {
     "stylesheet": "skin.css",

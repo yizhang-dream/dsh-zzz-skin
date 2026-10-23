@@ -541,3 +541,8 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **扭蛋彩蛋（§9.17）**：新会话按钮按下（:active 真实瞬态）= 按钮上方浮出「EGG」蛋形贴纸（radial 高光+accent 双色壳+黑描边硬影+蛋形 border-radius），0.5s 不规则摇晃，松手消失。实测 4 条 zzz-gacha-shake 规则注入、静态态 content 为空（active 才显形）✓
 - **空洞监测地图纹（§9.18）**：会话列表（panellist）垫双层 repeating-radial 等高线纹理（蓝/紫双圈层，mask 上下渐隐），18s 缓慢扫描纵移。实测 animationName=zzz-hollow-scan、radial 背景+mask 全挂载 ✓
 - v7 系列十八件，九批全部真机实测。
+
+## v7.9 · 收尾打磨（2026-10-24 二十五轮）
+
+- **reduced-motion 全覆盖**：§9 全部动画载体（含邦布/转盘/HDD/音波纹/S 评级/扭蛋/地图纹等 9 组新载体）补进 §6 停用清单。真机 --force-prefers-reduced-motion 实测：邦布/转盘/HDD/音波纹/S 评级 animationName 全部=none ✓
+- **上架打包件齐**：preview/dark.jpg + light.jpg 双实拍入包（manifest 对齐）、LICENSE(MIT)、NOTICE（官方 key art 版权声明：归 HoYoverse、仅个人非商业、自绘图可自由使用）。

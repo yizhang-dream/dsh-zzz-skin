@@ -1,0 +1,9 @@
+新艾利都 (New Eridu) DSH 皮肤
+===============================
+
+- 皮肤代码/设计：flower-moon，MIT 许可（见 LICENSE）。
+- assets/wallpaper-zzz-keyart.jpg：HoYoverse/miHoYo《绝区零》官方美术，
+  版权归原权利人所有。仅个人非商业使用，不得再分发。
+- assets/wallpaper-new-eridu.jpg：程序绘制（tools/wallpaper-art.html，
+  确定性种子），可自由使用。
+- 色板与动效参数取样自游戏实机截图，仅用于风格参考。
