@@ -1729,3 +1729,53 @@ body:not([data-ds-dark-theme]) pre code {
   0%, 54% { opacity: 1; }
   55%, 100% { opacity: 0.12; }
 }
+
+/* ── §9.7 角色切换闪光（v7.3）：切会话 = 换人白闪演出 ─────────────
+ * 游戏换人是一帧白闪+滑入。宿主锚点：会话列的 cam-push 动画重启（§5.2 已有
+ * zzz-cam-push）。追加一帧白闪：conversation 面板 ::before 覆盖白幕，
+ * 与 cam-push 同时触发（同 selector 同 animation-timeline 起点近似）。*/
+.wSkVaW_root {
+  position: relative;
+}
+.wSkVaW_root::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: #fff;
+  opacity: 0;
+  animation: zzz-swap-flash 300ms var(--zzz-ease-crt, ease-out) 1 both;
+}
+@keyframes zzz-swap-flash {
+  0% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* ── §9.8 Hollow 侵蚀红雾（v7.3）：错误态 = 空洞侵蚀 ────────────────
+ * 游戏空洞侵蚀是红色雾气从边缘渗入。宿主锚点：会话列内出现错误行
+ * （[class*=turnErrorRow] / [data-state=error] / role=alert）。
+ * 用面板内层固定遮罩 + 呼吸红雾，错误消失即退。*/
+.pI_x6G_centerCol:has([class*="turnErrorRow"]):not(:has([aria-busy="true"])),
+.pI_x6G_centerCol:has([data-state="error"]),
+.pI_x6G_centerCol:has([role="alert"]) {
+  --zzz-corrode: 1;
+}
+.pI_x6G_centerCol:has([class*="turnErrorRow"]):not(:has([aria-busy="true"]))::after,
+.pI_x6G_centerCol:has([data-state="error"])::after,
+.pI_x6G_centerCol:has([role="alert"])::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3 !important;
+  pointer-events: none !important;
+  background:
+    radial-gradient(140% 110% at 50% 130%, rgba(242, 52, 58, 0.34) 0%, transparent 58%),
+    radial-gradient(90% 70% at 0% 100%, rgba(180, 20, 30, 0.22) 0%, transparent 60%),
+    radial-gradient(90% 70% at 100% 90%, rgba(180, 20, 30, 0.2) 0%, transparent 60%) !important;
+  animation: zzz-corrode-breathe 3.2s ease-in-out infinite alternate !important;
+}
+@keyframes zzz-corrode-breathe {
+  from { opacity: 0.55; }
+  to   { opacity: 1; }
+}

@@ -505,3 +505,9 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **对话选项斜切框（§9.5）**：role=menuitem（更多菜单/右键菜单）→ 黑底斜切框 + 左缘 accent 色条，hover 位移+色条点亮。实测 borderLeftColor=rgb(212,207,1)（--zzz-accent）、clip-path 斜切 ✓
 - **PRESS ANY KEY（§9.6）**：hero 空态（data-phase=hero）→ 会话列中下「PRESS ANY KEY」斜体宽字距闪烁（1.6s steps(2)），主菜单启动提示复刻。实测 content/animationName/letter-spacing 命中 ✓
 - 至此 v7 系列六件游戏元素全部宿主真实状态驱动。
+
+## v7.3 · 第四批游戏元素（2026-10-24 十九轮）
+
+- **角色切换闪光（§9.7）**：切会话=换人演出。白闪载体挂 .wSkVaW_root::before（避开 centerCol::before=PRESS ANY KEY 的载体冲突），300ms 白幕 0.85→0，与 cam-push 同步。实测 animationName=zzz-swap-flash ✓
+- **Hollow 侵蚀红雾（§9.8）**：错误态（turnErrorRow/data-state=error/role=alert）= 空洞侵蚀红雾从底缘与两角渗入（三层 radial 红雾 3.2s 呼吸）。实测注入错误行→zzz-corrode-breathe 挂载、移除→退场（状态机干净） ✓
+- 载体冲突纪律：同一元素的同一伪元素只能承载一个演出——错误红雾覆盖 S 评级（错误优先），白闪独立载体避让 PRESS ANY KEY。
