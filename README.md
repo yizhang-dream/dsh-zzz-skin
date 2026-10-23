@@ -535,3 +535,9 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **音波纹（§9.15）**：流式输出正文（data-streaming）底部 5 条错峰跳动声波竖条（accent 渐隐 box-shadow 阵列，0.9s scaleY 脉动）。注入实测 animationName=zzz-wave、bg=accent 色 ✓
 - **调查报告弹窗（§9.16）**：设置弹窗档案化——纸面横线底（27px repeating）+顶部 accent 斜纹档案标签条（旋转-1.6°贴纸）+右下红色 CONFIDENTIAL 机密章（旋转-4°）。真机打开设置弹窗实测三件全挂载 ✓
 - v7 系列十六件，八批全部真机实测。
+
+## v7.8 · 第九批游戏元素（2026-10-24 二十四轮）
+
+- **扭蛋彩蛋（§9.17）**：新会话按钮按下（:active 真实瞬态）= 按钮上方浮出「EGG」蛋形贴纸（radial 高光+accent 双色壳+黑描边硬影+蛋形 border-radius），0.5s 不规则摇晃，松手消失。实测 4 条 zzz-gacha-shake 规则注入、静态态 content 为空（active 才显形）✓
+- **空洞监测地图纹（§9.18）**：会话列表（panellist）垫双层 repeating-radial 等高线纹理（蓝/紫双圈层，mask 上下渐隐），18s 缓慢扫描纵移。实测 animationName=zzz-hollow-scan、radial 背景+mask 全挂载 ✓
+- v7 系列十八件，九批全部真机实测。

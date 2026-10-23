@@ -2007,3 +2007,64 @@ body:not([data-ds-dark-theme]) pre code {
   pointer-events: none;
   z-index: 8;
 }
+
+/* ── §9.17 扭蛋彩蛋（v7.8）：新会话按钮按下 = 开出一枚扭蛋 ───────────
+ * 游戏信号机/扭蛋的出蛋演出。宿主锚点：new-session 按钮 :active（按下的真实瞬态）——
+ * 按住时按钮上方浮出一枚「蛋」贴纸摇晃，松手自然消失（active 态结束）。
+ * 纯 CSS 随机感：两层不同周期摇晃叠加近似不规则。*/
+[data-dsh-part="new-session"] {
+  position: relative;
+  isolation: isolate;
+}
+[data-dsh-part="new-session"]:active::after {
+  content: "EGG";
+  position: absolute;
+  right: -6px;
+  top: -14px;
+  z-index: 9;
+  padding: 1px 7px;
+  font-size: 9px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.14em;
+  color: #14141a;
+  background: radial-gradient(circle at 30% 30%, #fff 0 18%, var(--zzz-accent-soft) 19% 62%, var(--zzz-accent) 63%);
+  border: 1.5px solid #14141a;
+  border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%;
+  box-shadow: 2px 2px 0 #14141a;
+  transform-origin: 50% 100%;
+  animation: zzz-gacha-shake 0.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes zzz-gacha-shake {
+  0%, 100% { transform: rotate(-9deg) translateY(0); }
+  25% { transform: rotate(7deg) translateY(-1px); }
+  55% { transform: rotate(-5deg) translateY(0.5px); }
+  80% { transform: rotate(10deg) translateY(-1.5px); }
+}
+
+/* ── §9.18 空洞监测地图纹（v7.8）：会话列表 = 空洞监测屏 ──────────────
+ * 游戏空洞监测地图的等高线/扫描线。宿主锚点：sidebar panellist（会话列表树）——
+ * 等高线 radial 圈层纹理 + 缓慢扫描亮线（18s 一周），低调垫在行底。*/
+[data-slot="sidebar.panellist"] {
+  position: relative;
+}
+[data-slot="sidebar.panellist"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-radial-gradient(circle 90px at 30% 20%, transparent 0 34px, rgba(120, 160, 200, 0.05) 34px 35px, transparent 35px 68px, rgba(120, 160, 200, 0.04) 68px 69px),
+    repeating-radial-gradient(circle 110px at 78% 65%, transparent 0 40px, rgba(150, 110, 200, 0.045) 40px 41px, transparent 41px 80px, rgba(150, 110, 200, 0.035) 80px 81px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
+}
+[data-slot="sidebar.panellist"]::after {
+  animation: zzz-hollow-scan 18s linear infinite;
+}
+@keyframes zzz-hollow-scan {
+  from { transform: translateY(-4%); }
+  to   { transform: translateY(4%); }
+}
