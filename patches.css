@@ -53,13 +53,14 @@
  * 包装层处断掉，计算高度变成 0 → 整页空白只剩背景。
  * 这里用视口高度兜底，等价于宿主自己的移动端规则。
  * ═══════════════════════════════════════════════════════════════════════ */
-[data-dsh-frame] {
+[data-dsh-frame],
+.pI_x6G_frame {
   height: 100dvh;
   min-height: 100dvh;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
- * §2 分层：画布 / 辉光 / 纹理
+ * §2 分层：画布 / 壁纸 / 屏幕纹理（v5：色洗→网点斜纹→巨字→测试卡→玻璃面板）
  *
  * v2 把两团辉光塞进了 body::after（z-index 顶到最大），它们于是盖在
  * 整个 UI 上方，把文字和面板全洗成紫雾。v3 把辉光放回**内容之下**，
@@ -74,7 +75,8 @@ body {
 }
 
 /* 面板底：宿主的 frame 自带不透明底，要透出来才能看见辉光 */
-[data-dsh-frame] {
+[data-dsh-frame],
+.pI_x6G_frame {
   background: transparent;
 }
 
@@ -83,17 +85,20 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -2;
   pointer-events: none;
   background:
-    radial-gradient(46% 36% at 84% -8%, rgba(150, 52, 196, 0.24) 0%, transparent 62%),
-    radial-gradient(46% 38% at 4% 104%, rgba(32, 150, 182, 0.20) 0%, transparent 66%),
-    radial-gradient(120% 92% at 50% 42%, transparent 44%, rgba(4, 5, 14, 0.42) 100%);
-  animation: zzz-aura 20s ease-in-out infinite alternate;
+    radial-gradient(52% 44% at 86% -6%, rgba(168, 60, 220, 0.34) 0%, transparent 64%),
+    radial-gradient(30% 26% at 68% 0%, rgba(120, 40, 190, 0.18) 0%, transparent 70%),
+    radial-gradient(50% 40% at 2% 106%, rgba(28, 160, 190, 0.30) 0%, transparent 66%),
+    radial-gradient(36% 26% at 80% 98%, rgba(212, 207, 1, 0.07) 0%, transparent 60%),
+    radial-gradient(26% 22% at 14% 6%, rgba(190, 70, 235, 0.13) 0%, transparent 64%),
+    radial-gradient(122% 94% at 50% 42%, transparent 38%, rgba(3, 4, 12, 0.50) 100%);
+  animation: zzz-aura 22s ease-in-out infinite alternate;
 }
 @keyframes zzz-aura {
-  from { opacity: 0.78; transform: scale(1); }
-  to   { opacity: 1;    transform: scale(1.04); }
+  from { opacity: 0.8; transform: scale(1); }
+  to   { opacity: 1;   transform: scale(1.045); }
 }
 
 /* 纹理层：45° 网 + 扫描线 + 噪点。只叠在最上面做「屏幕」质感，
@@ -104,18 +109,154 @@ body::after {
   inset: -6%;
   z-index: 2147483000;
   pointer-events: none;
-  opacity: 0.46;
+  opacity: 0.5;
   background-image:
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.010) 0 1px, transparent 1px 5px),
-    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 5px),
-    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.009) 0 1px, transparent 1px 3px),
-    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.075'/%3E%3C/svg%3E");
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.11'/%3E%3C/svg%3E");
   background-size: auto, auto, auto, 180px 180px;
   animation: zzz-scan-drift 26s linear infinite;
 }
 @keyframes zzz-scan-drift {
   from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(0, 3px, 0); }
+  to   { transform: translate3d(0, 4px, 0); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §2b 壁纸艺术层（v5）
+ *
+ * 载体都在内容之下（z-index: -1），透过玻璃面板与画布边缝显形：
+ *   frame::before —— 网点场 × 双向斜纹 × 警示条；径向 mask 挖空中央阅读区
+ *   frame::after  —— 巨型竖排「NEW ERIDU」描边字，贴右缘上下漂移
+ *   html::before —— 电视测试卡底条（SMPTE 七段色 + 信号闪烁）
+ * 全部只动 transform / opacity；reduced-motion 下停。
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+[data-dsh-frame]::before,
+.pI_x6G_frame::before {
+  content: "";
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    /* 网点场·黄绿（右上，两档颗粒叠出网点渐变感） */
+    radial-gradient(circle, rgba(212, 207, 1, 0.22) 1.3px, transparent 1.5px),
+    radial-gradient(circle, rgba(212, 207, 1, 0.13) 2.2px, transparent 2.5px),
+    /* 网点场·白（左下，更细更密，像远处网点屏） */
+    radial-gradient(circle, rgba(255, 255, 255, 0.16) 1.1px, transparent 1.3px),
+    /* 斜纹带·青 115° */
+    repeating-linear-gradient(115deg, rgba(40, 209, 228, 0.085) 0 2px, transparent 2px 28px),
+    /* 斜纹带·品红紫 65°（反向交叠织出菱形网） */
+    repeating-linear-gradient(65deg, rgba(190, 70, 235, 0.075) 0 2px, transparent 2px 34px),
+    /* 警示斜纹·底缘（黄黑刀路，压到最低） */
+    repeating-linear-gradient(-45deg, rgba(212, 207, 1, 0.06) 0 9px, transparent 9px 38px);
+  background-size: 9px 9px, 22px 22px, 7px 7px, auto, auto, auto;
+  background-position: 0 0, 11px 7px, 3px 2px, 0 0, 0 0, 0 100%;
+  /* 中央挖空：30% 内纯画布（阅读区），52% 起渐显，82% 后全量 */
+  mask-image: radial-gradient(115% 105% at 50% 44%, transparent 32%, rgba(0, 0, 0, 0.6) 52%, #000 76%);
+  -webkit-mask-image: radial-gradient(115% 105% at 50% 44%, transparent 32%, rgba(0, 0, 0, 0.6) 52%, #000 76%);
+  animation: zzz-wall-drift 64s ease-in-out infinite alternate;
+}
+@keyframes zzz-wall-drift {
+  from { transform: translate3d(-6px, -4px, 0) rotate(-0.15deg); }
+  to   { transform: translate3d(7px, 5px, 0) rotate(0.15deg); }
+}
+
+[data-dsh-frame]::after,
+.pI_x6G_frame::after {
+  content: "NEW ERIDU";
+  position: fixed;
+  top: 3%;
+  right: -14px;
+  z-index: -1;
+  pointer-events: none;
+  writing-mode: vertical-rl;
+  font-size: clamp(64px, 8vw, 108px);
+  line-height: 1;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.085);
+  animation: zzz-type-drift 26s ease-in-out infinite alternate;
+}
+@keyframes zzz-type-drift {
+  from { transform: translateY(8px); }
+  to   { transform: translateY(-12px); }
+}
+
+html::before {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  z-index: 2147483000;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    rgba(212, 207, 1, 0.8) 0 14%,
+    rgba(40, 209, 228, 0.8) 14% 28%,
+    rgba(190, 70, 235, 0.8) 28% 42%,
+    rgba(242, 52, 58, 0.8) 42% 56%,
+    rgba(239, 218, 39, 0.8) 56% 70%,
+    rgba(242, 242, 244, 0.8) 70% 84%,
+    rgba(255, 255, 255, 0.3) 84% 100%);
+  mask-image: linear-gradient(90deg, #000 0 82%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, #000 0 82%, transparent 100%);
+  animation: zzz-bars-flicker 9s steps(1) infinite;
+}
+@keyframes zzz-bars-flicker {
+  0%, 91%  { opacity: 0.46; }
+  92%       { opacity: 0.3; }
+  93%, 95%  { opacity: 0.55; }
+  96%       { opacity: 0.4; }
+  97%, 100% { opacity: 0.46; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §2c hero 空态专属壁纸（v5.1）
+ *
+ * §2b 的中央 mask 把艺术挡在阅读区外；空态（hero）恰恰最该出壁纸。
+ * _emptyTabHost 是空态舞台，伪元素未被占用（v4 角标挂在会话列上）。
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+[class*="_emptyTabHost"] {
+  position: relative;
+}
+[class*="_emptyTabHost"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(212, 207, 1, 0.24) 1.8px, transparent 2.1px),
+    radial-gradient(circle, rgba(40, 209, 228, 0.17) 1.2px, transparent 1.4px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.07) 2.6px, transparent 3px);
+  background-size: 14px 14px, 8px 8px, 26px 26px;
+  background-position: 0 0, 5px 3px, 12px 9px;
+  mask-image: radial-gradient(95% 85% at 32% 24%, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 75%);
+  -webkit-mask-image: radial-gradient(95% 85% at 32% 24%, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 75%);
+}
+[class*="_emptyTabHost"]::after {
+  content: "NEW ERIDU";
+  position: absolute;
+  left: 50%;
+  bottom: 5%;
+  z-index: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translateX(-50%) skewX(-8deg);
+  font-size: clamp(56px, 6.5vw, 104px);
+  line-height: 1;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(242, 242, 244, 0.13);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -125,7 +266,9 @@ body::after {
 /* R2 双层描边面板：外圈 #222 细线 + 内圈 1px 高光 */
 [data-dsh-surface="settings"],
 [role="dialog"] {
-  background-color: var(--zzz-panel);
+  background-color: rgba(10, 10, 12, 0.88);
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
   border: 1px solid var(--zzz-line);
   border-radius: 22px;
   box-shadow:
@@ -136,20 +279,24 @@ body::after {
 
 /* 侧栏与主区之间：一条 1px 灰线，不用阴影 */
 [data-pane="sidebar"],
-[data-dsh-surface="sidebar"] {
-  background-color: #050507;
+.pI_x6G_sidebarCol {
+  background-color: rgba(5, 5, 7, 0.86);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
 }
 [data-dsh-surface="sidebar"] {
   background-color: transparent;
 }
-[data-pane="sidebar"] {
+[data-pane="sidebar"],
+.pI_x6G_sidebarCol {
   border-right: 1px solid var(--zzz-line);
   position: relative;
   overflow: hidden;
 }
 
 /* R4 巨型字形水印：只出现在侧栏，作为「墙纸」 */
-[data-pane="sidebar"]::after {
+[data-pane="sidebar"]::after,
+.pI_x6G_sidebarCol::after {
   content: "ZENLESS";
   position: absolute;
   left: -26px;
@@ -161,7 +308,7 @@ body::after {
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.04em;
-  color: rgba(255, 255, 255, 0.028);
+  color: rgba(212, 207, 1, 0.075);
   transform: rotate(-90deg);
   transform-origin: left bottom;
   animation: zzz-watermark 24s ease-in-out infinite alternate;
@@ -178,7 +325,9 @@ body::after {
   background-color: rgba(255, 255, 255, 0.022);
 }
 [role="menu"] {
-  background-color: var(--zzz-panel);
+  background-color: rgba(10, 10, 12, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--zzz-line);
   border-radius: 14px;
   padding: 6px;
@@ -526,12 +675,14 @@ html::after {
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.05em;
-  color: rgba(255, 255, 255, 0.022);
+  color: rgba(212, 207, 1, 0.04);
 }
 
 /* 右侧详情栏：和主区同一块面板，左侧一条灰线 */
 [data-dsh-surface="details"] {
-  background-color: #08080a;
+  background-color: rgba(8, 8, 10, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-left: 1px solid var(--zzz-line);
 }
 
@@ -547,14 +698,18 @@ html::after {
 
 /* 会话列：抬成一块浮在画布上的面板（设置页那种「黑板上浮」）
  * 这是和实机差距最大的一处——以前内容列和画布同色，层次是平的。 */
-[data-pane="conversation"] {
-  background-color: #0a0a0c;
+[data-pane="conversation"],
+.pI_x6G_centerCol {
+  background-color: rgba(10, 10, 12, 0.8);
+  backdrop-filter: blur(16px) saturate(1.12);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
   border: 1px solid var(--zzz-line);
   border-radius: 22px;
   margin: 10px 10px 10px 0;
   overflow: hidden;
 }
-[data-pane="conversation"]::before {
+[data-pane="conversation"]::before,
+.pI_x6G_centerCol::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1006,7 +1161,9 @@ input[type="checkbox"]:checked::after {
   position: relative;
 }
 [data-pane="conversation"]:has([data-phase="hero"])::before,
-[data-pane="conversation"]:has([data-phase="hero"])::after {
+[data-pane="conversation"]:has([data-phase="hero"])::after,
+.pI_x6G_centerCol:has([data-phase="hero"])::before,
+.pI_x6G_centerCol:has([data-phase="hero"])::after {
   content: "";
   position: absolute;
   width: 20px;
@@ -1259,6 +1416,14 @@ input[type="checkbox"]:checked::after {
   [data-slot="sidebar.panellist"]::before,
   [data-slot="sidebar.workspaces"]::before,
   [data-slot="conversation.header"]::before,
+  [data-dsh-frame]::before,
+  [data-dsh-frame]::after,
+  .pI_x6G_frame::before,
+  .pI_x6G_frame::after,
+  .pI_x6G_sidebarCol::after,
+  [class*="_emptyTabHost"]::before,
+  [class*="_emptyTabHost"]::after,
+  html::before,
   body::before,
   body::after,
   html::after {

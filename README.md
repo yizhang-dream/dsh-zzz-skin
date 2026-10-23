@@ -403,3 +403,19 @@ cd .playwright-mcp && python -m http.server 8971
 **审计的两个假信号**（记录防再踩）：① 黄底若画在伪元素/渐变上，`effBg` 爬不到 → 黑字误报 1:1；② 流式入场瞬间的 hover 态会短暂采集到过渡值。真实 Chrome 下 `getComputedStyle` 全量可靠，`background-image` 等空串问题只存在于无头。
 
 **模式拨杆（`hYkIZq_lever`/`lever-track`/`lever-arm`）没做**：会话内与 hero 均未复现该控件，无法实测样式，未盲写。
+
+## v5 · 六层壁纸系统（2026-10-24）
+
+用户裁定 v4「皮肤太单调，要做到壁纸级」。排查发现根因是结构性的：**壁纸层一直在，但被不透明面板盖住**（conversation 主面板占 77% 屏幅、纯黑不透明），v5 因此重做：
+
+- **§2 色洗重做**：双紫星云 + 青渊 + 黄绿街灯回声，六层径向渐变（body::before，z-index -2）
+- **§2b 壁纸艺术层**：网点场 × 双向斜纹 × 警示条多背景拼贴（frame::before，径向 mask 挖空中央阅读区）；竖排「NEW ERIDU」描边巨字（frame::after）；SMPTE 电视测试卡底条（html::before，steps(1) 信号闪烁）
+- **§2c hero 空态专属壁纸**：`_emptyTabHost` 舞台上网点聚光（黄绿粗点 + 青细点 + 白远点三层）+ 斜体幽灵大字——空态没有正文，是壁纸最该放开的地方
+- **面板玻璃化**：侧栏 0.86 / 会话列 0.80 / 详情栏 0.85 / 弹层 0.88 / 菜单 0.90 半透明底 + backdrop-blur，壁纸透过面板显形
+- **屏幕微纹理提强**：45° 网 / 扫描线 / 噪点各提 40–60%，仍压在「屏幕质感」档不抢戏
+
+### 工程要点（本次新增的三条铁律）
+
+1. **新官方 UI 没有旧锚点**：dsh-web（zhu fork）卸载后换 @deepseek-ai/dsh-web-app，没有 `[data-dsh-frame]`/`[data-pane=...]`；布局类是 `.pI_x6G_frame/_sidebarCol/_centerCol/_rightbarCol/_bottomRow`。载体一律**双挂**（属性 + 类名）；高度兜底必须同步迁移，否则整页 15px 塌陷（v3 高度链断裂在新 UI 复发）。
+2. **skin-center v2 是插件不是本体**：路由由 `@linxin666/dsh-client-ui-skin-center` 提供。它随旧 UI 一起被卸载时，`/api/skin-center/v2/*` 全 404、皮肤全失效且 UI 不再标注 data-dsh-surface 之外的锚点。修复：`pnnpm add` + 写进 `~/.dsh/profiles/web/package.json` 的 `dsh.profile.bundles` + 重启 dsh-web。
+3. **验皮肤别用 ZCode 自带 MCP 浏览器**：该内核把伪元素 `position` 钉死 `static`（防覆盖加固，连 `!important` 都无效），壁纸层全部假阴性。验收一律真实 Chrome + CDP（`tools/cdp.mjs`）。
