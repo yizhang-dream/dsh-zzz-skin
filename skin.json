@@ -31,7 +31,7 @@
       "dark": {
         "type": "image",
         "src": "assets/wallpaper-new-eridu.jpg",
-        "scrim": "linear-gradient(180deg, rgba(10, 12, 30, 0.1) 0%, rgba(8, 9, 22, 0.22) 72%, rgba(8, 9, 22, 0.34) 100%)"
+        "scrim": "linear-gradient(180deg, rgba(10, 12, 30, 0.08) 0%, rgba(8, 9, 22, 0.18) 72%, rgba(8, 9, 22, 0.28) 100%)"
       },
       "light": {
         "type": "image",

@@ -444,3 +444,7 @@ cd .playwright-mcp && python -m http.server 8971
 ## v5.6 · 内容层让位壁纸（2026-10-24 七轮）
 
 用户端壁纸已挂载但被「对话框后面的紫色背景」盖住——真凶是**对话区内容容器 .wSkVaW_root 的不透明底 rgb(12,14,35)**（=皮肤画布令牌 --dsw-alias-bg-base 被它引用），侧栏同伙 .hHd-Xa_root（插件近黑）。v5 只玻璃化了 centerCol/sidebarCol 外壳，内容层没动。修复：两者 background-color: transparent，底与可读性交由外壳玻璃（0.80/0.86+blur）。铁律：玻璃化要打穿到内容层——外壳透明、内容容器不透明等于没透。
+
+## v5.7 · 满幅无缝（2026-10-24 八轮）
+
+用户指出「周围留一圈缝不美观，看看别的壁纸怎么做」——对照内置 Blue Fantasy：它不动布局列、scrim 只有 0.08–0.2，UI 全是叠层，没有浮起面板。那圈缝是 v3 遗留的「黑板上浮」设计（centerCol margin:10px + radius:22px + 描边）。v5.7 撤掉三者回到原生满幅，scrim 对齐 BF 放宽到 0.08/0.18/0.28——壁纸贯穿全窗，侧栏与对话区是连续玻璃层。
