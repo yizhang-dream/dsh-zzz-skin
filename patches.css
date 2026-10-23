@@ -1488,7 +1488,7 @@ button[class*="primary"],
   transform: translateY(-50%);
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
-  border-left: 7px solid var(--zzz-yellow, #d4cf01);
+  border-left: 7px solid #14141a;
   pointer-events: none;
 }
 [class*="sessionRow"],
@@ -1500,7 +1500,7 @@ button[class*="primary"],
 [data-dsh-surface="settings"] h3::before,
 [data-slot="sidebar.workspaces"] > div:first-child::before {
   content: "// ";
-  color: var(--zzz-yellow, #d4cf01);
+  color: inherit;
   font-weight: 900;
   font-style: italic;
 }
