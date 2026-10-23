@@ -4,8 +4,8 @@
  * 色值全部从游戏实机截图取样，不是凭感觉配的：
  *   画布     #0C0E23 → #0D0E30   深蓝紫（不是紫，也不是纯黑）
  *   面板     #0C0C0C → #1E1E1E   近中性黑（和画布反差分得开）
- *   交互黄绿 #D4CF01             选中/主行动（设置页 Input 胶囊，v3 起）
- *   金       #EFDA27             选中环/警示（装备页环；v4 起 warn 也收进来）
+ *   交互黄绿 var(--zzz-accent)             选中/主行动（设置页 Input 胶囊，v3 起）
+ *   金       var(--zzz-accent-soft)             选中环/警示（装备页环；v4 起 warn 也收进来）
  *   （v2 的强调黄 #FBC827 已全部退役，仅历史取样记录）
  *   信号红   #F2343A             COMBAT 取样
  *   信号青   #28D1E4             Explore 取样
@@ -17,6 +17,9 @@
  * ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
+  /* 强调色：唯一彩色入口，用户可整体替换（ZZZ 经典黄绿只是默认值） */
+  --zzz-accent: var(--zzz-accent);
+  --zzz-accent-soft: var(--zzz-accent-soft);
   color: #f2f2f4;
   background-color: #0c0e23;
 }
@@ -71,15 +74,15 @@ body[data-ds-dark-theme] {
   --dsw-alias-border-inverted: rgba(0, 0, 0, 0.24);
   --dsw-alias-border-inverted2: rgba(0, 0, 0, 0.36);
 
-  /* 品牌：黄绿 #D4CF01（设置页选中胶囊取样）。红只留给危险/返回。 */
-  --dsw-alias-brand-primary: #d4cf01;
+  /* 品牌：黄绿 var(--zzz-accent)（设置页选中胶囊取样）。红只留给危险/返回。 */
+  --dsw-alias-brand-primary: var(--zzz-accent);
   --dsw-alias-brand-primary-invert: #0a0b14;
-  --dsw-alias-brand-primary-new-colorprimary-new-color: #d4cf01;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: var(--zzz-accent);
   --dsw-alias-brand-text: #e8e45a;
   --dsw-alias-link: #28d1e4;
 
   /* 按钮 */
-  --dsw-alias-button-primary-fill: #d4cf01;
+  --dsw-alias-button-primary-fill: var(--zzz-accent);
   --dsw-alias-button-primary-hover: #e2dd12;
   --dsw-alias-button-primary-dimmed: rgba(212, 207, 1, 0.42);
   --dsw-alias-button-contrast-fill: #f2f2f4;
@@ -106,10 +109,10 @@ body[data-ds-dark-theme] {
   --dsw-alias-state-success-primary: #35d98a;
   --dsw-alias-state-success-secondary: rgba(53, 217, 138, 0.55);
   --dsw-alias-state-success-tertiary: rgba(53, 217, 138, 0.15);
-  --dsw-alias-state-warn-primary: #efda27;
+  --dsw-alias-state-warn-primary: var(--zzz-accent-soft);
   --dsw-alias-state-warn-secondary: rgba(239, 218, 39, 0.55);
   --dsw-alias-state-warn-tertiary: rgba(239, 218, 39, 0.15);
-  --dsw-alias-state-warn-label: #efda27;
+  --dsw-alias-state-warn-label: var(--zzz-accent-soft);
   --dsw-alias-state-error-primary: #f2343a;
   --dsw-alias-state-error-secondary: rgba(242, 52, 58, 0.55);
   --dsw-alias-state-business-primary: #28d1e4;
@@ -153,7 +156,7 @@ body[data-ds-dark-theme] {
 
   --dsw-alias-turn-trigger-bg: rgba(255, 255, 255, 0.055);
   --dsw-alias-turn-trigger-bg-hover: rgba(255, 255, 255, 0.11);
-  --dsw-alias-onboarding-accent: #d4cf01;
+  --dsw-alias-onboarding-accent: var(--zzz-accent);
   --dsw-alias-onboarding-card-fill: #151517;
   --dsw-alias-onboarding-checkbox-border: rgba(255, 255, 255, 0.22);
   --dsw-alias-onboarding-secondary-fill: rgba(255, 255, 255, 0.06);
@@ -335,7 +338,7 @@ body:not([data-ds-dark-theme]) ::selection {
  */
 :root {
   --dsw-static-amber-100: #4a3a08;
-  --dsw-static-amber-400: #efda27;
+  --dsw-static-amber-400: var(--zzz-accent-soft);
   --dsw-static-amber-500: #f0f137;
   --dsw-static-amber-600: #d9a900;
   --dsw-static-amber-900: #1f1903;
