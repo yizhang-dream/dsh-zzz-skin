@@ -1411,6 +1411,8 @@ input[type="checkbox"]:checked::after {
     animation: none !important;
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 5);
   }
+  .pI_x6G_centerCol::after, [data-pane="conversation"]::after,
+  [data-slot="conversation.header"]::after { animation: none, none !important; opacity: 0; }
   html::after { display: none; }
 }
 
@@ -1546,4 +1548,76 @@ body:not([data-ds-dark-theme]) pre code {
   border: 1.5px solid #14141a;
   background-color: #fdfdf8;
   box-shadow: 2px 2px 0 rgba(16, 16, 22, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §9 战斗 UI 移植（v7.0，2026-10-24）——游戏里最标志性的两块战斗界面
+ *
+ * 9.1 HDD 侦测警报：流式生成中（aria-busy）→ 顶部出现喧响侦测横条
+ *     （红黑警示斜纹 + ATTENTION + 侦测刻度扫描）。
+ * 9.2 S 评级弹卡：回合完成（turn-tail 出现且不 busy）→ 右下弹出大字 S
+     评级卡（描边斜体 + 弹跳入场 + 落定 2s 后退场）。
+ * 触发锚点全部来自宿主真实状态流，非定时器装饰。
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* 9.1 HDD：流式生成 = 敌人侦测中 */
+[data-pane="conversation"]:has([aria-busy="true"]),
+.pI_x6G_centerCol:has([aria-busy="true"]) {
+  --zzz-hdd-on: 1;
+}
+[data-slot="conversation.header"] {
+  position: relative;
+}
+[data-pane="conversation"]:has([aria-busy="true"]) [data-slot="conversation.header"]::after,
+.pI_x6G_centerCol:has([aria-busy="true"]) [data-slot="conversation.header"]::after {
+  content: "ATTENTION // SIGNAL DETECTED";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 2px 12px 2px 30px;
+  font-size: 11px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.12em;
+  color: #ff5b62;
+  background:
+    repeating-linear-gradient(-45deg, rgba(242, 52, 58, 0.22) 0 8px, transparent 8px 16px),
+    rgba(20, 20, 26, 0.85);
+  border: 1.5px solid #f2343a;
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%);
+  animation: zzz-hdd-alert 0.9s steps(2) infinite;
+  pointer-events: none;
+}
+@keyframes zzz-hdd-alert {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.55; }
+}
+
+/* 9.2 S 评级：回合完成弹出（仅最近一次完成；新一轮生成中不显示） */
+[data-pane="conversation"]:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"]))::after,
+.pI_x6G_centerCol:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"]))::after {
+  content: "S";
+  position: absolute;
+  right: 26px;
+  bottom: 96px;
+  z-index: 5;
+  font-size: 88px;
+  line-height: 1;
+  font-weight: 900;
+  font-style: italic;
+  color: #f7f7fa;
+  -webkit-text-stroke: 3px #14141a;
+  text-shadow: 5px 5px 0 rgba(20, 20, 26, 0.85);
+  transform-origin: 60% 80%;
+  animation: zzz-rank-s 2.6s var(--zzz-ease-snap, ease-out) forwards;
+  pointer-events: none;
+}
+@keyframes zzz-rank-s {
+  0%   { opacity: 0; transform: scale(2.6) rotate(-14deg); }
+  18%  { opacity: 1; transform: scale(1) rotate(-6deg); }
+  26%  { transform: scale(1.06) rotate(-6deg); }
+  34%  { transform: scale(1) rotate(-6deg); }
+  78%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(0.92) translateY(10px) rotate(-6deg); }
 }
