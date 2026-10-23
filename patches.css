@@ -96,7 +96,7 @@ body::before {
     radial-gradient(52% 44% at 86% -6%, rgba(168, 60, 220, 0.34) 0%, transparent 64%),
     radial-gradient(30% 26% at 68% 0%, rgba(120, 40, 190, 0.18) 0%, transparent 70%),
     radial-gradient(50% 40% at 2% 106%, rgba(28, 160, 190, 0.30) 0%, transparent 66%),
-    radial-gradient(36% 26% at 80% 98%, rgba(212, 207, 1, 0.07) 0%, transparent 60%),
+    radial-gradient(36% 26% at 80% 98%, color-mix(in srgb, var(--zzz-accent) 07) 0%, transparent 60%),
     radial-gradient(26% 22% at 14% 6%, rgba(190, 70, 235, 0.13) 0%, transparent 64%),
     radial-gradient(122% 94% at 50% 42%, transparent 38%, rgba(3, 4, 12, 0.50) 100%);
   animation: zzz-aura 22s ease-in-out infinite alternate;
@@ -147,8 +147,8 @@ body::after {
   pointer-events: none;
   background-image:
     /* 网点场·黄绿（右上，两档颗粒叠出网点渐变感） */
-    radial-gradient(circle, rgba(212, 207, 1, 0.13) 1.3px, transparent 1.5px),
-    radial-gradient(circle, rgba(212, 207, 1, 0.08) 2.2px, transparent 2.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 13) 1.3px, transparent 1.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 08) 2.2px, transparent 2.5px),
     /* 网点场·白（左下，更细更密，像远处网点屏） */
     radial-gradient(circle, rgba(255, 255, 255, 0.1) 1.1px, transparent 1.3px),
     /* 斜纹带·青 115° */
@@ -156,7 +156,7 @@ body::after {
     /* 斜纹带·品红紫 65°（反向交叠织出菱形网） */
     repeating-linear-gradient(65deg, rgba(190, 70, 235, 0.05) 0 2px, transparent 2px 34px),
     /* 警示斜纹·底缘（黄黑刀路，压到最低） */
-    repeating-linear-gradient(-45deg, rgba(212, 207, 1, 0.04) 0 9px, transparent 9px 38px);
+    repeating-linear-gradient(-45deg, color-mix(in srgb, var(--zzz-accent) 04) 0 9px, transparent 9px 38px);
   background-size: 9px 9px, 22px 22px, 7px 7px, auto, auto, auto;
   background-position: 0 0, 11px 7px, 3px 2px, 0 0, 0 0, 0 100%;
   /* 中央挖空：30% 内纯画布（阅读区），52% 起渐显，82% 后全量 */
@@ -202,7 +202,7 @@ html::before {
   z-index: 2147483000;
   pointer-events: none;
   background: linear-gradient(90deg,
-    rgba(212, 207, 1, 0.8) 0 14%,
+    color-mix(in srgb, var(--zzz-accent) 80%, transparent) 0 14%,
     rgba(40, 209, 228, 0.8) 14% 28%,
     rgba(190, 70, 235, 0.8) 28% 42%,
     rgba(242, 52, 58, 0.8) 42% 56%,
@@ -270,7 +270,7 @@ html::before {
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.04em;
-  color: rgba(212, 207, 1, 0.075);
+  color: color-mix(in srgb, var(--zzz-accent) 075);
   transform: rotate(-90deg);
   transform-origin: left bottom;
   animation: zzz-watermark 24s ease-in-out infinite alternate;
@@ -372,8 +372,8 @@ pre code {
 
 /* P6 呼吸：运行中的东西边缘光起伏 */
 @keyframes zzz-breathe {
-  0%, 100% { box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.34), 0 0 0 rgba(212, 207, 1, 0); }
-  50%      { box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.72), 0 0 18px -4px rgba(212, 207, 1, 0.34); }
+  0%, 100% { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 34), 0 0 0 rgba(212, 207, 1, 0); }
+  50%      { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 72), 0 0 18px -4px color-mix(in srgb, var(--zzz-accent) 34); }
 }
 
 /* P7 光标：实机选择框是方块闪，不是细线 */
@@ -412,7 +412,7 @@ html::after {
   z-index: 2147483001;
   pointer-events: none;
   background: #fff;
-  box-shadow: 0 0 22px 7px #fff, 0 0 64px 20px rgba(212, 207, 1, 0.45);
+  box-shadow: 0 0 22px 7px #fff, 0 0 64px 20px color-mix(in srgb, var(--zzz-accent) 45);
   animation: zzz-power-line 600ms var(--zzz-ease-crt) 1 both;
 }
 
@@ -424,7 +424,7 @@ html::after {
   letter-spacing: -0.02em;
 }
 [data-slot="sidebar.brand.mark"] {
-  filter: drop-shadow(0 0 8px rgba(212, 207, 1, 0.42));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--zzz-accent) 42));
 }
 
 /* R1 选中反转：导航行选中 = 实心黄绿 + 黑字（设置页 Input 胶囊） */
@@ -442,7 +442,7 @@ html::after {
 [data-dsh-part="sidebar-entry"]:hover,
 [data-dsh-part="entry"]:hover {
   background-color: rgba(255, 255, 255, 0.055);
-  box-shadow: inset 2px 0 0 var(--zzz-yellow);
+  box-shadow: inset 2px 0 0 var(--zzz-accent);
 }
 [data-dsh-part="sidebar-entry"][aria-current],
 [data-dsh-part="sidebar-entry"][aria-selected="true"],
@@ -450,9 +450,9 @@ html::after {
 [data-dsh-part="entry"][aria-current],
 [data-dsh-part="entry"][aria-selected="true"],
 [data-dsh-part="entry"][data-active="true"] {
-  background-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
   color: var(--zzz-ink);
-  box-shadow: 0 0 22px -6px rgba(212, 207, 1, 0.7);
+  box-shadow: 0 0 22px -6px color-mix(in srgb, var(--zzz-accent) 7);
 }
 [data-dsh-part="sidebar-entry"][aria-current] *,
 [data-dsh-part="entry"][aria-current] * {
@@ -483,14 +483,14 @@ html::after {
   position: relative;
   overflow: hidden;
   border-radius: 999px;
-  background-image: linear-gradient(160deg, #e2dd12 0%, #c9c401 100%);
+  background-image: linear-gradient(160deg, var(--zzz-accent-soft) 0%, var(--zzz-accent) 100%);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--zzz-ink) !important;
   font-style: italic;
   font-weight: 800;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 6px 20px -8px rgba(212, 207, 1, 0.8);
+    0 6px 20px -8px color-mix(in srgb, var(--zzz-accent) 80%, transparent);
   transition: box-shadow 150ms ease, transform 110ms var(--zzz-ease-snap);
 }
 [data-dsh-part="new-session"] * {
@@ -515,7 +515,7 @@ html::after {
 [data-dsh-part="new-session"]:hover {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    0 8px 28px -8px rgba(212, 207, 1, 0.95);
+    0 8px 28px -8px color-mix(in srgb, var(--zzz-accent) 95);
 }
 [data-dsh-part="new-session"]:active {
   transform: scale(0.975);
@@ -574,17 +574,17 @@ html::after {
 
 /* 输入区：准星式聚焦环——四角括号，不是四边描边 */
 [data-dsh-part="composer-input"] {
-  caret-color: var(--zzz-yellow);
+  caret-color: var(--zzz-accent);
   border-radius: 10px;
 }
 [data-dsh-part="composer-input"]:focus-visible {
   outline: none;
   box-shadow: none;
   background-image:
-    linear-gradient(var(--zzz-yellow), var(--zzz-yellow)),
-    linear-gradient(var(--zzz-yellow), var(--zzz-yellow)),
-    linear-gradient(var(--zzz-yellow), var(--zzz-yellow)),
-    linear-gradient(var(--zzz-yellow), var(--zzz-yellow));
+    linear-gradient(var(--zzz-accent), var(--zzz-accent)),
+    linear-gradient(var(--zzz-accent), var(--zzz-accent)),
+    linear-gradient(var(--zzz-accent), var(--zzz-accent)),
+    linear-gradient(var(--zzz-accent), var(--zzz-accent));
   background-repeat: no-repeat;
   background-size: 12px 1.5px, 12px 1.5px, 1.5px 12px, 1.5px 12px;
   background-position: left top, right bottom, left top, right bottom;
@@ -604,11 +604,11 @@ html::after {
   transition: border-color 160ms ease, box-shadow 200ms ease;
 }
 [data-slot="conversation.composer.bar"]:focus-within {
-  border-color: rgba(212, 207, 1, 0.55);
+  border-color: color-mix(in srgb, var(--zzz-accent) 55%, transparent);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 0 0 1px rgba(212, 207, 1, 0.18),
-    0 0 28px -10px rgba(212, 207, 1, 0.55);
+    0 0 0 1px color-mix(in srgb, var(--zzz-accent) 18%, transparent),
+    0 0 28px -10px color-mix(in srgb, var(--zzz-accent) 55%, transparent);
 }
 
 /* 附件 chip：斜切角（装备页物品格的刀口） */
@@ -637,7 +637,7 @@ html::after {
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.05em;
-  color: rgba(212, 207, 1, 0.04);
+  color: color-mix(in srgb, var(--zzz-accent) 04);
 }
 
 /* 右侧详情栏：和主区同一块面板，左侧一条灰线 */
@@ -764,7 +764,7 @@ button[aria-label*="删除"]:active {
 [role="menuitem"]:nth-child(n + 5) { animation-delay: 88ms; }
 [role="menuitem"]:hover,
 [role="menuitem"]:focus-visible {
-  background-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
   color: var(--zzz-ink);
   outline: none;
 }
@@ -791,7 +791,7 @@ button[aria-label*="删除"]:active {
   z-index: -1;
   border-radius: inherit;
   background: inherit;
-  border: 1px solid rgba(212, 207, 1, 0.28);
+  border: 1px solid color-mix(in srgb, var(--zzz-accent) 28);
   transform: translate(22px, -10px) scale(0.985);
   filter: blur(2px);
   opacity: 0.4;
@@ -813,7 +813,7 @@ button[aria-label*="删除"]:active {
   transition: background-color 110ms var(--zzz-ease-hard);
 }
 [data-dsh-surface="settings"] [role="switch"][aria-checked="true"] {
-  background-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
 }
 
 /* 标签页：黄绿滑块 */
@@ -823,7 +823,7 @@ button[aria-label*="删除"]:active {
   transition: color 110ms var(--zzz-ease-hard);
 }
 [role="tab"][aria-selected="true"] {
-  color: var(--zzz-yellow);
+  color: var(--zzz-accent);
 }
 [role="tablist"] {
   position: relative;
@@ -872,9 +872,9 @@ button[aria-label*="删除"]:active {
 
 /* R1：选中 = 实心黄绿 + 黑字（与侧栏导航同一套语言） */
 [data-dsh-surface="settings"] nav button[aria-current="true"] {
-  background-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
   color: var(--zzz-ink);
-  box-shadow: 0 0 22px -6px rgba(212, 207, 1, 0.7);
+  box-shadow: 0 0 22px -6px color-mix(in srgb, var(--zzz-accent) 7);
 }
 [data-dsh-surface="settings"] nav button[aria-current="true"] * {
   color: var(--zzz-ink);
@@ -923,8 +923,8 @@ button[aria-label*="删除"]:active {
   transition: border-color 120ms ease, color 120ms ease;
 }
 [data-dsh-surface="settings"] [class*="_selector"]:hover {
-  border-color: var(--zzz-yellow);
-  color: var(--zzz-yellow);
+  border-color: var(--zzz-accent);
+  color: var(--zzz-accent);
 }
 [data-dsh-surface="settings"] [class*="_themeCube"] {
   border: 1px solid rgba(255, 255, 255, 0.16);
@@ -933,10 +933,10 @@ button[aria-label*="删除"]:active {
   font-weight: 700;
 }
 [data-dsh-surface="settings"] [class*="_themeCube"][aria-pressed="true"] {
-  border-color: var(--zzz-yellow);
-  color: var(--zzz-yellow);
-  background-color: rgba(212, 207, 1, 0.10);
-  box-shadow: 0 0 20px -8px rgba(212, 207, 1, 0.8);
+  border-color: var(--zzz-accent);
+  color: var(--zzz-accent);
+  background-color: color-mix(in srgb, var(--zzz-accent) 10);
+  box-shadow: 0 0 20px -8px color-mix(in srgb, var(--zzz-accent) 80%, transparent);
 }
 
 /* ── 5.3c 插件市场 / 卡片列表（对齐实机主菜单的图标条与胶囊）────── */
@@ -960,16 +960,16 @@ button[aria-label*="删除"]:active {
 }
 [data-dsh-surface="settings"] [class*="_pill"]:hover,
 [data-dsh-surface="settings"] [class*="_cats"] button:hover {
-  border-color: var(--zzz-yellow);
-  color: var(--zzz-yellow);
+  border-color: var(--zzz-accent);
+  color: var(--zzz-accent);
 }
 [data-dsh-surface="settings"] [class*="_pill"][aria-pressed="true"],
 [data-dsh-surface="settings"] [class*="_pill"][aria-selected="true"],
 [data-dsh-surface="settings"] [class*="_pill"][data-active="true"],
 [data-dsh-surface="settings"] [class*="_cats"] button[aria-pressed="true"],
 [data-dsh-surface="settings"] [class*="_cats"] button[aria-selected="true"] {
-  background-color: var(--zzz-yellow);
-  border-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
+  border-color: var(--zzz-accent);
   color: var(--zzz-ink);
 }
 
@@ -986,7 +986,7 @@ button[aria-label*="删除"]:active {
 }
 [data-dsh-surface="settings"] [class*="_tab"][aria-selected="true"],
 [data-dsh-surface="settings"] [class*="_tab"][data-active="true"] {
-  background-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
   color: var(--zzz-ink);
 }
 
@@ -1021,17 +1021,17 @@ button[aria-label*="删除"]:active {
 .cm-num,
 [data-dsh-usage-foot-card] output,
 [data-dsh-usage-foot-card] [data-value] {
-  color: var(--zzz-yellow) !important;
+  color: var(--zzz-accent) !important;
   font-variant-numeric: tabular-nums;
 }
 
 /* 2. 版本/等级一类的徽章：黄绿描边小胶囊，数字与文字同色 */
 [class*="_version"],
 [class*="_badge"] {
-  border: 1px solid rgba(212, 207, 1, 0.55);
+  border: 1px solid color-mix(in srgb, var(--zzz-accent) 55%, transparent);
   border-radius: 999px;
   padding: 0 8px;
-  color: var(--zzz-yellow);
+  color: var(--zzz-accent);
   font-style: italic;
   font-weight: 700;
 }
@@ -1040,8 +1040,8 @@ button[aria-label*="删除"]:active {
 [class*="_avatar"],
 [class*="_avatarButton"] {
   box-shadow:
-    0 0 0 1px rgba(212, 207, 1, 0.45),
-    0 0 14px -4px rgba(212, 207, 1, 0.5);
+    0 0 0 1px color-mix(in srgb, var(--zzz-accent) 45),
+    0 0 14px -4px color-mix(in srgb, var(--zzz-accent) 5);
 }
 
 /* ── 5.3e 一致性收口：所有标签栏/复选框/统计卡统一到一套语言 ─────────
@@ -1052,8 +1052,8 @@ button[aria-label*="删除"]:active {
 [role="tab"][aria-selected="true"],
 [class*="-tab"][aria-selected="true"],
 [class*="_tab"][aria-selected="true"] {
-  background-color: var(--zzz-yellow);
-  border-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
+  border-color: var(--zzz-accent);
   color: var(--zzz-ink);
   border-radius: 999px;
 }
@@ -1072,11 +1072,11 @@ input[type="checkbox"] {
   transition: border-color 120ms ease, background-color 120ms ease;
 }
 input[type="checkbox"]:hover {
-  border-color: var(--zzz-yellow);
+  border-color: var(--zzz-accent);
 }
 input[type="checkbox"]:checked {
-  background-color: var(--zzz-yellow);
-  border-color: var(--zzz-yellow);
+  background-color: var(--zzz-accent);
+  border-color: var(--zzz-accent);
 }
 input[type="checkbox"]:checked::after {
   content: "";
@@ -1140,14 +1140,14 @@ input[type="checkbox"]:checked::after {
 [data-pane="conversation"]:has([data-phase="hero"])::before {
   left: 14px;
   top: 14px;
-  border-left: 1.5px solid var(--zzz-yellow);
-  border-top: 1.5px solid var(--zzz-yellow);
+  border-left: 1.5px solid var(--zzz-accent);
+  border-top: 1.5px solid var(--zzz-accent);
 }
 [data-pane="conversation"]:has([data-phase="hero"])::after {
   right: 14px;
   bottom: 14px;
-  border-right: 1.5px solid var(--zzz-yellow);
-  border-bottom: 1.5px solid var(--zzz-yellow);
+  border-right: 1.5px solid var(--zzz-accent);
+  border-bottom: 1.5px solid var(--zzz-accent);
 }
 
 /* ── 5.3f Workshop / 表单页：下拉、输入、卡片标题 ────────────────── */
@@ -1162,8 +1162,8 @@ input[type="checkbox"]:checked::after {
   transition: border-color 120ms ease, color 120ms ease;
 }
 [data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]):hover {
-  border-color: var(--zzz-yellow);
-  color: var(--zzz-yellow);
+  border-color: var(--zzz-accent);
+  color: var(--zzz-accent);
 }
 
 /* 输入框：同一档圆角，聚焦黄边 */
@@ -1176,8 +1176,8 @@ input[type="checkbox"]:checked::after {
 }
 [data-dsh-surface="settings"] input:focus-visible {
   outline: none;
-  border-color: var(--zzz-yellow);
-  box-shadow: 0 0 0 1px rgba(212, 207, 1, 0.35);
+  border-color: var(--zzz-accent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 35);
 }
 
 /* 卡片标题：粗斜体（实机每张卡都有一个这样的名字牌） */
@@ -1212,8 +1212,8 @@ input[type="checkbox"]:checked::after {
   font-weight: 600;
 }
 [data-pane="conversation"] [class*="_ghostButton"]:hover {
-  border-color: var(--zzz-yellow);
-  color: var(--zzz-yellow);
+  border-color: var(--zzz-accent);
+  color: var(--zzz-accent);
 }
 [data-pane="conversation"] [class*="_empty"] {
   color: var(--dsw-alias-label-tertiary);
@@ -1227,7 +1227,7 @@ input[type="checkbox"]:checked::after {
 [data-dsh-surface="conversation"] [aria-busy="true"] {
   border-radius: 10px;
   /* 静态环先给一个保底，呼吸动画在此基础上起伏 */
-  box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.45);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 45);
   animation: zzz-breathe 2.2s ease-in-out infinite;
 }
 /* 完成的工具卡：中性细环，和运行中的黄环区分开 */
@@ -1257,7 +1257,7 @@ input[type="checkbox"]:checked::after {
 .cm-style-peak-sample {
   background-image: linear-gradient(
     to right,
-    var(--zzz-gold) 0 50%,
+    var(--zzz-accent-soft) 0 50%,
     var(--zzz-cyan) 50%
   ) !important;
 }
@@ -1277,8 +1277,8 @@ input[type="checkbox"]:checked::after {
   transition: background-color 140ms ease, box-shadow 140ms ease;
 }
 [data-dsh-part="resize-handle"]:hover {
-  background-color: rgba(212, 207, 1, 0.5);
-  box-shadow: 0 0 14px -2px rgba(212, 207, 1, 0.7);
+  background-color: color-mix(in srgb, var(--zzz-accent) 5);
+  box-shadow: 0 0 14px -2px color-mix(in srgb, var(--zzz-accent) 7);
 }
 
 /* ── 5.7 第三方插件着色对齐 ───────────────────────────────────────── */
@@ -1302,13 +1302,13 @@ input[type="checkbox"]:checked::after {
  *    （原 5.3d 的 [_badge] 黄绿描边不含底色，模块自带的绿底会透出来） */
 [class*="_badge"] {
   border-color: rgba(239, 218, 39, 0.6);
-  color: var(--zzz-gold);
+  color: var(--zzz-accent-soft);
   background: rgba(239, 218, 39, 0.08) !important;
 }
 
 /* 2. 「预览版」角标：长春花紫 #dbe4ff → 金描边胶囊，等宽字体保留 */
 [class*="_previewBadge"] {
-  color: var(--zzz-gold);
+  color: var(--zzz-accent-soft);
   border: 1px solid rgba(239, 218, 39, 0.55);
   border-radius: 999px;
   padding: 0 8px;
@@ -1339,7 +1339,7 @@ input[type="checkbox"]:checked::after {
   background: rgba(255, 255, 255, 0.03) !important;
 }
 [class*="_externalWallpaperTitle"] {
-  color: var(--zzz-gold) !important;
+  color: var(--zzz-accent-soft) !important;
 }
 
 /* 6. 看板列计数 #808090 on #1e1e20 = 4.27:1 → 提到 5:1 档 */
@@ -1409,7 +1409,7 @@ input[type="checkbox"]:checked::after {
   [data-dsh-surface="conversation"] [data-state="running"],
   [data-dsh-surface="conversation"] [aria-busy="true"] {
     animation: none !important;
-    box-shadow: inset 0 0 0 1px rgba(212, 207, 1, 0.5);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 5);
   }
   html::after { display: none; }
 }
