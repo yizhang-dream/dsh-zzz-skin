@@ -4,8 +4,9 @@
  * 色值全部从游戏实机截图取样，不是凭感觉配的：
  *   画布     #0C0E23 → #0D0E30   深蓝紫（不是紫，也不是纯黑）
  *   面板     #0C0C0C → #1E1E1E   近中性黑（和画布反差分得开）
- *   强调黄   #FBC827             STORY 标题取样
- *   高亮黄   #F0F137             NEW! 角标取样
+ *   交互黄绿 #D4CF01             选中/主行动（设置页 Input 胶囊，v3 起）
+ *   金       #EFDA27             选中环/警示（装备页环；v4 起 warn 也收进来）
+ *   （v2 的强调黄 #FBC827 已全部退役，仅历史取样记录）
  *   信号红   #F2343A             COMBAT 取样
  *   信号青   #28D1E4             Explore 取样
  *
@@ -105,10 +106,10 @@ body[data-ds-dark-theme] {
   --dsw-alias-state-success-primary: #35d98a;
   --dsw-alias-state-success-secondary: rgba(53, 217, 138, 0.55);
   --dsw-alias-state-success-tertiary: rgba(53, 217, 138, 0.15);
-  --dsw-alias-state-warn-primary: #fbc827;
-  --dsw-alias-state-warn-secondary: rgba(251, 200, 39, 0.55);
-  --dsw-alias-state-warn-tertiary: rgba(251, 200, 39, 0.15);
-  --dsw-alias-state-warn-label: #fbc827;
+  --dsw-alias-state-warn-primary: #efda27;
+  --dsw-alias-state-warn-secondary: rgba(239, 218, 39, 0.55);
+  --dsw-alias-state-warn-tertiary: rgba(239, 218, 39, 0.15);
+  --dsw-alias-state-warn-label: #efda27;
   --dsw-alias-state-error-primary: #f2343a;
   --dsw-alias-state-error-secondary: rgba(242, 52, 58, 0.55);
   --dsw-alias-state-business-primary: #28d1e4;
@@ -118,7 +119,7 @@ body[data-ds-dark-theme] {
   /* 代码 */
   --dsw-alias-markdown-code-block: #08080a;
   --dsw-alias-markdown-code-block-banner: #151517;
-  --dsw-alias-markdown-inline-code: rgba(251, 200, 39, 0.13);
+  --dsw-alias-markdown-inline-code: rgba(212, 207, 1, 0.13);
   --dsw-alias-markdown-code-segment-selected: rgba(212, 207, 1, 0.2);
   --dsw-alias-markdown-code-segment-unselected: rgba(255, 255, 255, 0.055);
   --dsw-alias-markdown-citation: #28d1e4;
@@ -152,7 +153,7 @@ body[data-ds-dark-theme] {
 
   --dsw-alias-turn-trigger-bg: rgba(255, 255, 255, 0.055);
   --dsw-alias-turn-trigger-bg-hover: rgba(255, 255, 255, 0.11);
-  --dsw-alias-onboarding-accent: #fbc827;
+  --dsw-alias-onboarding-accent: #d4cf01;
   --dsw-alias-onboarding-card-fill: #151517;
   --dsw-alias-onboarding-checkbox-border: rgba(255, 255, 255, 0.22);
   --dsw-alias-onboarding-secondary-fill: rgba(255, 255, 255, 0.06);
@@ -321,7 +322,7 @@ body:not([data-ds-dark-theme]) {
 }
 
 ::selection {
-  background: rgba(251, 200, 39, 0.32);
+  background: rgba(212, 207, 1, 0.32);
   color: #fff;
 }
 body:not([data-ds-dark-theme]) ::selection {
@@ -334,7 +335,7 @@ body:not([data-ds-dark-theme]) ::selection {
  */
 :root {
   --dsw-static-amber-100: #4a3a08;
-  --dsw-static-amber-400: #fbc827;
+  --dsw-static-amber-400: #efda27;
   --dsw-static-amber-500: #f0f137;
   --dsw-static-amber-600: #d9a900;
   --dsw-static-amber-900: #1f1903;

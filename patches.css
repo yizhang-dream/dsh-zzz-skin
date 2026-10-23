@@ -1165,6 +1165,77 @@ input[type="checkbox"]:checked::after {
   color: var(--dsw-alias-label-secondary) !important;
 }
 
+/* ── 5.8 v4 全 DOM 审计收口（2026-10-24）─────────────────────────────
+ * 审计法：真实 Chrome + CDP 走 8 个页面态（hero/对话/流式/设置/皮肤/
+ * 模型/工坊/看板），逐元素聚合计算样式，色相落在语言外或对比度不足的
+ * 逐条收编。结论：主体已干净，残留集中在三方插件的「成功绿载体」与
+ * 个别模块自带的琥珀/暖棕/长春花紫。
+ *
+ * 语义裁定：#35d98a 是 skin.css 的 state-success 族（HP 绿），保留；
+ * 琥珀 #FBC827 是 v2 残留 → warn 收进金 #EFDA27（见 skin.css）。
+ * ─────────────────────────────────────────────────────────────────── */
+
+/* 1. 「当前使用/激活」状态徽章 → 装备页选中环语言：金环胶囊。
+ *    （原 5.3d 的 [_badge] 黄绿描边不含底色，模块自带的绿底会透出来） */
+[class*="_badge"] {
+  border-color: rgba(239, 218, 39, 0.6);
+  color: var(--zzz-gold);
+  background: rgba(239, 218, 39, 0.08) !important;
+}
+
+/* 2. 「预览版」角标：长春花紫 #dbe4ff → 金描边胶囊，等宽字体保留 */
+[class*="_previewBadge"] {
+  color: var(--zzz-gold);
+  border: 1px solid rgba(239, 218, 39, 0.55);
+  border-radius: 999px;
+  padding: 0 8px;
+  font-style: italic;
+  font-weight: 700;
+}
+
+/* 3. 工坊预览链接：长春花紫 #9e9eff → 青（链接族） */
+[class*="_previewLink"] {
+  color: var(--zzz-cyan) !important;
+}
+
+/* 4. HP 绿的载体给「健康」语言：Shield 徽章描边胶囊、凭据点辉光 */
+.sa-chip-btn {
+  /* 插件样式表比皮肤晚注入，同特异性会输——边框要 !important（同 §5.7 cost-meter 教训） */
+  border: 1px solid rgba(53, 217, 138, 0.4) !important;
+  border-radius: 999px !important;
+  background: rgba(53, 217, 138, 0.08) !important;
+}
+[class*="_credentialDot"] {
+  border-radius: 999px;
+  box-shadow: 0 0 6px rgba(53, 217, 138, 0.55);
+}
+
+/* 5. 皮肤页「外部壁纸目录」提示：暖棕块 → 中性面板 + 金标题 */
+[class*="_externalWallpaperNotice"] {
+  border-color: var(--zzz-line) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+[class*="_externalWallpaperTitle"] {
+  color: var(--zzz-gold) !important;
+}
+
+/* 6. 看板列计数 #808090 on #1e1e20 = 4.27:1 → 提到 5:1 档 */
+[class*="_columnCount"] {
+  color: #9a9ba8 !important;
+}
+
+/* 8. 模型页危险按钮红字 #F2343A on #212123 = 4.09:1 → 提到 4.5 档
+ *    （色相不漂，只是提亮一档；红胶囊按钮本体走渐变+白字不受影响） */
+[class*="_dangerButton"] {
+  color: #ff454b !important;
+}
+
+/* 7. 会话/工作区行 8px → 10px（圆角三档纪律） */
+[class*="sessionRow"],
+[class*="projectRow"] {
+  border-radius: 10px;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
  * §6 减少动态
  * ═══════════════════════════════════════════════════════════════════════ */

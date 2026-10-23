@@ -374,3 +374,32 @@ cd .playwright-mcp && python -m http.server 8971
 - **设置面板宽度**：实机接近满屏，宿主写死 802px 居中弹窗；硬改风险高，暂不动。
 - **顶部资源条**：游戏顶部有等级/资源胶囊，DSH 没有对应信息，没有自造。
 - ~~宿主侧栏渲染异常~~：已定位为 `zzz-power-on` 里 `filter` 导致合成层位图不失效，v3.3 修复（见上）。
+
+## v4 全 DOM 审计收口（2026-10-24）
+
+用户授权「自行优化皮肤」。这轮不再靠截图目检，改为**计算样式全量审计**：真实 Chrome + CDP（`tools/cdp.mjs`）走 8 个页面态（hero / 对话 / 流式 / 设置 / 皮肤 / 模型 / 工坊 / 看板），注入 `tools/audit-inject.js` 逐元素聚合 color / bg / border / radius / animation，按语言色相判定泄漏 + 爬祖先算有效底色查对比度。
+
+结论：v3 系主体已干净，残留集中在**三方插件自带的颜色**与 **v2 琥珀令牌**，共收 9 处：
+
+| 问题 | 位置 | 处置 |
+|---|---|---|
+| 行内代码底色 v2 琥珀 `rgba(251,200,39,.13)` | skin.css inline-code 令牌 | → 黄绿 `rgba(212,207,1,.13)`（数值语言） |
+| warn 族三黄并存 | skin.css warn ×4 + amber-400 | 全部收进金 `#EFDA27`（`#FBC827` 退役） |
+| 引导页强调 / 选区琥珀 | onboarding-accent / `::selection` | → `#D4CF01` |
+| 「当前使用」徽章绿底透出 | 皮肤页 `TJMolG_badge` | 金环胶囊（装备页选中环语言） |
+| 「预览版」角标长春花紫 | `pXSMma_previewBadge` | 金描边胶囊，SF Mono 保留 |
+| 工坊预览链接长春花紫 | `bkhjFa_previewLink` | → 青 `#28D1E4`（链接族） |
+| Shield 徽章无语言 | `sa-chip-btn` | HP 绿描边胶囊 |
+| 凭据状态点裸圆 | `zGbnIq_credentialDot` | 绿色辉光 |
+| 壁纸目录提示暖棕块 | `TJMolG_externalWallpaper*` | 中性面板 + 金标题 |
+| 看板列计数 4.27:1 | `_7D6uKa_columnCount` | `#9a9ba8`（≈5:1） |
+| 会话行 8px 圆角 | `YDXeBa_sessionRow` | → 10px（三档纪律） |
+| 危险按钮红字 4.09:1 | `zGbnIq_dangerButton` | `#ff454b` |
+
+**语义裁定**：`#35d98a` 是 state-success 族（HP 绿），保留为「健康」专用色，不再当泄漏处理。
+
+**新坑（重要）**：三方插件样式表比皮肤**晚注入**，同特异性皮肤规则必输——`sa-chip-btn` 第一版边框就是这么丢的。对插件族（`sa-*` / `cm-*` / 三方模块）必须 `!important`，宿主模块（`hHd-Xa` 等）不用。
+
+**审计的两个假信号**（记录防再踩）：① 黄底若画在伪元素/渐变上，`effBg` 爬不到 → 黑字误报 1:1；② 流式入场瞬间的 hover 态会短暂采集到过渡值。真实 Chrome 下 `getComputedStyle` 全量可靠，`background-image` 等空串问题只存在于无头。
+
+**模式拨杆（`hYkIZq_lever`/`lever-track`/`lever-arm`）没做**：会话内与 hero 均未复现该控件，无法实测样式，未盲写。
