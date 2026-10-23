@@ -499,3 +499,9 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **邦布 loading（§9.3）**：纯 CSS 程序绘制（胶囊身体+双耳+描边+硬影），挂 turn-tail（等待首字时探头待机），1.4s squash 律动。实测 animationName=zzz-bangboo-bounce ✓
 - **COMBO 计数牌（§9.4）**：侧栏 workspaces 标题挂游戏右上连击样式「COMBO」贴纸牌（accent 斜纹底+黑描边+微旋转+2.2s 脉冲）。实测 content=COMBO, animationName=zzz-combo-pulse ✓
 - 均为宿主真实锚点（turn-tail / sidebar.workspaces），零定时器装饰。
+
+## v7.2 · 第三批游戏元素（2026-10-24 十八轮）
+
+- **对话选项斜切框（§9.5）**：role=menuitem（更多菜单/右键菜单）→ 黑底斜切框 + 左缘 accent 色条，hover 位移+色条点亮。实测 borderLeftColor=rgb(212,207,1)（--zzz-accent）、clip-path 斜切 ✓
+- **PRESS ANY KEY（§9.6）**：hero 空态（data-phase=hero）→ 会话列中下「PRESS ANY KEY」斜体宽字距闪烁（1.6s steps(2)），主菜单启动提示复刻。实测 content/animationName/letter-spacing 命中 ✓
+- 至此 v7 系列六件游戏元素全部宿主真实状态驱动。

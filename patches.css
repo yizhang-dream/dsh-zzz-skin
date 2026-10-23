@@ -1685,3 +1685,47 @@ body:not([data-ds-dark-theme]) pre code {
 }
 [data-dsh-surface="conversation"]:has([aria-busy="true"]) ~ * [data-slot="sidebar.workspaces"]::after,
 [data-dsh-part="queue-dock"] ~ * {}
+
+/* ── §9.5 对话选项斜切框（v7.2）：弹层菜单选项 = 剧情对话选项 ──────
+ * 游戏 NPC 对话的选项是黑底斜切框 + 左缘色条 + 序号感。宿主锚点：role=menuitem
+ * （更多菜单/右键菜单等）。hover 时色条点亮 + 位移，选中态实心反转。*/
+[role="menuitem"] {
+  border: 1.5px solid #14141a !important;
+  background-color: rgba(18, 18, 22, 0.92) !important;
+  border-left: 3px solid var(--zzz-accent) !important;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+  color: #e8e8ec;
+  transition: transform 110ms var(--zzz-ease-snap, ease-out), background-color 110ms;
+}
+[role="menuitem"]:hover,
+[role="menuitem"]:focus-visible {
+  transform: translateX(3px);
+  border-left-color: var(--zzz-accent-soft) !important;
+  box-shadow: -3px 0 12px -2px color-mix(in srgb, var(--zzz-accent) 60%, transparent);
+}
+
+/* ── §9.6 PRESS ANY KEY（v7.2）：hero 空态 = 主菜单启动提示 ──────────
+ * 游戏主菜单底部的闪烁提示。宿主锚点：会话列处于 hero 相位（data-phase=hero）。
+ * 挂在会话列底部（composer 上缘之下的空隙），斜体描边小字闪烁。*/
+.pI_x6G_centerCol:has([data-phase="hero"])::before,
+[data-pane="conversation"]:has([data-phase="hero"])::before {
+  content: "PRESS ANY KEY";
+  position: absolute;
+  left: 50%;
+  bottom: 108px;
+  transform: translateX(-50%) rotate(-1.2deg);
+  z-index: 4;
+  font-size: 13px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.32em;
+  color: #e8e8ec;
+  -webkit-text-stroke: 0.5px rgba(20, 20, 26, 0.9);
+  text-shadow: 2px 2px 0 rgba(20, 20, 26, 0.75);
+  animation: zzz-press-key 1.6s steps(2) infinite;
+  pointer-events: none;
+}
+@keyframes zzz-press-key {
+  0%, 54% { opacity: 1; }
+  55%, 100% { opacity: 0.12; }
+}
