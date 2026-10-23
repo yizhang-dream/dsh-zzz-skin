@@ -5,7 +5,7 @@
   "name": "新艾利都",
   "nameEn": "New Eridu",
   "author": "flower-moon",
-  "tagline": "深紫夜 · 警示黄 · 六层壁纸 · 玻璃面板 · CRT 开机",
+  "tagline": "深紫夜 · 警示黄 · 六层壁纸 · 新艾利都夜行壁纸 · 玻璃面板",
   "description": "《绝区零》新艾利都主题 v5：在 v4 全 DOM 审计收口之上新增六层壁纸系统——星云色洗、网点场、双向斜纹、巨型竖排 NEW ERIDU、SMPTE 电视测试卡底条、屏幕微纹理；侧栏/会话/弹层全部玻璃化透出壁纸。107 个 --dsw-* 语义令牌全量重映射，六招镜头语言动效（CRT 开关机、错峰入场、景别推近、双层弹窗、故障撕裂、字体抖动），浅深两档正文对比度校验。",
   "tags": [
     "zenless",
@@ -18,7 +18,7 @@
   ],
   "accent": "#FFD84D",
   "order": 10,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "preview": {
     "light": "preview/light.svg",
@@ -26,6 +26,18 @@
   },
   "contributes": {
     "stylesheet": "skin.css",
-    "patches": "patches.css"
+    "patches": "patches.css",
+    "backgroundMedia": {
+      "dark": {
+        "type": "image",
+        "src": "assets/wallpaper-new-eridu.jpg",
+        "scrim": "linear-gradient(180deg, rgba(10, 12, 30, 0.5) 0%, rgba(8, 9, 22, 0.74) 100%)"
+      },
+      "light": {
+        "type": "image",
+        "src": "assets/wallpaper-new-eridu.jpg",
+        "scrim": "linear-gradient(180deg, rgba(244, 244, 248, 0.62) 0%, rgba(248, 248, 252, 0.78) 100%)"
+      }
+    }
   }
 }

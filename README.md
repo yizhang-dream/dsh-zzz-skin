@@ -419,3 +419,12 @@ cd .playwright-mcp && python -m http.server 8971
 1. **新官方 UI 没有旧锚点**：dsh-web（zhu fork）卸载后换 @deepseek-ai/dsh-web-app，没有 `[data-dsh-frame]`/`[data-pane=...]`；布局类是 `.pI_x6G_frame/_sidebarCol/_centerCol/_rightbarCol/_bottomRow`。载体一律**双挂**（属性 + 类名）；高度兜底必须同步迁移，否则整页 15px 塌陷（v3 高度链断裂在新 UI 复发）。
 2. **skin-center v2 是插件不是本体**：路由由 `@linxin666/dsh-client-ui-skin-center` 提供。它随旧 UI 一起被卸载时，`/api/skin-center/v2/*` 全 404、皮肤全失效且 UI 不再标注 data-dsh-surface 之外的锚点。修复：`pnnpm add` + 写进 `~/.dsh/profiles/web/package.json` 的 `dsh.profile.bundles` + 重启 dsh-web。
 3. **验皮肤别用 ZCode 自带 MCP 浏览器**：该内核把伪元素 `position` 钉死 `static`（防覆盖加固，连 `!important` 都无效），壁纸层全部假阴性。验收一律真实 Chrome + CDP（`tools/cdp.mjs`）。
+
+## v5.3 · 真·壁纸（backgroundMedia，2026-10-24 二轮）
+
+用户指出「还没换掉壁纸，实拍还是大飞鱼」——大飞鱼=skin-center 内置皮肤 **Blue Fantasy（鲸鱼插画背景）**；zzz-zenless 之前没有声明壁纸，壁纸位空着。v5.3：
+
+- **自绘壁纸「新艾利都·夜行」**（2560×1440，assets/wallpaper-new-eridu.jpg，450KB JPEG）：夜城两层剪影+霓虹招牌+车灯光轨、NEW ERIDU 巨字+竖排「新艾利都」、网点场、斜纹、星云、SMPTE 条、扫描线、噪点。画布源码 tools/wallpaper-art.html，CDP 渲染器 tools/render-wallpaper.mjs（确定性种子，可复现）。
+- **manifest 挂载**：`contributes.backgroundMedia.dark/light = {type:image, src:assets/…, scrim:可读性渐变}`——皮肤中心把它填进固定装饰层 `background`（fixed z-2 <img> + scrim div），并触发 `data-dsh-backdrop-active`。
+- **优先级铁律**：Wallpaper Engine 壁纸 > 用户手动壁纸 > 皮肤 backgroundMedia。用户端若仍见别的壁纸，查 设置→皮肤 的手动壁纸/试穿状态。
+- **平衡修正**：插画接管视觉后，CSS 网点/斜纹降回克制档、§2c hero 专属构图退役（删除）、hero 态玻璃从 0.80/16px 放宽到 0.45/10px 让壁纸呼吸；scrim 加深到 0.50/0.74。

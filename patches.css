@@ -142,16 +142,16 @@ body::after {
   pointer-events: none;
   background-image:
     /* 网点场·黄绿（右上，两档颗粒叠出网点渐变感） */
-    radial-gradient(circle, rgba(212, 207, 1, 0.22) 1.3px, transparent 1.5px),
-    radial-gradient(circle, rgba(212, 207, 1, 0.13) 2.2px, transparent 2.5px),
+    radial-gradient(circle, rgba(212, 207, 1, 0.13) 1.3px, transparent 1.5px),
+    radial-gradient(circle, rgba(212, 207, 1, 0.08) 2.2px, transparent 2.5px),
     /* 网点场·白（左下，更细更密，像远处网点屏） */
-    radial-gradient(circle, rgba(255, 255, 255, 0.16) 1.1px, transparent 1.3px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.1) 1.1px, transparent 1.3px),
     /* 斜纹带·青 115° */
-    repeating-linear-gradient(115deg, rgba(40, 209, 228, 0.085) 0 2px, transparent 2px 28px),
+    repeating-linear-gradient(115deg, rgba(40, 209, 228, 0.05) 0 2px, transparent 2px 28px),
     /* 斜纹带·品红紫 65°（反向交叠织出菱形网） */
-    repeating-linear-gradient(65deg, rgba(190, 70, 235, 0.075) 0 2px, transparent 2px 34px),
+    repeating-linear-gradient(65deg, rgba(190, 70, 235, 0.05) 0 2px, transparent 2px 34px),
     /* 警示斜纹·底缘（黄黑刀路，压到最低） */
-    repeating-linear-gradient(-45deg, rgba(212, 207, 1, 0.06) 0 9px, transparent 9px 38px);
+    repeating-linear-gradient(-45deg, rgba(212, 207, 1, 0.04) 0 9px, transparent 9px 38px);
   background-size: 9px 9px, 22px 22px, 7px 7px, auto, auto, auto;
   background-position: 0 0, 11px 7px, 3px 2px, 0 0, 0 0, 0 100%;
   /* 中央挖空：30% 内纯画布（阅读区），52% 起渐显，82% 后全量 */
@@ -179,7 +179,7 @@ body::after {
   font-style: italic;
   letter-spacing: 0.06em;
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.085);
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.05);
   animation: zzz-type-drift 26s ease-in-out infinite alternate;
 }
 @keyframes zzz-type-drift {
@@ -214,49 +214,6 @@ html::before {
   93%, 95%  { opacity: 0.55; }
   96%       { opacity: 0.4; }
   97%, 100% { opacity: 0.46; }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
- * §2c hero 空态专属壁纸（v5.1）
- *
- * §2b 的中央 mask 把艺术挡在阅读区外；空态（hero）恰恰最该出壁纸。
- * _emptyTabHost 是空态舞台，伪元素未被占用（v4 角标挂在会话列上）。
- * ═══════════════════════════════════════════════════════════════════════ */
-
-[class*="_emptyTabHost"] {
-  position: relative;
-}
-[class*="_emptyTabHost"]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle, rgba(212, 207, 1, 0.24) 1.8px, transparent 2.1px),
-    radial-gradient(circle, rgba(40, 209, 228, 0.17) 1.2px, transparent 1.4px),
-    radial-gradient(circle, rgba(255, 255, 255, 0.07) 2.6px, transparent 3px);
-  background-size: 14px 14px, 8px 8px, 26px 26px;
-  background-position: 0 0, 5px 3px, 12px 9px;
-  mask-image: radial-gradient(95% 85% at 32% 24%, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 75%);
-  -webkit-mask-image: radial-gradient(95% 85% at 32% 24%, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 75%);
-}
-[class*="_emptyTabHost"]::after {
-  content: "NEW ERIDU";
-  position: absolute;
-  left: 50%;
-  bottom: 5%;
-  z-index: 0;
-  pointer-events: none;
-  white-space: nowrap;
-  transform: translateX(-50%) skewX(-8deg);
-  font-size: clamp(56px, 6.5vw, 104px);
-  line-height: 1;
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: 0.04em;
-  color: transparent;
-  -webkit-text-stroke: 2px rgba(242, 242, 244, 0.13);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1162,6 +1119,14 @@ input[type="checkbox"]:checked::after {
 }
 [data-pane="conversation"]:has([data-phase="hero"])::before,
 [data-pane="conversation"]:has([data-phase="hero"])::after,
+[data-pane="conversation"]:has([data-phase="hero"]),
+.pI_x6G_centerCol:has([data-phase="hero"]) {
+  background-color: rgba(10, 10, 12, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+[data-pane="conversation"]:has([data-phase="hero"])::before,
+[data-pane="conversation"]:has([data-phase="hero"])::after,
 .pI_x6G_centerCol:has([data-phase="hero"])::before,
 .pI_x6G_centerCol:has([data-phase="hero"])::after {
   content: "";
@@ -1421,8 +1386,6 @@ input[type="checkbox"]:checked::after {
   .pI_x6G_frame::before,
   .pI_x6G_frame::after,
   .pI_x6G_sidebarCol::after,
-  [class*="_emptyTabHost"]::before,
-  [class*="_emptyTabHost"]::after,
   html::before,
   body::before,
   body::after,
