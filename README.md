@@ -436,3 +436,7 @@ cd .playwright-mcp && python -m http.server 8971
 1. **大飞鱼真身**：不是 Blue Fantasy，是并行工作流 01:36 装进 bundles 的 **@smalltailqwq/dsh-client-ui-skin-maid-atelier 插件**——它往会话列里塞 absolute 不透明壁纸 div（skin-assets/maid-atelier/*.webp），盖在一切皮肤之上，active 是谁它都画。已从 deps+bundles 摘除（备份 package.json.bak-20261024-remove-smalltail），dsh-web 重启后资源加载归零。
 2. **scrim 过深**：壁纸其实一直在 background 装饰层渲染，但 scrim 0.50/0.74 把它压到几乎不可见（隔离实验：隐藏应用后提亮 2.6× 才能看清）。已放宽到 0.16/0.38/0.50（底部渐深保正文）。
 3. **验证教训（铁律升级）**：DOM 挂载≠视觉可见；看小图会脑补。本轮起验证三件套：隔离截图（隐藏 .pI_x6G_frame）+ 提亮查看 + 亮度均值核对。像素相关性在低光+jpeg 量化下不灵敏，不能单独作准。
+
+## v5.5 · 壁纸提亮（2026-10-24 四轮）
+
+用户指出背景没有壁纸原图样式——V1 图太暗（mean≈30）+scrim 叠加后直出就是一片深夜色。重渲染 V2：底色/星云/大字描边/光轨/网点整体提亮（对齐原作亮紫青夜空），scrim 放宽到 0.10/0.22/0.34。验收标准改为「无提亮直出可辨」。

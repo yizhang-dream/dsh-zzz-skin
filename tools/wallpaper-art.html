@@ -5,14 +5,14 @@ const W = 2560, H = 1440;
 let seed = 42; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
 const rg = (a, b) => a + rnd() * (b - a);
 // 1 base
-let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0b0d22'); g.addColorStop(.5, '#0d0e30'); g.addColorStop(1, '#090a1c'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#171a44'); g.addColorStop(.5, '#1d2052'); g.addColorStop(1, '#131534'); x.fillStyle = g; x.fillRect(0, 0, W, H);
 // 2 nebula
 const neb = (cx, cy, r, col, a) => { const ng = x.createRadialGradient(cx, cy, 0, cx, cy, r); ng.addColorStop(0, col.replace('%A', a)); ng.addColorStop(1, col.replace('%A', 0)); x.fillStyle = ng; x.fillRect(cx - r, cy - r, r * 2, r * 2); };
-neb(2120, 120, 1250, 'rgba(168,60,220,%A)', .5);
-neb(1720, -60, 850, 'rgba(120,40,190,%A)', .34);
-neb(-120, 1380, 1150, 'rgba(28,160,190,%A)', .44);
-neb(2080, 1380, 720, 'rgba(212,207,1,%A)', .1);
-neb(560, 240, 520, 'rgba(190,70,235,%A)', .16);
+neb(2120, 120, 1250, 'rgba(178,72,235,%A)', .66);
+neb(1720, -60, 850, 'rgba(140,60,215,%A)', .5);
+neb(-120, 1380, 1150, 'rgba(38,185,215,%A)', .6);
+neb(2080, 1380, 720, 'rgba(212,207,1,%A)', .16);
+neb(560, 240, 520, 'rgba(205,90,245,%A)', .3);
 // 3 sparks
 for (let i = 0; i < 170; i++) { const px = rg(0, W), py = rg(0, H * .75), r2 = rg(.6, 2.4), a2 = rg(.15, .7) * (1 - py / H); x.fillStyle = rnd() < .22 ? 'rgba(212,207,1,' + a2 + ')' : 'rgba(255,255,255,' + a2 + ')'; x.beginPath(); x.arc(px, py, r2, 0, 7); x.fill(); }
 // 11 hollow ring
@@ -21,13 +21,13 @@ x.strokeStyle = 'rgba(212,207,1,0.1)'; x.lineWidth = 1.5; x.beginPath(); x.arc(4
 // 7 ribbons
 x.save(); x.globalAlpha = .06; x.translate(W / 2, H / 2); x.rotate(65 * Math.PI / 180); x.fillStyle = '#be46eb'; for (let i = -30; i < 30; i++) x.fillRect(-1600, i * 46, 3200, 2.4); x.rotate(-115 * Math.PI / 180); x.fillStyle = '#28d1e4'; for (let i = -30; i < 30; i++) x.fillRect(-1600, i * 52, 3200, 2.2); x.restore();
 // 6 halftone top-right
-for (let gy = 0; gy < 620; gy += 17) for (let gx = 1420; gx < W; gx += 17) { const d = Math.hypot(gx - 2180, gy - 60) / 900; if (d < 1) { const a3 = (1 - d) * .5; x.fillStyle = 'rgba(212,207,1,' + (a3 * .55) + ')'; x.beginPath(); x.arc(gx + 8, gy + 8, 2.6 * (1 - d * .5), 0, 7); x.fill(); } }
-for (let gy = 0; gy < 420; gy += 13) for (let gx = 1560; gx < W; gx += 13) { const d = Math.hypot(gx - 2300, gy - 0) / 800; if (d < 1) { x.fillStyle = 'rgba(255,255,255,' + ((1 - d) * .18) + ')'; x.fillRect(gx, gy, 1.6, 1.6); } }
+for (let gy = 0; gy < 620; gy += 17) for (let gx = 1420; gx < W; gx += 17) { const d = Math.hypot(gx - 2180, gy - 60) / 900; if (d < 1) { const a3 = (1 - d) * .5; x.fillStyle = 'rgba(212,207,1,' + (a3 * .8) + ')'; x.beginPath(); x.arc(gx + 8, gy + 8, 2.6 * (1 - d * .5), 0, 7); x.fill(); } }
+for (let gy = 0; gy < 420; gy += 13) for (let gx = 1560; gx < W; gx += 13) { const d = Math.hypot(gx - 2300, gy - 0) / 800; if (d < 1) { x.fillStyle = 'rgba(255,255,255,' + ((1 - d) * .28) + ')'; x.fillRect(gx, gy, 1.6, 1.6); } }
 // 4 far skyline
 const win = (bx, by, bw, bh) => { const n = Math.floor(bw * bh / 2600); for (let i = 0; i < n; i++) { x.fillStyle = rnd() < .3 ? 'rgba(40,209,228,.5)' : 'rgba(212,207,1,.45)'; x.fillRect(bx + rg(6, bw - 10), by + rg(8, bh - 12), 4, 6); } };
 let cx2 = -40; while (cx2 < W) { const bw = rg(70, 170), bh = rg(120, 400), by = H - 120 - bh; x.fillStyle = '#080914'; x.fillRect(cx2, by, bw, bh + 200); if (rnd() < .5) win(cx2, by, bw, bh); if (rnd() < .35) { x.strokeStyle = '#080914'; x.lineWidth = 3; x.beginPath(); x.moveTo(cx2 + bw / 2, by); x.lineTo(cx2 + bw / 2, by - rg(20, 70)); x.stroke(); } cx2 += bw + rg(4, 30); }
 // 10 light trails
-for (let i = 0; i < 26; i++) { const ty = rg(H - 330, H - 90); const tg = x.createLinearGradient(0, ty, W, ty); const lime = rnd() < .6; const col = lime ? '212,207,1' : '242,52,58'; tg.addColorStop(0, 'rgba(' + col + ',0)'); tg.addColorStop(.5, 'rgba(' + col + ',.5)'); tg.addColorStop(1, 'rgba(' + col + ',0)'); x.strokeStyle = tg; x.lineWidth = rg(2, 5); x.beginPath(); const x0 = rg(-200, W * .3), x1 = x0 + rg(W * .5, W); x.moveTo(x0, ty); x.bezierCurveTo(x0 + (x1 - x0) * .3, ty - rg(0, 26), x0 + (x1 - x0) * .7, ty + rg(0, 26), x1, ty + rg(-12, 12)); x.stroke(); }
+for (let i = 0; i < 26; i++) { const ty = rg(H - 330, H - 90); const tg = x.createLinearGradient(0, ty, W, ty); const lime = rnd() < .6; const col = lime ? '212,207,1' : '242,52,58'; tg.addColorStop(0, 'rgba(' + col + ',0)'); tg.addColorStop(.5, 'rgba(' + col + ',.75)'); tg.addColorStop(1, 'rgba(' + col + ',0)'); x.strokeStyle = tg; x.lineWidth = rg(2, 5); x.beginPath(); const x0 = rg(-200, W * .3), x1 = x0 + rg(W * .5, W); x.moveTo(x0, ty); x.bezierCurveTo(x0 + (x1 - x0) * .3, ty - rg(0, 26), x0 + (x1 - x0) * .7, ty + rg(0, 26), x1, ty + rg(-12, 12)); x.stroke(); }
 // 5 near skyline + neon
 cx2 = -60; while (cx2 < W) { const bw = rg(90, 220), bh = rg(200, 560), by = H - 40 - bh; x.fillStyle = '#05050a'; x.fillRect(cx2, by, bw, bh + 120); if (rnd() < .55) win(cx2, by, bw, bh); if (rnd() < .5) { const sy = by + rg(20, Math.max(30, bh - 60)), sw = rg(24, 60), sh = rg(10, 26); const col2 = [
   ['rgba(212,207,1,', ')'], ['rgba(40,209,228,', ')'], ['rgba(190,70,235,', ')'], ['rgba(239,218,39,', ')']
@@ -35,22 +35,22 @@ cx2 = -60; while (cx2 < W) { const bw = rg(90, 220), bh = rg(200, 560), by = H -
 // 8 BIG TYPE
 x.save(); x.translate(1330, 760); x.transform(1, 0, -0.16, 1, 0, 0);
 x.font = '900 italic 372px "Arial Black", "Segoe UI", sans-serif'; x.textAlign = 'center';
-x.strokeStyle = 'rgba(255,255,255,0.1)'; x.lineWidth = 4; x.strokeText('NEW ERIDU', 0, 0);
-x.strokeStyle = 'rgba(212,207,1,0.05)'; x.lineWidth = 2; x.strokeText('NEW ERIDU', 7, 5);
-x.font = '700 italic 44px "Segoe UI", sans-serif'; x.fillStyle = 'rgba(255,255,255,0.24)';
+x.strokeStyle = 'rgba(255,255,255,0.2)'; x.lineWidth = 5; x.strokeText('NEW ERIDU', 0, 0);
+x.strokeStyle = 'rgba(212,207,1,0.1)'; x.lineWidth = 3; x.strokeText('NEW ERIDU', 8, 6);
+x.font = '700 italic 44px "Segoe UI", sans-serif'; x.fillStyle = 'rgba(255,255,255,0.4);'
 const tag = 'Z E N L E S S   Z O N E   Z E R O'; x.fillText(tag, 0, 78);
-x.fillStyle = 'rgba(212,207,1,0.4)'; x.fillRect(-330, 108, 660, 3);
+x.fillStyle = 'rgba(212,207,1,0.65)'; x.fillRect(-330, 108, 660, 3);
 x.restore();
 // 9 vertical kanji
-x.save(); x.font = '900 96px "Microsoft YaHei", sans-serif'; x.fillStyle = 'rgba(255,255,255,0.12)'; x.textAlign = 'center'; const kj = '新艾利都'; let ky = 180; for (const ch of kj) { x.fillText(ch, W - 92, ky); ky += 128; } x.restore();
+x.save(); x.font = '900 96px "Microsoft YaHei", sans-serif'; x.fillStyle = 'rgba(255,255,255,0.22)'; x.textAlign = 'center'; const kj = '新艾利都'; let ky = 180; for (const ch of kj) { x.fillText(ch, W - 92, ky); ky += 128; } x.restore();
 // 12 SMPTE
 const bars = ['rgba(212,207,1,.55)', 'rgba(40,209,228,.55)', 'rgba(190,70,235,.55)', 'rgba(242,52,58,.55)', 'rgba(239,218,39,.55)', 'rgba(242,242,244,.55)', 'rgba(255,255,255,.2)'];
 for (let i = 0; i < 7; i++) { x.fillStyle = bars[i]; x.fillRect(i * W / 7, H - 26, W / 7 + 1, 26); }
 // 13 scanlines
-x.fillStyle = 'rgba(0,0,0,0.16)'; for (let sy = 0; sy < H; sy += 4) x.fillRect(0, sy, W, 1.2);
+x.fillStyle = 'rgba(0,0,0,0.09)'; for (let sy = 0; sy < H; sy += 4) x.fillRect(0, sy, W, 1.2);
 // 14 noise
-for (let i = 0; i < 5200; i++) { x.fillStyle = 'rgba(255,255,255,' + rg(.01, .045) + ')'; x.fillRect(rg(0, W), rg(0, H), 1.3, 1.3); }
+for (let i = 0; i < 2600; i++) { x.fillStyle = 'rgba(255,255,255,' + rg(.01, .045) + ')'; x.fillRect(rg(0, W), rg(0, H), 1.3, 1.3); }
 // 15 vignette
-const vg = x.createRadialGradient(W / 2, H * .44, H * .35, W / 2, H * .5, H * 1.05); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(3,4,12,.5)'); x.fillStyle = vg; x.fillRect(0, 0, W, H);
+const vg = x.createRadialGradient(W / 2, H * .44, H * .35, W / 2, H * .5, H * 1.05); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(3,4,12,.3)'); x.fillStyle = vg; x.fillRect(0, 0, W, H);
 window.__done = true;
 </script>
