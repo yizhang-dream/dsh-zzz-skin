@@ -428,3 +428,11 @@ cd .playwright-mcp && python -m http.server 8971
 - **manifest 挂载**：`contributes.backgroundMedia.dark/light = {type:image, src:assets/…, scrim:可读性渐变}`——皮肤中心把它填进固定装饰层 `background`（fixed z-2 <img> + scrim div），并触发 `data-dsh-backdrop-active`。
 - **优先级铁律**：Wallpaper Engine 壁纸 > 用户手动壁纸 > 皮肤 backgroundMedia。用户端若仍见别的壁纸，查 设置→皮肤 的手动壁纸/试穿状态。
 - **平衡修正**：插画接管视觉后，CSS 网点/斜纹降回克制档、§2c hero 专属构图退役（删除）、hero 态玻璃从 0.80/16px 放宽到 0.45/10px 让壁纸呼吸；scrim 加深到 0.50/0.74。
+
+## v5.4 · 壁纸可见性修复（2026-10-24 三轮）
+
+用户连续两轮指出「实拍还是大飞鱼」，两次诊断更正：
+
+1. **大飞鱼真身**：不是 Blue Fantasy，是并行工作流 01:36 装进 bundles 的 **@smalltailqwq/dsh-client-ui-skin-maid-atelier 插件**——它往会话列里塞 absolute 不透明壁纸 div（skin-assets/maid-atelier/*.webp），盖在一切皮肤之上，active 是谁它都画。已从 deps+bundles 摘除（备份 package.json.bak-20261024-remove-smalltail），dsh-web 重启后资源加载归零。
+2. **scrim 过深**：壁纸其实一直在 background 装饰层渲染，但 scrim 0.50/0.74 把它压到几乎不可见（隔离实验：隐藏应用后提亮 2.6× 才能看清）。已放宽到 0.16/0.38/0.50（底部渐深保正文）。
+3. **验证教训（铁律升级）**：DOM 挂载≠视觉可见；看小图会脑补。本轮起验证三件套：隔离截图（隐藏 .pI_x6G_frame）+ 提亮查看 + 亮度均值核对。像素相关性在低光+jpeg 量化下不灵敏，不能单独作准。
