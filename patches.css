@@ -1446,3 +1446,99 @@ body:not([data-ds-dark-theme]) [class*="_bubble"] {
   background-color: rgba(255, 255, 255, calc(0.32 + var(--dsh-skin-bubble-alpha, 0.5) * 0.48));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §8 风格化 v6（2026-10-24）——「绝区零不是颜色，是风格」
+ *
+ * 用户裁定：只换配色+壁纸不叫绝区零。ZZZ 的风格语言：粗黑描边、斜切硬边、
+ * 漫画硬阴影（offset 实心影）、警示黄绿大块、路牌式信息设计、贴纸角标。
+ * 本节把它做进每一个控件；亮色档做成「白纸漫画」（白底黑描边 lime 点缀）。
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* 8.1 漫画硬阴影 + 粗黑描边：菜单、弹窗、卡片 */
+[role="menu"],
+[role="dialog"],
+.cm-card {
+  border: 2px solid #14141a !important;
+  box-shadow: 4px 4px 0 rgba(16, 16, 22, 0.9) !important;
+  border-radius: 6px !important;
+}
+
+/* 8.2 按钮全面斜切 + 硬阴影（路牌感） */
+[data-slot="conversation.composer.bar"] button,
+button[class*="primary"],
+[class*="newSession"] {
+  border-radius: 4px !important;
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+}
+[data-slot="conversation.composer.bar"] button:not(:disabled):hover {
+  box-shadow: 2.5px 2.5px 0 rgba(16, 16, 22, 0.85);
+  transform: translate(-1px, -1px);
+}
+
+/* 8.3 会话行 hover：左缘黄绿楔形箭头（路牌指向） */
+[class*="sessionRow"]:hover::before,
+[class*="projectRow"]:hover::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: translateY(-50%);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 7px solid var(--zzz-yellow, #d4cf01);
+  pointer-events: none;
+}
+[class*="sessionRow"],
+[class*="projectRow"] {
+  position: relative;
+}
+
+/* 8.4 区块标题路牌前缀「//」 */
+[data-dsh-surface="settings"] h3::before,
+[data-slot="sidebar.workspaces"] > div:first-child::before {
+  content: "// ";
+  color: var(--zzz-yellow, #d4cf01);
+  font-weight: 900;
+  font-style: italic;
+}
+
+/* 8.5 贴纸角标：选中态徽章微旋转 + 黑描边 */
+[class*="_badge"],
+[data-dsh-usage-foot-card] [class*="count"] {
+  display: inline-block;
+  border: 1.5px solid #14141a;
+  transform: rotate(-2deg);
+  box-shadow: 1.5px 1.5px 0 rgba(16, 16, 22, 0.8);
+}
+
+/* 8.6 亮色档 = 白纸漫画（白底黑描边 lime 点缀，不是暗玻璃的浅色版） */
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
+body:not([data-ds-dark-theme]) [data-pane="conversation"] {
+  background-color: rgba(250, 250, 246, 0.82);
+  border-left: 2px solid #14141a;
+}
+body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol,
+body:not([data-ds-dark-theme]) [data-pane="sidebar"] {
+  background-color: rgba(250, 250, 246, 0.88);
+  border-right: 2px solid #14141a;
+}
+body:not([data-ds-dark-theme]) [data-dsh-part="message-body"],
+body:not([data-ds-dark-theme]) [class*="_bubble"] {
+  border: 2px solid #14141a !important;
+  background-color: rgba(255, 255, 255, calc(0.55 + var(--dsh-skin-bubble-alpha, 0.5) * 0.4)) !important;
+  box-shadow: 2.5px 2.5px 0 rgba(16, 16, 22, 0.75) !important;
+}
+body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] {
+  border: 2px solid #14141a;
+  background-color: rgba(255, 255, 255, 0.86);
+  box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.8);
+}
+body:not([data-ds-dark-theme]) pre,
+body:not([data-ds-dark-theme]) pre code {
+  border: 1.5px solid #14141a;
+  background-color: #fdfdf8;
+  box-shadow: 2px 2px 0 rgba(16, 16, 22, 0.6);
+}
