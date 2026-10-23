@@ -1884,3 +1884,56 @@ body:not([data-ds-dark-theme]) pre code {
   0%, 100% { opacity: 0.85; }
   50% { opacity: 1; }
 }
+
+/* ── §9.13 结算翻卡（v7.6）：usage 卡 hover = 结算翻面 ─────────────
+ * 游戏结算界面卡片翻面。宿主锚点：usage 费用卡（--dsh-usage-foot-card）。
+ * hover 时 perspective 3D 翻转（rotateX 摆动回弹），伪元素加背面网点纹理。*/
+[data-dsh-usage-foot-card] {
+  transition: transform 420ms var(--zzz-ease-snap, cubic-bezier(0.16, 1.16, 0.3, 1));
+  transform-style: preserve-3d;
+}
+[data-dsh-usage-foot-card]:hover,
+.cm-card:hover {
+  animation: zzz-card-flip 640ms var(--zzz-ease-snap, ease-out) 1;
+}
+@keyframes zzz-card-flip {
+  0%   { transform: perspective(700px) rotateX(0deg) translateY(0); }
+  38%  { transform: perspective(700px) rotateX(-16deg) translateY(-4px); }
+  62%  { transform: perspective(700px) rotateX(7deg) translateY(-2px); }
+  100% { transform: perspective(700px) rotateX(0deg) translateY(0); }
+}
+
+/* ── §9.14 Hollow 深潜进度条（v7.6）：流式中底部侵蚀推进 ──────────────
+ * 游戏空洞深潜的侵蚀深度条。宿主锚点：aria-busy（流式生成中）——
+ * 会话列底部出现红色刻度条缓慢推进+游标脉冲，busy 结束退场。
+ * 载体：conversation composer bar::before（::after 未占用）。*/
+[data-slot="conversation.composer.bar"] { position: relative; }
+[data-pane="conversation"]:has([aria-busy="true"]) [data-slot="conversation.composer.bar"]::before,
+.pI_x6G_centerCol:has([aria-busy="true"]) [data-slot="conversation.composer.bar"]::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: -7px;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, rgba(242, 52, 58, 0.28) 0 3px, transparent 3px 9px);
+  border: 1px solid rgba(242, 52, 58, 0.55);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  pointer-events: none;
+}
+[data-pane="conversation"]:has([aria-busy="true"]) [data-slot="conversation.composer.bar"]::after,
+.pI_x6G_centerCol:has([aria-busy="true"]) [data-slot="conversation.composer.bar"]::after {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: -7px;
+  width: 42%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #f2343a 30%, #ff6a70 100%);
+  animation: zzz-deepdive 2.8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes zzz-deepdive {
+  from { transform: translateX(0); }
+  to   { transform: translateX(135%); }
+}
