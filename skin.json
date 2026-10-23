@@ -30,13 +30,13 @@
     "backgroundMedia": {
       "dark": {
         "type": "image",
-        "src": "assets/wallpaper-new-eridu.jpg",
-        "scrim": "linear-gradient(180deg, rgba(10, 12, 30, 0.08) 0%, rgba(8, 9, 22, 0.18) 72%, rgba(8, 9, 22, 0.28) 100%)"
+        "src": "assets/wallpaper-zzz-keyart.jpg",
+        "scrim": "linear-gradient(180deg, rgba(8, 9, 22, 0.2) 0%, rgba(8, 9, 22, 0.36) 70%, rgba(8, 9, 22, 0.5) 100%)"
       },
       "light": {
         "type": "image",
-        "src": "assets/wallpaper-new-eridu.jpg",
-        "scrim": "linear-gradient(180deg, rgba(244, 244, 248, 0.62) 0%, rgba(248, 248, 252, 0.78) 100%)"
+        "src": "assets/wallpaper-zzz-keyart.jpg",
+        "scrim": "linear-gradient(180deg, rgba(244, 244, 248, 0.5) 0%, rgba(248, 248, 252, 0.66) 100%)"
       }
     }
   }
