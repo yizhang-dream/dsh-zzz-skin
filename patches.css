@@ -1937,3 +1937,73 @@ body:not([data-ds-dark-theme]) pre code {
   from { transform: translateX(0); }
   to   { transform: translateX(135%); }
 }
+
+/* ── §9.15 音波纹（v7.7）：流式输出 = 声波传输 ─────────────────────
+ * 游戏语音/信号界面的声波条纹。宿主锚点：消息正文流式生成中（data-streaming）——
+ * 正文底部挂 5 条错峰跳动的声波竖条（accent 色），随流式出现/消失。*/
+[data-streaming] {
+  position: relative;
+  padding-bottom: 14px;
+}
+[data-streaming]::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  width: 5px;
+  height: 12px;
+  background: var(--zzz-accent);
+  box-shadow:
+    9px 0 0 -0.5px color-mix(in srgb, var(--zzz-accent) 80%, transparent),
+    18px 0 0 -1.5px color-mix(in srgb, var(--zzz-accent) 55%, transparent),
+    27px 0 0 -0.5px color-mix(in srgb, var(--zzz-accent) 75%, transparent),
+    36px 0 0 -2px color-mix(in srgb, var(--zzz-accent) 45%, transparent);
+  animation: zzz-wave 0.9s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes zzz-wave {
+  0%, 100% { transform: scaleY(0.5); opacity: 0.7; }
+  50% { transform: scaleY(1.35); opacity: 1; }
+}
+
+/* ── §9.16 调查报告弹窗（v7.7）：设置弹窗 = 游戏内档案/报告 ──────────
+ * 游戏「调查报告/HDD 档案」纸感弹窗。宿主锚点：role=dialog（设置弹窗）——
+ * 顶部档案标签条（::before 内容条）+ 纸面横线底 + 角落机密章。
+ * v8.1 的粗描边硬影已在，本节加「档案化」叙事层。*/
+[role="dialog"] {
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0 26px, rgba(20, 20, 26, 0.045) 26px 27px) !important;
+  position: relative;
+}
+[role="dialog"]::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: -9px;
+  width: 84px;
+  height: 18px;
+  background:
+    repeating-linear-gradient(-45deg, var(--zzz-accent) 0 4px, var(--zzz-accent-soft) 4px 8px);
+  border: 1.5px solid #14141a;
+  transform: rotate(-1.6deg);
+  box-shadow: 2px 2px 0 #14141a;
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  z-index: 8;
+  pointer-events: none;
+}
+[role="dialog"]::after {
+  content: "CONFIDENTIAL";
+  position: absolute;
+  right: 18px;
+  bottom: 12px;
+  font-size: 8.5px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.3em;
+  color: rgba(242, 52, 58, 0.75);
+  border: 1.5px solid rgba(242, 52, 58, 0.75);
+  padding: 1px 6px;
+  transform: rotate(-4deg);
+  pointer-events: none;
+  z-index: 8;
+}

@@ -523,3 +523,15 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - **频道噪点帧（§9.11）**：切会话=电视换台雪花。载体 wSkVaW_root::after（::before=白闪，同载体双伪元素分工），SVG feTurbulence 噪点 + mix-blend screen + 260ms steps(2) 两帧横抖退场。实测 animationName=zzz-tv-static、blend=screen ✓
 - **DATA BANK 铭牌（§9.12）**：侧栏底部资料库贴纸（黑底黑描边+硬影+accent 微光+斜切+0.3em 宽字距+5s 呼吸），v3 ZENLESS 竖排水印的继任者。实测 content="DATA BANK"、animationName=zzz-databank ✓
 - 切会话现在是三连演出：白闪 → 噪点帧 → 景别推近。
+
+## v7.6 · 第七批游戏元素（2026-10-24 二十二轮）
+
+- **结算翻卡（§9.13）**：usage 费用卡 + cm-card hover 时 3D 翻面（perspective 700 rotateX -16°→+7° 回弹 640ms）。实测样式表 4 条 zzz-card-flip 规则注入 ✓
+- **Hollow 深潜进度条（§9.14）**：流式中（aria-busy）composer 上缘出现红色刻度轨道（::before 静态）+ 42% 宽渐变游标（::after zzz-deepdive 2.8s 往返推进）。注入 busy→cursor 动画挂载、移除→退场（afterIdle=none）✓
+- v7 系列十四件，七批全部真机实测。
+
+## v7.7 · 第八批游戏元素（2026-10-24 二十三轮）
+
+- **音波纹（§9.15）**：流式输出正文（data-streaming）底部 5 条错峰跳动声波竖条（accent 渐隐 box-shadow 阵列，0.9s scaleY 脉动）。注入实测 animationName=zzz-wave、bg=accent 色 ✓
+- **调查报告弹窗（§9.16）**：设置弹窗档案化——纸面横线底（27px repeating）+顶部 accent 斜纹档案标签条（旋转-1.6°贴纸）+右下红色 CONFIDENTIAL 机密章（旋转-4°）。真机打开设置弹窗实测三件全挂载 ✓
+- v7 系列十六件，八批全部真机实测。
