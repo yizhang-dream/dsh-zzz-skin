@@ -569,3 +569,11 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 - §9.16 档案标签条 top:-9px 探出弹窗被宿主容器裁半截 → 收进 top:6px
 - 实测验收：设置弹窗 9/10（纸底/导航清晰/值块白底墨边/无看不清区域）；「更多」菜单与「完全权限」下拉双验通过（纸白容器+黑片白字选项=ZZZ 对话选项语言）
 - 坑：账号菜单（更多）实测无 role=menu（class `_surface_ri079_1`），§5 的 [role=menu] 黑玻璃对它本就不匹配，容器纸白来自宿主令牌浅色档；CDP dispatchMouseEvent 坐标是 CSS px（又踩一次物理/CSS 混淆）
+
+## v8.3 · 菜单项 hover 钉色（2026-10-25 二十八轮）
+
+用户二次反馈精确定位：菜单黑片未 hover 正常，**hover 后白字变黑字**——§9.5 的 `color` 没打 `!important`（bg/border 打了），宿主浅色主题 hover 规则把字换成深字，而底被钉在黑片上 → 黑底黑字。同病灶两处：
+- `color` 常态+hover 全钉白（含子元素文字/快捷键）
+- svg 图标：宿主给 svg 硬设 `fill`（常态灰、hover 近黑，不走 currentColor）→ `[role="menuitem"] svg *` 统一钉浅灰白
+- hover `translateX(3px)` 被宿主 transform 盖掉 → 加 `!important`
+实测 hover 态：color 纯白 / fill 浅色 / matrix(…,3,0) 位移生效 / 黑片保持。

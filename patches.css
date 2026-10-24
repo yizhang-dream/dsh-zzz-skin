@@ -1714,14 +1714,30 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   background-color: rgba(18, 18, 22, 0.92) !important;
   border-left: 3px solid var(--zzz-accent) !important;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
-  color: #e8e8ec;
+  /* color 必须 !important：宿主 hover 规则会把字换成浅色主题深字，
+   * 底被我们的 !important 钉在黑片上 → hover 黑底黑字看不清 */
+  color: #e8e8ec !important;
   transition: transform 110ms var(--zzz-ease-snap, ease-out), background-color 110ms;
 }
 [role="menuitem"]:hover,
 [role="menuitem"]:focus-visible {
-  transform: translateX(3px);
+  transform: translateX(3px) !important;
   border-left-color: var(--zzz-accent-soft) !important;
   box-shadow: -3px 0 12px -2px color-mix(in srgb, var(--zzz-accent) 60%, transparent);
+  color: #ffffff !important;
+}
+/* 图标：宿主给 svg 硬设 fill（常态灰、hover 近黑），不走 currentColor——
+ * 统一钉浅色（含 hover），否则黑片上图标隐身 */
+[role="menuitem"] svg,
+[role="menuitem"] svg * {
+  fill: rgba(232, 232, 236, 0.82) !important;
+}
+/* 子元素文字/图标同理钉住（快捷键灰字保持自身灰阶：只钉 color 不动 kbd 类） */
+[role="menuitem"]:hover,
+[role="menuitem"]:hover span:not([class*="kbd"]):not([class*="Kbd"]),
+[role="menuitem"]:hover svg,
+[role="menuitem"]:focus-visible {
+  color: #ffffff !important;
 }
 
 /* ── §9.6 PRESS ANY KEY（v7.2）：hero 空态 = 主菜单启动提示 ──────────
