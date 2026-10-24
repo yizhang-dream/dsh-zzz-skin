@@ -546,3 +546,17 @@ npm 全量调研 9 款社区皮肤（蓝幻想/鲸吟/龙的传人/初音/MC/虎
 
 - **reduced-motion 全覆盖**：§9 全部动画载体（含邦布/转盘/HDD/音波纹/S 评级/扭蛋/地图纹等 9 组新载体）补进 §6 停用清单。真机 --force-prefers-reduced-motion 实测：邦布/转盘/HDD/音波纹/S 评级 animationName 全部=none ✓
 - **上架打包件齐**：preview/dark.jpg + light.jpg 双实拍入包（manifest 对齐）、LICENSE(MIT)、NOTICE（官方 key art 版权声明：归 HoYoverse、仅个人非商业、自绘图可自由使用）。
+
+## v8.0 · 亮色档重做（2026-10-24 二十六轮）
+
+用户反馈「浅色模式体验很差」。真 Chrome 实拍体检暴露六个根因，全部修复：
+
+- **color-mix 语法死规则（波及两档）**：39 处 `color-mix(in srgb, X N)` 缺 `%` 又缺第二色参——单色+百分比是无效语法，整条 background 声明被浏览器丢弃。§2 色洗、§2b 网点场从 v6.2 起就没渲染过（暗色下被壁纸遮住未暴露）。修复后色洗/网点在两档首次真正生效 ✓
+- **keyart 真身纠偏**：wallpaper-zzz-keyart.jpg 实为**六分街三人组白天群像插画**（非认知中的夜景），v5.8 以来的描述有误。亮色档顺势定方向「白纸漫画垫彩色印刷插画」，暗色档维持现状。
+- **壁纸印刷调（§10.11）**：白纱罩亮图=高光糊成一片（评分 4/10）。改走滤镜路线：`[data-dsh-skin-layer="background"] img { filter: saturate(.84) contrast(.97) brightness(1.02) }` + 轻纱 scrim（0.46 顶压暗带→0.10→0.26）+ hero 无 blur。四轮实拍迭代 4→6→7.5→**8.5/10 定稿** ✓
+- **载体冲突（§9.6）**：PRESS ANY KEY 与 §5 hero 角标共用 centerCol::before，被残留 `width/height:20px + inset` 压成 20px 列换行三行、钉在列顶。补 `inset:auto; width/height:auto; nowrap` 重置 ✓；亮色变体=墨字+白晕+accent 错位影+高下限闪烁（0.45 代替 0.12）；§6 补该载体 reduced-motion 停用（真机实测 none ✓）
+- **贴纸溢出裁切**：COMBO 牌 75px 宽塞不进 56px 侧栏轨道（左端裁成「MBO」）→ 8.5px 居中锚定；DATA BANK 横排 95px 改竖排（writing-mode: vertical-rl）✓
+- **输入卡与发送钮（§10.5/10.6）**：hero 输入真身是 `uV2eYG_card`，composer.bar 槽位 display:contents 零尺寸——§8.6 打在槽位上的描边全落空。直接打内容卡：白纸卡+墨描边+硬阴影；发送钮宿主暗色默认（12% 青底白箭头）亮色下隐形 → accent 实心+墨描边 ✓
+- **S 评级亮色变体（§9.2b）**：白字在纸上消失 → accent 实心+墨描边 ✓
+- COMMISSION 横幅补 nowrap（对话态被截断）✓；§10 全节：纸色画布/色洗/墨线纹理/墨点网点/hero 轻纸雾/空洞纹墨色变体。
+- 暗色回归（强制属性混合实测）：无渲染破相、贴纸完整、纹理在 ✓。preview/light.jpg 换 8.5 分实拍。

@@ -78,6 +78,14 @@ if (cmd === 'goto') {
   const out = args[0].match(/^[A-Za-z]:|^[/\\]/) ? args[0] : join(SHOTS, args[0]);
   writeFileSync(out, Buffer.from(m.result.data, 'base64'));
   console.log('saved', out);
+} else if (cmd === 'shotclip') {
+  // shotclip <name.png> <x> <y> <w> <h>  视口内裁剪截图（CSS px）
+  await send('Page.enable');
+  const [, x, y, w, h] = args;
+  const m = await send('Page.captureScreenshot', { format: 'png', clip: { x: +x, y: +y, width: +w, height: +h, scale: 1 } });
+  const out = args[0].match(/^[A-Za-z]:|^[/\\]/) ? args[0] : join(SHOTS, args[0]);
+  writeFileSync(out, Buffer.from(m.result.data, 'base64'));
+  console.log('saved', out);
 } else if (cmd === 'wait') {
   await sleep(+args[0]); console.log('waited');
 }

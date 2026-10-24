@@ -96,7 +96,7 @@ body::before {
     radial-gradient(52% 44% at 86% -6%, rgba(168, 60, 220, 0.34) 0%, transparent 64%),
     radial-gradient(30% 26% at 68% 0%, rgba(120, 40, 190, 0.18) 0%, transparent 70%),
     radial-gradient(50% 40% at 2% 106%, rgba(28, 160, 190, 0.30) 0%, transparent 66%),
-    radial-gradient(36% 26% at 80% 98%, color-mix(in srgb, var(--zzz-accent) 07) 0%, transparent 60%),
+    radial-gradient(36% 26% at 80% 98%, color-mix(in srgb, var(--zzz-accent) 07%, transparent) 0%, transparent 60%),
     radial-gradient(26% 22% at 14% 6%, rgba(190, 70, 235, 0.13) 0%, transparent 64%),
     radial-gradient(122% 94% at 50% 42%, transparent 38%, rgba(3, 4, 12, 0.50) 100%);
   animation: zzz-aura 22s ease-in-out infinite alternate;
@@ -147,8 +147,8 @@ body::after {
   pointer-events: none;
   background-image:
     /* 网点场·黄绿（右上，两档颗粒叠出网点渐变感） */
-    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 13) 1.3px, transparent 1.5px),
-    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 08) 2.2px, transparent 2.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 13%, transparent) 1.3px, transparent 1.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 08%, transparent) 2.2px, transparent 2.5px),
     /* 网点场·白（左下，更细更密，像远处网点屏） */
     radial-gradient(circle, rgba(255, 255, 255, 0.1) 1.1px, transparent 1.3px),
     /* 斜纹带·青 115° */
@@ -156,7 +156,7 @@ body::after {
     /* 斜纹带·品红紫 65°（反向交叠织出菱形网） */
     repeating-linear-gradient(65deg, rgba(190, 70, 235, 0.05) 0 2px, transparent 2px 34px),
     /* 警示斜纹·底缘（黄黑刀路，压到最低） */
-    repeating-linear-gradient(-45deg, color-mix(in srgb, var(--zzz-accent) 04) 0 9px, transparent 9px 38px);
+    repeating-linear-gradient(-45deg, color-mix(in srgb, var(--zzz-accent) 04%, transparent) 0 9px, transparent 9px 38px);
   background-size: 9px 9px, 22px 22px, 7px 7px, auto, auto, auto;
   background-position: 0 0, 11px 7px, 3px 2px, 0 0, 0 0, 0 100%;
   /* 中央挖空：30% 内纯画布（阅读区），52% 起渐显，82% 后全量 */
@@ -270,7 +270,7 @@ html::before {
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.04em;
-  color: color-mix(in srgb, var(--zzz-accent) 075);
+  color: color-mix(in srgb, var(--zzz-accent) 075%, transparent);
   transform: rotate(-90deg);
   transform-origin: left bottom;
   animation: zzz-watermark 24s ease-in-out infinite alternate;
@@ -372,8 +372,8 @@ pre code {
 
 /* P6 呼吸：运行中的东西边缘光起伏 */
 @keyframes zzz-breathe {
-  0%, 100% { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 34), 0 0 0 rgba(212, 207, 1, 0); }
-  50%      { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 72), 0 0 18px -4px color-mix(in srgb, var(--zzz-accent) 34); }
+  0%, 100% { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 34%, transparent), 0 0 0 rgba(212, 207, 1, 0); }
+  50%      { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 72%, transparent), 0 0 18px -4px color-mix(in srgb, var(--zzz-accent) 34%, transparent); }
 }
 
 /* P7 光标：实机选择框是方块闪，不是细线 */
@@ -412,7 +412,7 @@ html::after {
   z-index: 2147483001;
   pointer-events: none;
   background: #fff;
-  box-shadow: 0 0 22px 7px #fff, 0 0 64px 20px color-mix(in srgb, var(--zzz-accent) 45);
+  box-shadow: 0 0 22px 7px #fff, 0 0 64px 20px color-mix(in srgb, var(--zzz-accent) 45%, transparent);
   animation: zzz-power-line 600ms var(--zzz-ease-crt) 1 both;
 }
 
@@ -424,7 +424,7 @@ html::after {
   letter-spacing: -0.02em;
 }
 [data-slot="sidebar.brand.mark"] {
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--zzz-accent) 42));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--zzz-accent) 42%, transparent));
 }
 
 /* R1 选中反转：导航行选中 = 实心黄绿 + 黑字（设置页 Input 胶囊） */
@@ -452,7 +452,7 @@ html::after {
 [data-dsh-part="entry"][data-active="true"] {
   background-color: var(--zzz-accent);
   color: var(--zzz-ink);
-  box-shadow: 0 0 22px -6px color-mix(in srgb, var(--zzz-accent) 7);
+  box-shadow: 0 0 22px -6px color-mix(in srgb, var(--zzz-accent) 7%, transparent);
 }
 [data-dsh-part="sidebar-entry"][aria-current] *,
 [data-dsh-part="entry"][aria-current] * {
@@ -515,7 +515,7 @@ html::after {
 [data-dsh-part="new-session"]:hover {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    0 8px 28px -8px color-mix(in srgb, var(--zzz-accent) 95);
+    0 8px 28px -8px color-mix(in srgb, var(--zzz-accent) 95%, transparent);
 }
 [data-dsh-part="new-session"]:active {
   transform: scale(0.975);
@@ -637,7 +637,7 @@ html::after {
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.05em;
-  color: color-mix(in srgb, var(--zzz-accent) 04);
+  color: color-mix(in srgb, var(--zzz-accent) 04%, transparent);
 }
 
 /* 右侧详情栏：和主区同一块面板，左侧一条灰线 */
@@ -791,7 +791,7 @@ button[aria-label*="删除"]:active {
   z-index: -1;
   border-radius: inherit;
   background: inherit;
-  border: 1px solid color-mix(in srgb, var(--zzz-accent) 28);
+  border: 1px solid color-mix(in srgb, var(--zzz-accent) 28%, transparent);
   transform: translate(22px, -10px) scale(0.985);
   filter: blur(2px);
   opacity: 0.4;
@@ -874,7 +874,7 @@ button[aria-label*="删除"]:active {
 [data-dsh-surface="settings"] nav button[aria-current="true"] {
   background-color: var(--zzz-accent);
   color: var(--zzz-ink);
-  box-shadow: 0 0 22px -6px color-mix(in srgb, var(--zzz-accent) 7);
+  box-shadow: 0 0 22px -6px color-mix(in srgb, var(--zzz-accent) 7%, transparent);
 }
 [data-dsh-surface="settings"] nav button[aria-current="true"] * {
   color: var(--zzz-ink);
@@ -935,7 +935,7 @@ button[aria-label*="删除"]:active {
 [data-dsh-surface="settings"] [class*="_themeCube"][aria-pressed="true"] {
   border-color: var(--zzz-accent);
   color: var(--zzz-accent);
-  background-color: color-mix(in srgb, var(--zzz-accent) 10);
+  background-color: color-mix(in srgb, var(--zzz-accent) 10%, transparent);
   box-shadow: 0 0 20px -8px color-mix(in srgb, var(--zzz-accent) 80%, transparent);
 }
 
@@ -1040,8 +1040,8 @@ button[aria-label*="删除"]:active {
 [class*="_avatar"],
 [class*="_avatarButton"] {
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--zzz-accent) 45),
-    0 0 14px -4px color-mix(in srgb, var(--zzz-accent) 5);
+    0 0 0 1px color-mix(in srgb, var(--zzz-accent) 45%, transparent),
+    0 0 14px -4px color-mix(in srgb, var(--zzz-accent) 5%, transparent);
 }
 
 /* ── 5.3e 一致性收口：所有标签栏/复选框/统计卡统一到一套语言 ─────────
@@ -1177,7 +1177,7 @@ input[type="checkbox"]:checked::after {
 [data-dsh-surface="settings"] input:focus-visible {
   outline: none;
   border-color: var(--zzz-accent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 35);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 35%, transparent);
 }
 
 /* 卡片标题：粗斜体（实机每张卡都有一个这样的名字牌） */
@@ -1227,7 +1227,7 @@ input[type="checkbox"]:checked::after {
 [data-dsh-surface="conversation"] [aria-busy="true"] {
   border-radius: 10px;
   /* 静态环先给一个保底，呼吸动画在此基础上起伏 */
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 45);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 45%, transparent);
   animation: zzz-breathe 2.2s ease-in-out infinite;
 }
 /* 完成的工具卡：中性细环，和运行中的黄环区分开 */
@@ -1277,8 +1277,8 @@ input[type="checkbox"]:checked::after {
   transition: background-color 140ms ease, box-shadow 140ms ease;
 }
 [data-dsh-part="resize-handle"]:hover {
-  background-color: color-mix(in srgb, var(--zzz-accent) 5);
-  box-shadow: 0 0 14px -2px color-mix(in srgb, var(--zzz-accent) 7);
+  background-color: color-mix(in srgb, var(--zzz-accent) 5%, transparent);
+  box-shadow: 0 0 14px -2px color-mix(in srgb, var(--zzz-accent) 7%, transparent);
 }
 
 /* ── 5.7 第三方插件着色对齐 ───────────────────────────────────────── */
@@ -1419,10 +1419,13 @@ input[type="checkbox"]:checked::after {
   [data-dsh-surface="conversation"] [data-state="running"],
   [data-dsh-surface="conversation"] [aria-busy="true"] {
     animation: none !important;
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 5);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--zzz-accent) 5%, transparent);
   }
   .pI_x6G_centerCol::after, [data-pane="conversation"]::after,
   [data-slot="conversation.header"]::after { animation: none, none !important; opacity: 0; }
+  /* PRESS ANY KEY 载体（§9.6/§10.7，steps 闪烁必须停） */
+  .pI_x6G_centerCol:has([data-phase="hero"])::before,
+  [data-pane="conversation"]:has([data-phase="hero"])::before { animation: none !important; opacity: 1; }
   html::after { display: none; }
 }
 
@@ -1631,6 +1634,13 @@ body:not([data-ds-dark-theme]) pre code {
   78%  { opacity: 1; }
   100% { opacity: 0; transform: scale(0.92) translateY(10px) rotate(-6deg); }
 }
+/* 亮色档：白字在纸底上会消失——换成 accent 实心 + 墨描边 */
+body:not([data-ds-dark-theme]) [data-pane="conversation"]:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"]))::after,
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"]))::after {
+  color: var(--zzz-accent);
+  -webkit-text-stroke: 3px #14141a;
+  text-shadow: 5px 5px 0 rgba(20, 20, 26, 0.55);
+}
 
 /* ── §9.3 邦布 loading（v7.1）：流式等待 = 邦布探头待机 ─────────────
  * 纯 CSS 程序绘制：胶囊身体 + 两只耳朵 + 眼睛，挂在 turn-tail（等待首字）。
@@ -1673,28 +1683,28 @@ body:not([data-ds-dark-theme]) pre code {
 [data-slot="sidebar.workspaces"]::after {
   content: "COMBO";
   position: absolute;
-  right: 10px;
+  /* 侧栏轨道仅 56px 宽：老版 13px 字号的牌子约 75px 宽，右锚后左端溢出视口
+   * 被裁成「MBO」——缩到 8.5px 居中锚定，整体收进轨道内。 */
+  right: 50%;
   top: 8px;
-  font-size: 13px;
+  transform: translateX(50%) rotate(-2deg);
+  font-size: 8.5px;
   font-weight: 900;
   font-style: italic;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   color: #14141a;
   background: repeating-linear-gradient(-45deg, var(--zzz-accent) 0 5px, var(--zzz-accent-soft) 5px 10px);
   border: 1.5px solid #14141a;
-  padding: 1px 8px;
-  transform: rotate(-3deg);
+  padding: 1px 5px;
   box-shadow: 1.5px 1.5px 0 #14141a;
   animation: zzz-combo-pulse 2.2s ease-in-out infinite;
   pointer-events: none;
 }
 @keyframes zzz-combo-pulse {
-  0%, 100% { transform: rotate(-3deg) scale(1); }
-  12% { transform: rotate(-2deg) scale(1.12); }
-  24% { transform: rotate(-3deg) scale(1); }
+  0%, 100% { transform: translateX(50%) rotate(-3deg) scale(1); }
+  12% { transform: translateX(50%) rotate(-2deg) scale(1.12); }
+  24% { transform: translateX(50%) rotate(-3deg) scale(1); }
 }
-[data-dsh-surface="conversation"]:has([aria-busy="true"]) ~ * [data-slot="sidebar.workspaces"]::after,
-[data-dsh-part="queue-dock"] ~ * {}
 
 /* ── §9.5 对话选项斜切框（v7.2）：弹层菜单选项 = 剧情对话选项 ──────
  * 游戏 NPC 对话的选项是黑底斜切框 + 左缘色条 + 序号感。宿主锚点：role=menuitem
@@ -1721,6 +1731,12 @@ body:not([data-ds-dark-theme]) pre code {
 [data-pane="conversation"]:has([data-phase="hero"])::before {
   content: "PRESS ANY KEY";
   position: absolute;
+  /* §5 的 hero 角标装饰在同一伪元素上留了 width/height:20px + top:auto，
+   * 不重置的话文字被压进 20px 列换行成三行、钉在列顶——inset:auto 全清。 */
+  inset: auto;
+  width: auto;
+  height: auto;
+  white-space: nowrap;
   left: 50%;
   bottom: 108px;
   transform: translateX(-50%) rotate(-1.2deg);
@@ -1823,6 +1839,7 @@ body:not([data-ds-dark-theme]) pre code {
   left: 12px;
   top: 50%;
   z-index: 5;
+  white-space: nowrap;
   transform: translateY(-50%) rotate(-1.5deg);
   padding: 2px 14px;
   font-size: 10.5px;
@@ -1873,20 +1890,22 @@ body:not([data-ds-dark-theme]) pre code {
 [data-pane="sidebar"]::after {
   content: "DATA BANK";
   position: absolute;
+  /* 56px 轨道放不下横排（老版 95px 宽左右各溢出 ~20px 被裁成「BATA」）；
+   * 竖排沿轨道向下，宽度 ~22px 收进栏内。 */
   left: 50%;
-  bottom: 42px;
-  transform: translateX(-50%) rotate(-1.5deg);
+  bottom: 46px;
+  transform: translateX(-50%);
+  writing-mode: vertical-rl;
   z-index: 2;
-  padding: 2px 12px;
-  font-size: 9.5px;
+  padding: 8px 2px;
+  font-size: 8.5px;
   font-weight: 900;
   font-style: italic;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.26em;
   color: #e8e8ec;
   background: rgba(16, 16, 22, 0.82);
   border: 1.5px solid #14141a;
   box-shadow: 2px 2px 0 rgba(20, 20, 26, 0.75), 0 0 14px -2px color-mix(in srgb, var(--zzz-accent) 45%, transparent);
-  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
   animation: zzz-databank 5s ease-in-out infinite;
   pointer-events: none;
 }
@@ -2077,4 +2096,123 @@ body:not([data-ds-dark-theme]) pre code {
 @keyframes zzz-hollow-scan {
   from { transform: translateY(-4%); }
   to   { transform: translateY(4%); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+ * §10 亮色档重做（v8.0，2026-10-24）——「白纸漫画」从外壳打到内容层
+ *
+ * 亮色体检（真 Chrome 实拍）暴露的根因：
+ *   a. skin.json light scrim 是暗藏青 rgba(8,9,22,…)——亮色界面等于盖深色滤镜，
+ *      左下角整块读成实心藏青（已改 skin.json 为纸白罩纱，本节不再处理）。
+ *   b. §2 色洗/网点场的 color-mix 百分号缺失导致整条 background 被丢——
+ *      已修（07→7% 等 24 处），本节给亮色配纸色系变体。
+ *   c. hero 输入卡 uV2eYG_card（composer.bar 槽位是 display:contents，
+ *      §8.6 打在槽位上的描边全部落空）——本节直接打内容卡。
+ *   d. 发送按钮=宿主暗色默认（12% 青底+白箭头），亮色下隐形。
+ * 档位判定：body 无 [data-ds-dark-theme]。
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* 10.1 画布与色洗：暗藏青画布 → 暖纸底；色洗换纸色系（米黄+淡青+accent 渗色） */
+html:has(body:not([data-ds-dark-theme])) {
+  background-color: #f4f2ea;
+}
+body:not([data-ds-dark-theme])::before {
+  background:
+    radial-gradient(52% 44% at 86% -6%, rgba(233, 216, 160, 0.34) 0%, transparent 64%),
+    radial-gradient(50% 40% at 2% 106%, rgba(184, 224, 228, 0.36) 0%, transparent 66%),
+    radial-gradient(36% 26% at 80% 98%, color-mix(in srgb, var(--zzz-accent) 16%, transparent) 0%, transparent 60%),
+    radial-gradient(26% 22% at 14% 6%, rgba(226, 210, 176, 0.22) 0%, transparent 64%),
+    radial-gradient(122% 94% at 50% 42%, transparent 55%, rgba(255, 255, 251, 0.35) 100%);
+}
+/* 10.2 屏幕微纹理：白线在纸底上不可见 → 换极淡墨线（噪点层共用） */
+body:not([data-ds-dark-theme])::after {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(20, 20, 26, 0.030) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(-45deg, rgba(20, 20, 26, 0.024) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(to bottom, rgba(20, 20, 26, 0.028) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
+}
+/* 10.3 网点场：暗色档的黄绿+白网点 → 亮色档的黄绿+墨点（印刷网点感，把壁纸按进纸里） */
+body:not([data-ds-dark-theme]) [data-dsh-frame]::before,
+body:not([data-ds-dark-theme]) .pI_x6G_frame::before {
+  background-image:
+    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 14%, transparent) 1.5px, transparent 1.7px),
+    radial-gradient(circle, color-mix(in srgb, var(--zzz-accent) 9%, transparent) 2.6px, transparent 2.9px),
+    radial-gradient(circle, rgba(20, 20, 26, 0.17) 1.2px, transparent 1.4px);
+}
+
+/* 10.4 hero 空态画布：§5 的 hero 暗雾 rgba(10,10,12,.45) → 轻纸雾（罩纱三层
+ *     叠加会漂白壁纸：skin.json scrim + 本节纸雾 + §10.1 白晕，此处压到最轻） */
+body:not([data-ds-dark-theme]) [data-pane="conversation"]:has([data-phase="hero"]),
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-phase="hero"]) {
+  background-color: rgba(250, 250, 246, 0.15);
+}
+body:not([data-ds-dark-theme]) [data-pane="conversation"]:has([data-phase="hero"])::before,
+body:not([data-ds-dark-theme]) [data-pane="conversation"]:has([data-phase="hero"])::after,
+body:not([data-ds-dark-theme]) [data-pane="conversation"]:has([data-phase="hero"]),
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-phase="hero"]) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* 10.5 输入内容卡（hero 与常驻同载体）：白纸卡 + 墨描边 + 硬阴影
+ *     注：composer.bar 槽位本身 display:contents 零尺寸，必须打内部 _card */
+body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] [class*="_card"] {
+  border: 2px solid #14141a !important;
+  border-radius: 10px !important;
+  background-color: #fffef9 !important;
+  box-shadow: 4px 4px 0 rgba(16, 16, 22, 0.85) !important;
+}
+
+/* 10.6 发送按钮：宿主暗色默认（12% 青底+白箭头）亮色下隐形 → accent 实心+墨描边 */
+body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] [class*="_card"] [class*="_primary"] {
+  background-color: var(--zzz-accent) !important;
+  border: 2px solid #14141a !important;
+  color: #14141a !important;
+  box-shadow: 2px 2px 0 #14141a !important;
+  border-radius: 8px !important;
+}
+body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] [class*="_card"] [class*="_primary"]:not(:disabled):hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #14141a !important;
+}
+
+/* 10.7 PRESS ANY KEY：亮色档浅灰浮雕不可读 → 墨字 + accent 错位影（印刷套版偏移） */
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-phase="hero"])::before,
+body:not([data-ds-dark-theme]) [data-pane="conversation"]:has([data-phase="hero"])::before {
+  color: #14141a;
+  -webkit-text-stroke: 0;
+  text-shadow:
+    -1px -1px 0 rgba(255, 255, 251, 0.9), 1px -1px 0 rgba(255, 255, 251, 0.9),
+    -1px 1px 0 rgba(255, 255, 251, 0.9), 1px 1px 0 rgba(255, 255, 251, 0.9),
+    2px 2px 0 color-mix(in srgb, var(--zzz-accent) 60%, #ffffff);
+  /* 亮色下 0.12 暗相位=整段消失，换高下限闪烁 */
+  animation: zzz-press-key-light 1.6s steps(2) infinite;
+}
+@keyframes zzz-press-key-light {
+  0%, 54% { opacity: 1; }
+  55%, 100% { opacity: 0.45; }
+}
+
+/* 10.8 DATA BANK 铭牌亮色变体：黑底贴纸 → 纸底墨字贴纸 */
+body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol::after,
+body:not([data-ds-dark-theme]) [data-pane="sidebar"]::after {
+  color: #14141a;
+  background: rgba(255, 254, 248, 0.94);
+  box-shadow: 2px 2px 0 rgba(20, 20, 26, 0.8), 0 0 12px -2px color-mix(in srgb, var(--zzz-accent) 55%, transparent);
+}
+
+/* 10.9 hero 角标（§5 conversation::before/::after 角括号）：accent 在纸底上保留 */
+/* 10.10 空洞监测纹亮色：蓝紫等高线在纸底发灰 → 换墨色等高线 */
+body:not([data-ds-dark-theme]) [data-slot="sidebar.panellist"]::after {
+  background-image:
+    repeating-radial-gradient(circle 90px at 30% 20%, transparent 0 34px, rgba(20, 20, 26, 0.075) 34px 35px, transparent 35px 68px, rgba(20, 20, 26, 0.05) 68px 69px),
+    repeating-radial-gradient(circle 110px at 78% 65%, transparent 0 40px, rgba(90, 70, 130, 0.09) 40px 41px, transparent 41px 80px, rgba(90, 70, 130, 0.06) 80px 81px);
+}
+
+/* 10.11 壁纸印刷调（v8.1）：实测 keyart 是明亮的六分街群像插画（非夜景），
+ *     白纱罩亮图=高光糊成一片。改走「印刷调」：滤镜降饱和微提亮，scrim 只留轻纱
+ *     （skin.json 0.12/0.36）。背景层有稳定锚点 data-dsh-skin-layer。 */
+body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
+  filter: saturate(0.84) contrast(0.97) brightness(1.02);
 }

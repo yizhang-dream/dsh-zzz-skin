@@ -18,7 +18,7 @@
   ],
   "accent": "#FFD84D",
   "order": 10,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "preview": {
     "light": "preview/light.jpg",
@@ -36,7 +36,7 @@
       "light": {
         "type": "image",
         "src": "assets/wallpaper-zzz-keyart.jpg",
-        "scrim": "linear-gradient(180deg, rgba(250, 250, 246, 0.55) 0%, rgba(250, 250, 246, 0.72) 100%)"
+        "scrim": "linear-gradient(180deg, rgba(250, 250, 246, 0.46) 0%, rgba(250, 250, 246, 0.10) 16%, rgba(250, 250, 246, 0.26) 100%)"
       }
     }
   }
