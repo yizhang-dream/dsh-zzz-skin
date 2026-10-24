@@ -2008,7 +2008,8 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   content: "";
   position: absolute;
   left: 14px;
-  top: -9px;
+  /* top:-9px 探出弹窗会被宿主弹层容器裁成半截，收进弹窗内上缘保住贴纸感 */
+  top: 6px;
   width: 84px;
   height: 18px;
   background:
@@ -2215,4 +2216,46 @@ body:not([data-ds-dark-theme]) [data-slot="sidebar.panellist"]::after {
  *     （skin.json 0.12/0.36）。背景层有稳定锚点 data-dsh-skin-layer。 */
 body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
   filter: saturate(0.84) contrast(0.97) brightness(1.02);
+}
+
+/* 10.12 设置弹窗/弹层亮色重涂（v8.2，2026-10-24）——「更多/设置发黑看不清」
+ *     根源：§3/§5 给弹窗(0.88)/菜单(0.9)/左导航(#070709)/值块(黑0.5)/输入(黑0.45)
+ *     全套硬编码暗色玻璃，浅色档从未覆盖；文字却已切浅色深字 → 深字压深底。
+ *     本节只重涂底色系（描边/硬影由 §8.1 黑边继续提供，accent 选中反转两档通吃）。 */
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"],
+body:not([data-ds-dark-theme]) [role="dialog"] {
+  background-color: rgba(251, 249, 244, 0.97);
+  backdrop-filter: blur(14px) saturate(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+}
+body:not([data-ds-dark-theme]) [role="menu"] {
+  background-color: rgba(251, 249, 244, 0.97);
+}
+/* 设置左导航：黑底列 → 透明（弹窗纸底直通）；hover 白雾 → 墨雾 */
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] nav {
+  background-color: transparent;
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] nav button[type="button"]:hover {
+  background-color: rgba(26, 26, 30, 0.06);
+}
+/* 值块/下拉/输入/主题卡：半黑底白细边 → 白底墨细边（hover accent 规则保留生效） */
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_selector"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]),
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_themeCube"] {
+  background-color: #ffffff;
+  border-color: rgba(26, 26, 30, 0.30);
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] input[type="text"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] input[type="search"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] input:not([type]) {
+  background-color: #ffffff;
+  border-color: rgba(26, 26, 30, 0.26);
+}
+/* 设置 tab / 侧栏条目：白雾 hover 在纸上不可见 → 墨雾 */
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_tab"]:not([class*="tabs"]):hover {
+  background-color: rgba(26, 26, 30, 0.06);
+}
+body:not([data-ds-dark-theme]) [data-dsh-part="sidebar-entry"]:hover,
+body:not([data-ds-dark-theme]) [data-dsh-part="entry"]:hover {
+  background-color: rgba(26, 26, 30, 0.06);
 }
