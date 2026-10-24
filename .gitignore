@@ -1,3 +1,8 @@
-node_modules/
-*.log
+demo-record/
+demo-ending/
+video-work/frames/
+video-work/*.jpg
+video-work/*.mp4
+video-work/*.mp3
+bili-cat.log
 tools/cdp-profile/
