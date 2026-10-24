@@ -1,0 +1,49 @@
+{
+  "skinManifestVersion": 2,
+  "id": "zzz-zenless-sixth-street",
+  "name": "新艾利都 · 六分街",
+  "nameEn": "New Eridu · Sixth Street",
+  "author": "flower-moon",
+  "tagline": "录像带店开业 · 青绿×橙 · 六分街日常",
+  "description": "铃与哲的录像带店开张场景，青绿街巷 × 橙黄点缀，纸箱与邦布的六分街生活流。（新艾利都版本主题系列：knock-knock 对话、绳网流式面板、十八件游戏动效、明暗双档全保留，强调色随版本。）",
+  "tags": [
+    "zenless",
+    "zzz",
+    "game",
+    "dark",
+    "light",
+    "crt",
+    "motion",
+    "comic",
+    "hoyoverse",
+    "version-theme",
+    "themes"
+  ],
+  "accent": "#f58a1f",
+  "order": 22,
+  "version": "8.3.0",
+  "license": "MIT",
+  "licenseUrl": "https://opensource.org/licenses/MIT",
+  "sourceUrl": "https://github.com/zhu1090093659/dsh-skins/tree/main/skins/zzz-zenless",
+  "attribution": "皮肤代码与设计：flower-moon（MIT）。壁纸素材：《绝区零》(Zenless Zone Zero) 官方主视觉插画（六分街 · 狡兔屋），© miHoYo / HoYoverse；登场角色：妮可·德玛拉 (Nicole Demara)、安比·德玛拉 (Anby Demara)、比利·奇德 (Billy Kid) 与邦布 (Bangboo)，均出自《绝区零》。该插画以非商业同人形式使用，本皮肤与 miHoYo / HoYoverse 无隶属、合作或授权关系。",
+  "preview": {
+    "light": "preview/light.jpg",
+    "dark": "preview/dark.jpg"
+  },
+  "contributes": {
+    "stylesheet": "skin.css",
+    "patches": "patches.css",
+    "backgroundMedia": {
+      "dark": {
+        "type": "image",
+        "src": "assets/wallpaper-sixth-street.jpg",
+        "scrim": "linear-gradient(180deg, rgba(18, 32, 31, 0.06) 0%, rgba(18, 32, 31, 0.1) 60%, rgba(18, 32, 31, 0.22) 100%)"
+      },
+      "light": {
+        "type": "image",
+        "src": "assets/wallpaper-sixth-street.jpg",
+        "scrim": "linear-gradient(180deg, rgba(242, 244, 236, 0.08) 0%, rgba(242, 244, 236, 0.02) 16%, rgba(242, 244, 236, 0.12) 100%)"
+      }
+    }
+  }
+}

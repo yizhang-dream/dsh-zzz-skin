@@ -1,0 +1,49 @@
+{
+  "skinManifestVersion": 2,
+  "id": "zzz-zenless-outer-ring",
+  "name": "新艾利都 · 外环落日",
+  "nameEn": "New Eridu · Outer Ring Sunset",
+  "author": "flower-moon",
+  "tagline": "外环漫游 · 落日橙金×红绸 · 壁画平涂风",
+  "description": "外环荒原的落日壁画：橙金夕照 × 红绸点缀，平涂质感与星芒太阳，机车与邦布同行。（新艾利都版本主题系列：knock-knock 对话、绳网流式面板、十八件游戏动效、明暗双档全保留，强调色随版本。）",
+  "tags": [
+    "zenless",
+    "zzz",
+    "game",
+    "dark",
+    "light",
+    "crt",
+    "motion",
+    "comic",
+    "hoyoverse",
+    "version-theme",
+    "themes"
+  ],
+  "accent": "#e8862a",
+  "order": 25,
+  "version": "8.3.0",
+  "license": "MIT",
+  "licenseUrl": "https://opensource.org/licenses/MIT",
+  "sourceUrl": "https://github.com/zhu1090093659/dsh-skins/tree/main/skins/zzz-zenless",
+  "attribution": "皮肤代码与设计：flower-moon（MIT）。壁纸素材：《绝区零》(Zenless Zone Zero) 官方主视觉插画（六分街 · 狡兔屋），© miHoYo / HoYoverse；登场角色：妮可·德玛拉 (Nicole Demara)、安比·德玛拉 (Anby Demara)、比利·奇德 (Billy Kid) 与邦布 (Bangboo)，均出自《绝区零》。该插画以非商业同人形式使用，本皮肤与 miHoYo / HoYoverse 无隶属、合作或授权关系。",
+  "preview": {
+    "light": "preview/light.jpg",
+    "dark": "preview/dark.jpg"
+  },
+  "contributes": {
+    "stylesheet": "skin.css",
+    "patches": "patches.css",
+    "backgroundMedia": {
+      "dark": {
+        "type": "image",
+        "src": "assets/wallpaper-outer-ring.jpg",
+        "scrim": "linear-gradient(180deg, rgba(36, 26, 20, 0.06) 0%, rgba(36, 26, 20, 0.1) 60%, rgba(36, 26, 20, 0.22) 100%)"
+      },
+      "light": {
+        "type": "image",
+        "src": "assets/wallpaper-outer-ring.jpg",
+        "scrim": "linear-gradient(180deg, rgba(248, 242, 232, 0.08) 0%, rgba(248, 242, 232, 0.02) 16%, rgba(248, 242, 232, 0.12) 100%)"
+      }
+    }
+  }
+}

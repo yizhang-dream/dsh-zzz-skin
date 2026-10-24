@@ -180,7 +180,7 @@ body::after {
   writing-mode: vertical-rl;
   font-size: clamp(64px, 8vw, 108px);
   line-height: 1;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.06em;
   color: transparent;
@@ -267,7 +267,7 @@ html::before {
   pointer-events: none;
   font-size: 96px;
   line-height: 0.82;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: -0.04em;
   color: color-mix(in srgb, var(--zzz-accent) 075%, transparent);
@@ -419,7 +419,7 @@ html::after {
 /* ── 5.1 侧栏 ──────────────────────────────────────────────────────── */
 /* 品牌字：粗斜体 + 收紧字距（实机标题字形） */
 [data-slot="sidebar.brand.name"] {
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: -0.02em;
 }
@@ -432,7 +432,7 @@ html::after {
 [data-dsh-part="entry"] {
   border-radius: 10px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
   letter-spacing: -0.01em;
   transition:
     background-color 110ms var(--zzz-ease-hard),
@@ -487,7 +487,7 @@ html::after {
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--zzz-ink) !important;
   font-style: italic;
-  font-weight: 800;
+  font-weight: 800 !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     0 6px 20px -8px color-mix(in srgb, var(--zzz-accent) 80%, transparent);
@@ -634,7 +634,7 @@ html::after {
   pointer-events: none;
   font-size: 132px;
   line-height: 1;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: -0.05em;
   color: color-mix(in srgb, var(--zzz-accent) 04%, transparent);
@@ -742,7 +742,7 @@ button[aria-label*="删除"]:active {
 [data-dsh-surface="conversation"] button[class*="_title"],
 [data-dsh-surface="conversation"] [class*="_toolName"] {
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
   letter-spacing: -0.005em;
 }
 [data-dsh-surface="conversation"] button[class*="_root"][class*="l_V-RG"] span {
@@ -819,7 +819,7 @@ button[aria-label*="删除"]:active {
 /* 标签页：黄绿滑块 */
 [role="tab"] {
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
   transition: color 110ms var(--zzz-ease-hard);
 }
 [role="tab"][aria-selected="true"] {
@@ -862,7 +862,7 @@ button[aria-label*="删除"]:active {
   padding: 0 12px;
   border-radius: 10px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
   letter-spacing: -0.01em;
   transition: background-color 110ms var(--zzz-ease-hard), color 110ms var(--zzz-ease-hard);
 }
@@ -886,7 +886,7 @@ button[aria-label*="删除"]:active {
 [data-dsh-surface="settings"] nav > div:first-child {
   padding: 4px 12px 10px;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: -0.02em;
 }
@@ -910,7 +910,7 @@ button[aria-label*="删除"]:active {
 /* 行/组的标题：加粗（实机设置行标题是粗体） */
 [data-dsh-surface="settings"] [class*="_row"] > :first-child,
 [data-dsh-surface="settings"] [class*="_group"] > :first-child {
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 /* 控件：深色描边胶囊（实机设置页右侧那些下拉与分段键） */
@@ -919,7 +919,7 @@ button[aria-label*="删除"]:active {
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
   transition: border-color 120ms ease, color 120ms ease;
 }
 [data-dsh-surface="settings"] [class*="_selector"]:hover {
@@ -930,7 +930,7 @@ button[aria-label*="删除"]:active {
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 [data-dsh-surface="settings"] [class*="_themeCube"][aria-pressed="true"] {
   border-color: var(--zzz-accent);
@@ -954,7 +954,7 @@ button[aria-label*="删除"]:active {
   padding: 0 10px;
   white-space: nowrap;
   font-style: italic;
-  font-weight: 600;
+  font-weight: 600 !important;
   line-height: 1;
   transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
 }
@@ -978,7 +978,7 @@ button[aria-label*="删除"]:active {
   border-radius: 8px;
   padding: 4px 10px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
   transition: background-color 110ms var(--zzz-ease-hard), color 110ms var(--zzz-ease-hard);
 }
 [data-dsh-surface="settings"] [class*="_tab"]:not([class*="tabs"]):hover {
@@ -1006,7 +1006,7 @@ button[aria-label*="删除"]:active {
 [data-dsh-surface="settings"] [class*="_card"] h3,
 [data-dsh-surface="settings"] [class*="_card"] h4 {
   font-style: italic;
-  font-weight: 800;
+  font-weight: 800 !important;
 }
 
 /* 设置/市场顶栏：一条细底边 + 薄雾，和主菜单顶部资源条同一语汇 */
@@ -1033,7 +1033,7 @@ button[aria-label*="删除"]:active {
   padding: 0 8px;
   color: var(--zzz-accent);
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 /* 3. 圆形槽位 / 头像：选中环用黄绿（实机驱动盘槽位） */
@@ -1094,7 +1094,7 @@ input[type="checkbox"]:checked::after {
 [data-dsh-surface="settings"] [class*="_card"] h3,
 [data-dsh-surface="settings"] h3 {
   font-style: italic;
-  font-weight: 800;
+  font-weight: 800 !important;
   letter-spacing: -0.01em;
 }
 
@@ -1158,7 +1158,7 @@ input[type="checkbox"]:checked::after {
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
   transition: border-color 120ms ease, color 120ms ease;
 }
 [data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]):hover {
@@ -1184,7 +1184,7 @@ input[type="checkbox"]:checked::after {
 [data-dsh-surface="settings"] [class*="_name"],
 [data-dsh-surface="settings"] [class*="_cardTitle"] {
   font-style: italic;
-  font-weight: 800;
+  font-weight: 800 !important;
   letter-spacing: -0.01em;
 }
 
@@ -1202,14 +1202,14 @@ input[type="checkbox"]:checked::after {
 }
 [data-pane="conversation"] [class*="_panelTitle"] {
   font-style: italic;
-  font-weight: 800;
+  font-weight: 800 !important;
   letter-spacing: -0.01em;
 }
 [data-pane="conversation"] [class*="_ghostButton"] {
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   font-style: italic;
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 [data-pane="conversation"] [class*="_ghostButton"]:hover {
   border-color: var(--zzz-accent);
@@ -1313,7 +1313,7 @@ input[type="checkbox"]:checked::after {
   border-radius: 999px;
   padding: 0 8px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 700 !important;
 }
 
 /* 3. 工坊预览链接：长春花紫 #9e9eff → 青（链接族） */
@@ -1521,7 +1521,7 @@ button[class*="primary"],
 [data-slot="sidebar.workspaces"] > div:first-child::before {
   content: "// ";
   color: inherit;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
 }
 
@@ -1537,12 +1537,17 @@ button[class*="primary"],
 /* 8.6 亮色档 = 白纸漫画（白底黑描边 lime 点缀，不是暗玻璃的浅色版） */
 body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
 body:not([data-ds-dark-theme]) [data-pane="conversation"] {
-  background-color: rgba(250, 250, 246, 0.82);
+  /* 2026-10-25 用户裁定：亮色档壁纸明显可见——纸面 0.82→0.62 + 6px 磨砂保正文可读 */
+  background-color: rgba(250, 250, 246, 0.62);
+  backdrop-filter: blur(6px) saturate(1.02);
+  -webkit-backdrop-filter: blur(6px) saturate(1.02);
   border-left: 2px solid #14141a;
 }
 body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol,
 body:not([data-ds-dark-theme]) [data-pane="sidebar"] {
-  background-color: rgba(250, 250, 246, 0.88);
+  background-color: rgba(250, 250, 246, 0.70);
+  backdrop-filter: blur(6px) saturate(1.02);
+  -webkit-backdrop-filter: blur(6px) saturate(1.02);
   border-right: 2px solid #14141a;
 }
 body:not([data-ds-dark-theme]) [data-dsh-part="message-body"],
@@ -1590,7 +1595,7 @@ body:not([data-ds-dark-theme]) pre code {
   transform: translateY(-50%);
   padding: 2px 12px 2px 30px;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.12em;
   color: #ff5b62;
@@ -1617,7 +1622,7 @@ body:not([data-ds-dark-theme]) pre code {
   z-index: 5;
   font-size: 88px;
   line-height: 1;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   color: #f7f7fa;
   -webkit-text-stroke: 3px #14141a;
@@ -1689,7 +1694,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   top: 8px;
   transform: translateX(50%) rotate(-2deg);
   font-size: 8.5px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.04em;
   color: #14141a;
@@ -1758,7 +1763,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   transform: translateX(-50%) rotate(-1.2deg);
   z-index: 4;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.32em;
   color: #e8e8ec;
@@ -1859,7 +1864,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   transform: translateY(-50%) rotate(-1.5deg);
   padding: 2px 14px;
   font-size: 10.5px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.18em;
   color: #14141a;
@@ -1915,7 +1920,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   z-index: 2;
   padding: 8px 2px;
   font-size: 8.5px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.26em;
   color: #e8e8ec;
@@ -2017,7 +2022,8 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
  * v8.1 的粗描边硬影已在，本节加「档案化」叙事层。*/
 [role="dialog"] {
   background-image:
-    repeating-linear-gradient(to bottom, transparent 0 26px, rgba(20, 20, 26, 0.045) 26px 27px) !important;
+    repeating-linear-gradient(to bottom, transparent 0 26px, rgba(20, 20, 26, 0.045) 26px 27px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 3px) !important;
   position: relative;
 }
 [role="dialog"]::before {
@@ -2043,7 +2049,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   right: 18px;
   bottom: 12px;
   font-size: 8.5px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.3em;
   color: rgba(242, 52, 58, 0.75);
@@ -2070,7 +2076,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   z-index: 9;
   padding: 1px 7px;
   font-size: 9px;
-  font-weight: 900;
+  font-weight: 900 !important;
   font-style: italic;
   letter-spacing: 0.14em;
   color: #14141a;
@@ -2134,12 +2140,13 @@ html:has(body:not([data-ds-dark-theme])) {
   background-color: #f4f2ea;
 }
 body:not([data-ds-dark-theme])::before {
+  /* 2026-10-25 用户裁定：亮色档壁纸要明显可见——色洗减半（0.34/0.36→0.15/0.16，白晕 0.35→0.16） */
   background:
-    radial-gradient(52% 44% at 86% -6%, rgba(233, 216, 160, 0.34) 0%, transparent 64%),
-    radial-gradient(50% 40% at 2% 106%, rgba(184, 224, 228, 0.36) 0%, transparent 66%),
-    radial-gradient(36% 26% at 80% 98%, color-mix(in srgb, var(--zzz-accent) 16%, transparent) 0%, transparent 60%),
-    radial-gradient(26% 22% at 14% 6%, rgba(226, 210, 176, 0.22) 0%, transparent 64%),
-    radial-gradient(122% 94% at 50% 42%, transparent 55%, rgba(255, 255, 251, 0.35) 100%);
+    radial-gradient(52% 44% at 86% -6%, rgba(233, 216, 160, 0.15) 0%, transparent 64%),
+    radial-gradient(50% 40% at 2% 106%, rgba(184, 224, 228, 0.16) 0%, transparent 66%),
+    radial-gradient(36% 26% at 80% 98%, color-mix(in srgb, var(--zzz-accent) 08%, transparent) 0%, transparent 60%),
+    radial-gradient(26% 22% at 14% 6%, rgba(226, 210, 176, 0.10) 0%, transparent 64%),
+    radial-gradient(122% 94% at 50% 42%, transparent 55%, rgba(255, 255, 251, 0.16) 100%);
 }
 /* 10.2 屏幕微纹理：白线在纸底上不可见 → 换极淡墨线（噪点层共用） */
 body:not([data-ds-dark-theme])::after {
@@ -2274,4 +2281,211 @@ body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_tab"]:not
 body:not([data-ds-dark-theme]) [data-dsh-part="sidebar-entry"]:hover,
 body:not([data-ds-dark-theme]) [data-dsh-part="entry"]:hover {
   background-color: rgba(26, 26, 30, 0.06);
+}
+
+/* ═══ §11 全局字重加粗（2026-10-25 用户裁定：字体还是要加粗）═══
+   基线 600：正文与全部 UI 文本统一半粗（游戏 UI 的均匀重字感）；
+   标题/强调 800；装饰元素原有 700-900 声明已在上面补 !important 保级。 */
+body,
+body *:not(svg):not(svg *) {
+  font-weight: 600 !important;
+}
+h1, h2, h3, h4, h5, h6, strong, b,
+th, [class*="title"], [class*="Title"],
+[class*="heading"], [class*="Heading"] {
+  font-weight: 800 !important;
+}
+/* 代码块保持可读的一档轻：等宽 500 */
+pre, code, kbd, samp, [class*="code"], [class*="Code"] {
+  font-weight: 500 !important;
+}
+
+/* ═══ §12 绳网化：设置 / 侧栏 / 底栏「流式自填充」（2026-10-25 用户裁定，参考绳网+HDD 界面）═══
+   设计语言：近黑底 × 行式骨架 × 逐行弹入（信号接收）× 扫描线 × 分段进度 × 等宽装饰串。
+   暗档黑面板 #1a1a1e/#202026 交替行；亮档纸面交替 #f4f3ee/#eceae2。 */
+/* ── 12.1 设置弹窗：扫描线 + 等宽装饰串 ── */
+[role="dialog"] [class*="_header"]::before {
+  content: "/// INTERKNOT.SYNC ";
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: color-mix(in srgb, var(--zzz-accent) 72%, transparent);
+  margin-right: 10px;
+  font-weight: 700 !important;
+}
+/* ── 12.2 设置行：交替底 + 细分隔 + 逐行弹入 ── */
+[role="dialog"] [class*="_row"] {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  animation: zzz-row-in 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) both;
+}
+[role="dialog"] [class*="_row"]:nth-child(odd)  { background-color: rgba(26, 26, 30, 0.22); }
+[role="dialog"] [class*="_row"]:nth-child(even) { background-color: rgba(26, 26, 30, 0.06); }
+[role="dialog"] [class*="_row"]:nth-child(1) { animation-delay: 0.02s; }
+[role="dialog"] [class*="_row"]:nth-child(2) { animation-delay: 0.09s; }
+[role="dialog"] [class*="_row"]:nth-child(3) { animation-delay: 0.16s; }
+[role="dialog"] [class*="_row"]:nth-child(4) { animation-delay: 0.23s; }
+[role="dialog"] [class*="_row"]:nth-child(5) { animation-delay: 0.30s; }
+[role="dialog"] [class*="_row"]:nth-child(6) { animation-delay: 0.37s; }
+[role="dialog"] [class*="_row"]:nth-child(7) { animation-delay: 0.44s; }
+[role="dialog"] [class*="_row"]:nth-child(8) { animation-delay: 0.51s; }
+[role="dialog"] [class*="_row"]:nth-child(n+9) { animation-delay: 0.58s; }
+@keyframes zzz-row-in {
+  from { opacity: 0; transform: translateX(-28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+/* ── 12.3 左导航：选中竖条 + 数据橙 ── */
+[role="dialog"] [class*="_nav"] button[class*="active"],
+[role="dialog"] [class*="_nav"] button[aria-selected="true"] {
+  box-shadow: inset 3px 0 0 0 var(--zzz-accent) !important;
+}
+[role="dialog"] [class*="_nav"] button {
+  position: relative;
+  transition: padding-left 0.18s ease;
+}
+[role="dialog"] [class*="_nav"] button:hover {
+  padding-left: 14px !important;
+}
+/* ── 12.4 侧栏会话行：胶囊扫光（信号接收高亮）── */
+[class*="sidebarCol"] [class*="_session"],
+.hHd-Xa_root [class*="item"] {
+  position: relative;
+  overflow: hidden;
+}
+[class*="sidebarCol"] [class*="_session"]:hover::after,
+.hHd-Xa_root [class*="item"]:hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, color-mix(in srgb, var(--zzz-accent) 16%, transparent) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: zzz-sweep 1.1s ease infinite;
+  pointer-events: none;
+}
+@keyframes zzz-sweep {
+  to { transform: translateX(100%); }
+}
+/* ── 12.5 底栏：分段式同步进度（busy 时游标刻度换成 steps 分段感）── */
+[class*="composerSeat"]::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: -6px;
+  height: 3px;
+  background: repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--zzz-accent) 75%, transparent) 0 14px,
+    transparent 14px 20px);
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+[class*="composerSeat"]:has([aria-busy="true"])::before,
+body:has([data-streaming]) [class*="composerSeat"]::before {
+  opacity: 1;
+  animation: zzz-seg-sync 1.2s steps(8) infinite;
+}
+@keyframes zzz-seg-sync {
+  to { background-position: -200% 0; }
+}
+/* ── 12.6 亮档纸面交替行 ── */
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"] {
+  border-bottom-color: rgba(20, 20, 24, 0.1);
+}
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(odd)  { background-color: rgba(20, 20, 24, 0.035); }
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) { background-color: rgba(20, 20, 24, 0.0); }
+/* ── 12.7 reduced-motion 全停 ── */
+@media (prefers-reduced-motion: reduce) {
+  [role="dialog"] [class*="_row"],
+  [class*="sidebarCol"] [class*="_session"]:hover::after,
+  .hHd-Xa_root [class*="item"]:hover::after,
+  [class*="composerSeat"]::before { animation: none !important; }
+}
+
+/* ═══ §13 knock knock 主对话框（2026-10-25 用户裁定：滴滴聊天=主对话框参考样本）═══
+   游戏内私信应用「knock knock」还原：AI 侧=纯白圆角气泡（黑粗字、左上小尾）、
+   己方=REPLY 蓝胶囊（白字、右上尾）、输入卡=蓝外壳+黑内胆+REPLY 贴纸。
+   色样取自官方截图：白 #fff / 蓝输入栏 #3451d3 / 黑内胆 #0b0b0e / 正文黑 #1e1e1e。 */
+/* ── 13.1 AI 侧：白色气泡 + 左上尾 ── */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
+  background: rgb(255 255 255 / var(--dsh-skin-bubble-alpha, 0.94)) !important;
+  color: #1e1e1e !important;
+  border-radius: 2px 26px 26px 26px !important;
+  padding: 14px 20px !important;
+  box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.55);
+  position: relative;
+}
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *,
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] * {
+  color: #1e1e1e !important;
+}
+/* AI 气泡内代码块保持深底 */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre,
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] code {
+  background: #14141a !important;
+  color: #f2f2f4 !important;
+}
+/* ── 13.2 己方：REPLY 蓝胶囊 + 右上尾 ── */
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"],
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] .Sixlwa_userStack {
+  background: rgb(52 81 211 / var(--dsh-skin-bubble-alpha, 0.96)) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 26px 2px 26px 26px !important;
+  box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.55) !important;
+  position: relative;
+}
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"] *,
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] .Sixlwa_userStack * {
+  color: #ffffff !important;
+}
+/* ── 13.3 输入卡：蓝外壳 + 黑内胆 + REPLY 贴纸 ── */
+[class*="uV2eYG_card"],
+[data-slot="conversation.composer.bar"] [class*="card"] {
+  border: 2.5px solid #3451d3 !important;
+  background: #0b0b0e !important;
+  box-shadow: 4px 4px 0 #14141a, 0 0 0 1px rgba(255, 255, 255, 0.04) !important;
+  position: relative;
+}
+[class*="uV2eYG_card"]::before {
+  content: "REPLY";
+  position: absolute;
+  left: 14px;
+  top: -11px;
+  z-index: 3;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 900 !important;
+  letter-spacing: 0.22em;
+  color: #ffffff;
+  background: #3451d3;
+  border: 1.5px solid #14141a;
+  padding: 1px 8px;
+  transform: rotate(-1.5deg);
+  box-shadow: 2px 2px 0 #14141a;
+  pointer-events: none;
+}
+/* 输入文字与占位符 */
+[class*="uV2eYG_card"] [contenteditable="true"],
+[class*="uV2eYG_card"] [contenteditable="true"] * {
+  color: #f0f0f0 !important;
+  caret-color: #3451d3;
+}
+/* ── 13.4 亮档适配：纸面版 knock knock ── */
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
+  background: rgb(255 255 255 / var(--dsh-skin-bubble-alpha, 0.98)) !important;
+  border: 1.5px solid #14141a !important;
+  box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.85) !important;
+}
+body:not([data-ds-dark-theme]) [class*="uV2eYG_card"],
+body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] [class*="card"] {
+  background: #fffef9 !important;
+  border-color: #3451d3 !important;
+  border-width: 2.5px !important;
+}
+body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"],
+body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] * {
+  color: #14141a !important;
 }
