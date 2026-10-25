@@ -567,10 +567,8 @@ html::after {
 [data-dsh-part="message-row"]:nth-child(5) { animation-delay: 180ms; }
 [data-dsh-part="message-row"]:nth-child(n + 6) { animation-delay: 225ms; }
 
-/* 回合尾巴：方块光标（P7） */
-[data-dsh-part="turn-tail"] {
-  animation: zzz-caret 1.06s steps(1) infinite;
-}
+/* 回合尾巴：方块光标（P7）——已撤（2026-10-25 用户裁定「一直在刷新的框框太丑」）：
+   整卡硬闪让每轮末尾的用量卡一直在闪，删除。zzz-caret 键帧保留供他处引用。 */
 
 /* 输入区：准星式聚焦环——四角括号，不是四边描边 */
 [data-dsh-part="composer-input"] {
