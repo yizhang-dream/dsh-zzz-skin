@@ -1645,38 +1645,8 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   text-shadow: 5px 5px 0 rgba(20, 20, 26, 0.55);
 }
 
-/* ── §9.3 邦布 loading（v7.1）：流式等待 = 邦布探头待机 ─────────────
- * 纯 CSS 程序绘制：胶囊身体 + 两只耳朵 + 眼睛，挂在 turn-tail（等待首字）。
- * 已在 §5.2 有方块光标的元素上追加，避免抢布局：作为 ::before 叠加。
- * 耳朵上下摆 + 身体 squash——邦布标志性待机律动。*/
-[data-dsh-part="turn-tail"] {
-  position: relative;
-  padding-left: 76px;
-  min-height: 44px;
-}
-[data-dsh-part="turn-tail"]::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  width: 40px;
-  height: 30px;
-  margin-top: -15px;
-  background:
-    /* 左耳 */ radial-gradient(circle 5px at 8px 4px, #f7f7fa 2.2px, transparent 3px),
-    /* 右耳 */ radial-gradient(circle 5px at 32px 4px, #f7f7fa 2.2px, transparent 3px),
-    /* 身体 */ linear-gradient(#f2f2f6 0%, #d8d8de 100%);
-  border-radius: 16px 16px 12px 12px;
-  border: 2px solid #14141a;
-  box-shadow: 2px 2px 0 rgba(20, 20, 26, 0.7);
-  /* 2026-10-25 停跳（用户裁定：不要一直动）——邦布静态驻场 */
-  pointer-events: none;
-}
-/* 眼睛：无法在伪元素内再嵌伪元素——用 box-shadow 内双点近似 */
-@keyframes zzz-bangboo-bounce {
-  from { transform: translateY(0) scaleY(1); }
-  to   { transform: translateY(-4px) scaleY(0.94); }
-}
+/* ── §9.3 邦布 loading：已撤（2026-10-25 用户裁定「底下白块不要了」）——
+   静态邦布在小尺寸下读成空心白块，且女仆头像上线后吉祥物概念已由头像承接。 */
 
 /* ── §9.4 COMBO 计数（v7.1）：会话数 = 连击数 ─────────────────────
  * 侧栏会话列表顶部（workspaces 标题）挂「HITS」计数牌——游戏右上连击样式：
@@ -2393,11 +2363,13 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 /* ── 13.1 AI 侧：白色气泡 + 左上尾 ── */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
-  background: rgb(255 255 255 / var(--dsh-skin-bubble-alpha, 0.94)) !important;
-  color: #1e1e1e !important;
-  border-radius: 2px 26px 26px 26px !important;
-  padding: 14px 20px !important;
-  box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.55);
+  /* 敲敲聊天记录规格：磨砂白条 55% + backdrop-blur，消息浮在壁纸上 */
+  background: rgb(255 255 255 / calc(0.52 + var(--dsh-skin-bubble-alpha, 0.55) * 0.40)) !important;
+  backdrop-filter: blur(20px) saturate(1.04);
+  -webkit-backdrop-filter: blur(20px) saturate(1.04);
+  color: #333333 !important;
+  border-radius: 20px !important;
+  padding: 14px 20px 12px 70px !important;
   position: relative;
 }
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *,
@@ -2487,13 +2459,14 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
   content: "";
   position: absolute;
   left: 10px;
-  top: 11px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  /* 2026-10-25 用户裁定：直接用社区做的 DeepSeek 女仆形象（maid-atelier 美术，
-     512×512 透明底 Q 版），整图圆切，浅蓝平涂底承托（敲敲头像规范） */
-  background: url("assets/avatar-fatfish.png") center / 40px 40px no-repeat,
+  top: 13px;
+  width: 47px;
+  height: 47px;
+  border-radius: 15px;
+  /* 敲敲聊天记录：圆角方头像 + 厚白描边，嵌在磨砂条内、底部略下坠 */
+  outline: 5px solid rgba(255, 255, 255, 0.92);
+  outline-offset: -1px;
+  background: url("assets/avatar-fatfish.png") center / 43px 43px no-repeat,
     linear-gradient(#eaf1ff, #d9e8ff);
   border: 1px solid rgba(20, 20, 26, 0.1);
   z-index: 2;
@@ -2505,6 +2478,43 @@ body:not([data-ds-dark-theme]) [data-chat-anchor-key*=":assistant-step"]:not([da
   border-color: rgba(20, 20, 26, 0.18);
 }
 /* reduced-motion 无关（静态装饰） */
+
+/* ═══ §15 敲敲聊天记录还原（2026-10-25，对照 wiki「敲敲的聊天记录」页）═══
+   参考（352px 裁切图实测）：消息直接浮在重度模糊的壁纸上（无面板托底）、
+   磨砂白消息卡、完成态状态行=大号灰字+删除线+›、消息间距宽松 28-30px。 */
+/* 15.1 会话列：玻璃面板 → 近透磨砂，壁纸成为聊天底 */
+body[data-ds-dark-theme] .pI_x6G_centerCol,
+body[data-ds-dark-theme] [data-pane="conversation"] {
+  background-color: rgba(12, 14, 35, 0.12) !important;
+  backdrop-filter: blur(26px) saturate(1.02);
+  -webkit-backdrop-filter: blur(26px) saturate(1.02);
+  border-left-color: rgba(255, 255, 255, 0.06);
+}
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
+body:not([data-ds-dark-theme]) [data-pane="conversation"] {
+  background-color: rgba(250, 250, 246, 0.22) !important;
+  backdrop-filter: blur(26px) saturate(1.02);
+  -webkit-backdrop-filter: blur(26px) saturate(1.02);
+}
+/* 15.2 完成态状态行：灰字 + 删除线 + ›（l_V-RG 即「已完成，用时」载体，§5.2c 实测） */
+[data-dsh-surface="conversation"] button[class*="l_V-RG"] {
+  text-decoration: line-through 1.5px rgba(169, 169, 184, 0.9);
+  opacity: 0.9;
+}
+[data-dsh-surface="conversation"] button[class*="l_V-RG"]::after {
+  content: " ›";
+  text-decoration: none;
+  font-weight: 900 !important;
+  color: rgba(169, 169, 184, 0.9);
+}
+/* 15.3 消息间距：宽松（参考 28-30px，桌面档取 22px） */
+.EvIC1a_flowItem + .EvIC1a_flowItem {
+  margin-top: 22px;
+}
+/* 15.4 磨砂条上的代码块恢复深底（对比保读） */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre {
+  background: #14141a !important;
+}
 
 
 
