@@ -2474,6 +2474,38 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
   color: #14141a !important;
 }
 
+/* ═══ §14 大肥鱼头像（2026-10-25 用户裁定：敲敲头像风格 × DeepSeek 人设胖鲸，放 AI 消息左侧）═══
+   样式规格取自敲敲官方头像（wiki.biligame.com/zzz/敲敲）：正圆无外环、
+   平涂浅底、主体居中 55-100%、细线软上色、眼睛高光是灵魂、无黑粗描边。
+   形象 = DeepSeek 人设「大肥鱼」：品牌蓝 #4D6BFE 胖鲸 + 浅肚 + 水柱。 */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]),
+[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]) {
+  padding-left: 68px !important;
+}
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before,
+[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 11px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  /* 2026-10-25 用户裁定：直接用社区做的 DeepSeek 女仆形象（maid-atelier 美术，
+     512×512 透明底 Q 版），整图圆切，浅蓝平涂底承托（敲敲头像规范） */
+  background: url("assets/avatar-fatfish.png") center / 40px 40px no-repeat,
+    linear-gradient(#eaf1ff, #d9e8ff);
+  border: 1px solid rgba(20, 20, 26, 0.1);
+  z-index: 2;
+  pointer-events: none;
+}
+/* 亮档：白气泡上给一圈淡描边防糊 */
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before,
+body:not([data-ds-dark-theme]) [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before {
+  border-color: rgba(20, 20, 26, 0.18);
+}
+/* reduced-motion 无关（静态装饰） */
+
 
 
 /* ═══ §T 版本主题：新艾利都 · 空洞威胁 ═══ */
