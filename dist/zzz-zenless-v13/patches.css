@@ -2365,30 +2365,23 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    ::after 伪元素画条会被 backdrop-filter 合成顺序盖到文字上面（字隔奶白透
    5% 成幽灵字，实测隐藏条后文字清晰实锤）；改用本体背景 + background-clip:
    content-box（背景只进内容盒=从 68px 起），天然垫底零层叠问题。 */
+/* 2026-10-25 用户裁定：AI 消息=与人类气泡同款设计，仅换颜色——
+   fit-content 收边 + 镜像圆角（人类泡右上小角 / AI 泡左上小角）+ 同款硬影；
+   暗档=奶白底深字，亮档=深炭底白字（翻转裁定维持）；头像照旧挂左槽 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
   background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
   background-clip: content-box;
   color: #333333 !important;
-  padding: 12px 20px 12px 68px !important;
-  border-radius: 20px !important;
+  width: fit-content;
+  max-width: min(100%, 74ch);
+  box-sizing: border-box;
+  padding: 12px 22px 12px 68px !important;
+  border-radius: 2px 26px 26px 26px !important;
+  box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.45);
   position: relative;
 }
-/* 字体按原图：圆体（幼圆）+ 大字距 + 宽行高 + 深炭粗字——内层 span 自带
-   font-family 会截胡，必须 !important 传下去（代码块保等宽） */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg),
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
-  font-family: "YouYuan", "幼圆", "SimYou", "Microsoft YaHei UI", sans-serif !important;
-  letter-spacing: 0.22em;
-  line-height: 1.9;
-  color: #303030 !important;
-}
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] [class*="_plainRun"],
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] p, 
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] span {
-  font-weight: 700 !important;
-}
+/* 2026-10-25 用户裁定：字体撤销（不要幼圆/大字距），回系统 UI 字体，仅保留字色 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *,
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] * {
   color: #1e1e1e !important;
@@ -2452,6 +2445,7 @@ body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistan
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
   background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
   color: #f4f4f6 !important;
+  box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.75);
 }
 body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg),
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg) {
