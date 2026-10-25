@@ -2645,6 +2645,39 @@ body:not([data-ds-dark-theme]) [role="dialog"] svg {
   opacity: 0.72;
 }
 
+/* ═══ §15.8 亮档「使用中」显示反色（2026-10-25 用户裁定）═══
+ * 用户：「使用显文字的时候黄色太亮晃眼看不清，请使用反色；灰色也看不清。」
+ * 反色 = 给字一个黄色的框，字色与框色互换（黄底墨字马克笔块）。
+ * 范围：运行状态行 / 黄色徽章（退出码等）/ 用量与轨迹的 138 灰字。暗档不动。 */
+/* 运行状态行（深度求索中 / 深潜共 N 中）：黄底墨字 */
+body:not([data-ds-dark-theme]) [class*="runningContent"] {
+  background: var(--zzz-accent) !important;
+  color: #14141a !important;
+  border-radius: 4px;
+  padding: 1px 8px;
+  box-shadow: 1.5px 1.5px 0 rgba(20, 20, 26, 0.3);
+}
+/* 黄字徽章（退出码 N 等）：黄底墨字 */
+body:not([data-ds-dark-theme]) [class*="_tag_brmue_"],
+body:not([data-ds-dark-theme]) [class*="YJoo9W_badge"] {
+  background: var(--zzz-accent) !important;
+  color: #14141a !important;
+  border: none !important;
+}
+/* 用量芯片 / 轨迹步进 / 占位符：138 灰 → 墨 82%（纸上 8.5:1） */
+body:not([data-ds-dark-theme]) [class*="bOPqQW_label"],
+body:not([data-ds-dark-theme]) [class*="_text_1rdzk_"],
+body:not([data-ds-dark-theme]) [class*="XrJvXW_summary"],
+body:not([data-ds-dark-theme]) [class*="uV2eYG_placeholder"] {
+  color: rgba(26, 26, 30, 0.82) !important;
+}
+/* 用量数值（我们自己的 accent !important 规则）亮档回墨字 */
+body:not([data-ds-dark-theme]) .cm-num,
+body:not([data-ds-dark-theme]) [data-dsh-usage-foot-card] output,
+body:not([data-ds-dark-theme]) [data-dsh-usage-foot-card] [data-value] {
+  color: #14141a !important;
+}
+
 
 
 /* ═══ §T 版本主题：新艾利都 · 1.3 虚拟杀机 ═══ */
