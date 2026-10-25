@@ -2584,17 +2584,18 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"] {
 .EvIC1a_flowItem + .EvIC1a_flowItem {
   margin-top: 22px;
 }
-/* 15.5 操作行芯片：消息下方的图标/状态行直接坐在壁纸上会被洗 → 加底 */
+/* 15.5 操作行芯片：消息下方的图标/状态行直接坐在壁纸上会被洗 → 加底。
+ * 不能给这行加 backdrop-filter：它嵌在会话列自己的磨砂里，Chromium 对
+ * 嵌套 backdrop-filter 在 hover 重绘时会反复闪（用户实测复现），改用
+ * 底色加浓代替磨砂。 */
 .xzv4MW_actions, [class*="xzv4MW_actions"] {
-  background: rgba(10, 10, 14, 0.72);
+  background: rgba(10, 10, 14, 0.78);
   border-radius: 10px;
   padding: 4px 10px !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 body:not([data-ds-dark-theme]) .xzv4MW_actions,
 body:not([data-ds-dark-theme]) [class*="xzv4MW_actions"] {
-  background: rgba(250, 250, 246, 0.85);
+  background: rgba(250, 250, 246, 0.88);
 }
 body:not([data-ds-dark-theme]) .xzv4MW_actions *,
 body:not([data-ds-dark-theme]) [class*="xzv4MW_actions"] * {
