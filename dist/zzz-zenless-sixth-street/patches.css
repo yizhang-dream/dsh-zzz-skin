@@ -242,7 +242,7 @@ html::before {
 /* 侧栏与主区之间：一条 1px 灰线，不用阴影 */
 [data-pane="sidebar"],
 .pI_x6G_sidebarCol {
-  background-color: rgba(5, 5, 7, 0.66);
+  background-color: rgba(5, 5, 7, 0.92);
   backdrop-filter: blur(7px) saturate(1.08);
   -webkit-backdrop-filter: blur(7px) saturate(1.08);
 }
@@ -640,7 +640,7 @@ html::after {
 
 /* 右侧详情栏：和主区同一块面板，左侧一条灰线 */
 [data-dsh-surface="details"] {
-  background-color: rgba(8, 8, 10, 0.85);
+  background-color: rgba(8, 8, 10, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-left: 1px solid var(--zzz-line);
@@ -1536,14 +1536,14 @@ button[class*="primary"],
 body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
 body:not([data-ds-dark-theme]) [data-pane="conversation"] {
   /* 2026-10-25 用户裁定：亮色档壁纸明显可见——纸面 0.82→0.62 + 6px 磨砂保正文可读 */
-  background-color: rgba(250, 250, 246, 0.62);
+  background-color: rgba(250, 250, 246, 0.35);
   backdrop-filter: blur(6px) saturate(1.02);
   -webkit-backdrop-filter: blur(6px) saturate(1.02);
   border-left: 2px solid #14141a;
 }
 body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol,
 body:not([data-ds-dark-theme]) [data-pane="sidebar"] {
-  background-color: rgba(250, 250, 246, 0.70);
+  background-color: rgba(250, 250, 246, 0.90);
   backdrop-filter: blur(6px) saturate(1.02);
   -webkit-backdrop-filter: blur(6px) saturate(1.02);
   border-right: 2px solid #14141a;
@@ -2361,35 +2361,18 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    己方=REPLY 蓝胶囊（白字、右上尾）、输入卡=蓝外壳+黑内胆+REPLY 贴纸。
    色样取自官方截图：白 #fff / 蓝输入栏 #3451d3 / 黑内胆 #0b0b0e / 正文黑 #1e1e1e。 */
 /* ── 13.1 AI 侧：白色气泡 + 左上尾 ── */
+/* 敲敲聊天记录：头像与句子分开——条只画文字区。2026-10-25 三改结构：
+   ::after 伪元素画条会被 backdrop-filter 合成顺序盖到文字上面（字隔奶白透
+   5% 成幽灵字，实测隐藏条后文字清晰实锤）；改用本体背景 + background-clip:
+   content-box（背景只进内容盒=从 68px 起），天然垫底零层叠问题。 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
-  /* 敲敲聊天记录（用户裁定严格按原图）：头像与句子分开——条只画文字区（::after），
-     本体透明；字体=圆体+大字距（原图实测 letter-spacing ≈0.45em，正文档取 0.22em） */
-  background: transparent !important;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+  background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
+  background-clip: content-box;
   color: #333333 !important;
-  padding: 10px 20px 10px 68px !important;
+  padding: 12px 20px 12px 68px !important;
+  border-radius: 20px !important;
   position: relative;
-}
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]::after,
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]::after {
-  content: "";
-  position: absolute;
-  left: 64px;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  border-radius: 20px;
-  background: rgb(255 255 255 / calc(0.82 + var(--dsh-skin-bubble-alpha, 0.55) * 0.15));
-  backdrop-filter: blur(20px) saturate(1.04);
-  -webkit-backdrop-filter: blur(20px) saturate(1.04);
-  pointer-events: none;
-}
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] > *,
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] > * {
-  position: relative;
-  z-index: 1;
 }
 /* 字体按原图：圆体（幼圆）+ 大字距 + 宽行高 + 深炭粗字——内层 span 自带
    font-family 会截胡，必须 !important 传下去（代码块保等宽） */
@@ -2463,10 +2446,9 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   caret-color: #3451d3;
 }
 /* ── 13.4 亮档适配：纸面版 knock knock ── */
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]::after,
-body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]::after {
-  background: rgb(255 255 255 / calc(0.82 + var(--dsh-skin-bubble-alpha, 0.55) * 0.15));
-  border: 1.5px solid rgba(20, 20, 26, 0.35);
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
+  border-left: 1.5px solid transparent;
 }
 body:not([data-ds-dark-theme]) [class*="uV2eYG_card"],
 body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] [class*="card"] {
@@ -2542,6 +2524,26 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"] {
 /* 15.3 消息间距：宽松（参考 28-30px，桌面档取 22px） */
 .EvIC1a_flowItem + .EvIC1a_flowItem {
   margin-top: 22px;
+}
+/* 15.5 操作行芯片：消息下方的图标/状态行直接坐在壁纸上会被洗 → 加底 */
+.xzv4MW_actions, [class*="xzv4MW_actions"] {
+  background: rgba(10, 10, 14, 0.72);
+  border-radius: 10px;
+  padding: 4px 10px !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+body:not([data-ds-dark-theme]) .xzv4MW_actions,
+body:not([data-ds-dark-theme]) [class*="xzv4MW_actions"] {
+  background: rgba(250, 250, 246, 0.82);
+}
+/* 15.6 顶栏弱化字提亮（视频/轨迹 tab 等灰字被壁纸洗） */
+[class*="centerCol"] header span, [class*="centerCol"] header button {
+  text-shadow: 0 1px 2px rgba(8, 9, 20, 0.55);
+}
+body:not([data-ds-dark-theme]) [class*="centerCol"] header span,
+body:not([data-ds-dark-theme]) [class*="centerCol"] header button {
+  text-shadow: 0 1px 2px rgba(250, 250, 246, 0.8);
 }
 /* 15.4 磨砂条上的代码块恢复深底（对比保读） */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre {
