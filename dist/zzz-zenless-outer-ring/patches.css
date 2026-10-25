@@ -2236,6 +2236,25 @@ body:not([data-ds-dark-theme]) [data-dsh-part="sidebar-entry"]:hover,
 body:not([data-ds-dark-theme]) [data-dsh-part="entry"]:hover {
   background-color: rgba(26, 26, 30, 0.06);
 }
+/* 设置内的卡片/胶囊/顶栏：§5.3c 写的是暗档语汇（硬黑卡 + 白雾边），且
+ * [class*="_card"] 会连第三方界面（插件市场）一起吃——那些卡片本来靠宿主
+ * 令牌取色，被我们压成黑底后亮档只剩黑块。亮档统一还原成纸卡。 */
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_card"] {
+  background-color: #ffffff;
+  border-color: rgba(26, 26, 30, 0.16);
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_card"]:hover {
+  border-color: rgba(26, 26, 30, 0.34);
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_pill"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_cats"] button {
+  background-color: rgba(26, 26, 30, 0.04);
+  border-color: rgba(26, 26, 30, 0.16);
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_header"] {
+  border-bottom-color: rgba(26, 26, 30, 0.14);
+  background-image: linear-gradient(to bottom, rgba(26, 26, 30, 0.035), transparent);
+}
 
 /* ═══ §11 全局字重加粗（2026-10-25 用户裁定：字体还是要加粗）═══
    基线 600：正文与全部 UI 文本统一半粗（游戏 UI 的均匀重字感）；
