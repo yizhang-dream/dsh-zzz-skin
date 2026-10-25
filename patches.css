@@ -2363,14 +2363,48 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 /* ── 13.1 AI 侧：白色气泡 + 左上尾 ── */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
-  /* 敲敲聊天记录规格：磨砂白条 55% + backdrop-blur，消息浮在壁纸上 */
-  background: rgb(255 255 255 / calc(0.52 + var(--dsh-skin-bubble-alpha, 0.55) * 0.40)) !important;
+  /* 敲敲聊天记录（用户裁定严格按原图）：头像与句子分开——条只画文字区（::after），
+     本体透明；字体=圆体+大字距（原图实测 letter-spacing ≈0.45em，正文档取 0.22em） */
+  background: transparent !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: #333333 !important;
+  padding: 10px 20px 10px 68px !important;
+  position: relative;
+}
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]::after,
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]::after {
+  content: "";
+  position: absolute;
+  left: 64px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 20px;
+  background: rgb(255 255 255 / calc(0.58 + var(--dsh-skin-bubble-alpha, 0.55) * 0.38));
   backdrop-filter: blur(20px) saturate(1.04);
   -webkit-backdrop-filter: blur(20px) saturate(1.04);
-  color: #333333 !important;
-  border-radius: 20px !important;
-  padding: 14px 20px 12px 70px !important;
+  pointer-events: none;
+}
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] > *,
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] > * {
   position: relative;
+  z-index: 1;
+}
+/* 字体按原图：圆体（幼圆）+ 大字距 + 宽行高 + 深炭粗字——内层 span 自带
+   font-family 会截胡，必须 !important 传下去（代码块保等宽） */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg),
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
+  font-family: "YouYuan", "幼圆", "SimYou", "Microsoft YaHei UI", sans-serif !important;
+  letter-spacing: 0.22em;
+  line-height: 1.9;
+  color: #303030 !important;
+}
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] [class*="_plainRun"],
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] p, 
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] span {
+  font-weight: 700 !important;
 }
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *,
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] * {
@@ -2429,11 +2463,10 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   caret-color: #3451d3;
 }
 /* ── 13.4 亮档适配：纸面版 knock knock ── */
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
-body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
-  background: rgb(255 255 255 / var(--dsh-skin-bubble-alpha, 0.98)) !important;
-  border: 1.5px solid #14141a !important;
-  box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.85) !important;
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]::after,
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]::after {
+  background: rgb(255 255 255 / calc(0.60 + var(--dsh-skin-bubble-alpha, 0.55) * 0.35));
+  border: 1.5px solid rgba(20, 20, 26, 0.35);
 }
 body:not([data-ds-dark-theme]) [class*="uV2eYG_card"],
 body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] [class*="card"] {
@@ -2458,8 +2491,8 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
 [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before {
   content: "";
   position: absolute;
-  left: 10px;
-  top: 13px;
+  left: 0;
+  top: 10px;
   width: 47px;
   height: 47px;
   border-radius: 15px;
