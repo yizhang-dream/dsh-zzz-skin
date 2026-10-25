@@ -2564,6 +2564,33 @@ body:not([data-ds-dark-theme]) [class*="centerCol"] header button {
   background: #14141a !important;
 }
 
+/* ═══ §10.12b 亮档弹窗装饰降墨（2026-10-25 用户裁定：浅色模式设置里不要深色的东西）═══
+   v8.2 曾有意让描边/硬影保持黑（白纸漫画期）；现在亮档整体已转浅，
+   近黑粗框+90% 黑硬影+墨色分隔线在浅界面里成为突兀深色块，全套降墨：
+   描边→纸灰、硬影→低透明柔影+轻错位、双层描边::before→弱化、结构分隔线→浅墨。 */
+body:not([data-ds-dark-theme]) [role="dialog"] {
+  border: 1.5px solid rgba(26, 26, 30, 0.22) !important;
+  box-shadow:
+    3px 4px 0 rgba(20, 20, 26, 0.08),
+    6px 10px 30px rgba(20, 20, 26, 0.16) !important;
+}
+/* 双层描边（§5.4 ::before 外圈）：亮档弱化为极浅灰环 */
+body:not([data-ds-dark-theme]) [role="dialog"]::before {
+  opacity: 0.35;
+}
+/* 结构分隔线（侧栏竖线/顶栏横线等 hairline 载体）降浅墨 */
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_nav"],
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_header"],
+body:not([data-ds-dark-theme]) [role="dialog"] header,
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_divider"],
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_content"] {
+  border-color: rgba(26, 26, 30, 0.13) !important;
+}
+/* 关闭 × 等线图标降一档浓度 */
+body:not([data-ds-dark-theme]) [role="dialog"] svg {
+  opacity: 0.72;
+}
+
 
 
 /* ═══ §T 版本主题：新艾利都 · 空洞威胁 ═══ */
