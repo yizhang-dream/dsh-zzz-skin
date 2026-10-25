@@ -21,14 +21,14 @@
   ],
   "accent": "#e8862a",
   "order": 25,
-  "version": "8.7.1",
+  "version": "8.7.2",
   "license": "MIT",
   "licenseUrl": "https://opensource.org/licenses/MIT",
   "sourceUrl": "https://github.com/zhu1090093659/dsh-skins/tree/main/skins/zzz-zenless",
   "attribution": "皮肤代码与设计：flower-moon（MIT）。壁纸素材：《绝区零》(Zenless Zone Zero) 官方主视觉插画（六分街 · 狡兔屋），© miHoYo / HoYoverse；登场角色：妮可·德玛拉 (Nicole Demara)、安比·德玛拉 (Anby Demara)、比利·奇德 (Billy Kid) 与邦布 (Bangboo)，均出自《绝区零》。该插画以非商业同人形式使用，本皮肤与 miHoYo / HoYoverse 无隶属、合作或授权关系。",
   "preview": {
-    "light": "preview/light.jpg",
-    "dark": "preview/dark.jpg"
+    "light": "assets/wallpaper-outer-ring.jpg",
+    "dark": "assets/wallpaper-outer-ring.jpg"
   },
   "contributes": {
     "stylesheet": "skin.css",

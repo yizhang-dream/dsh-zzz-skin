@@ -98,10 +98,8 @@ const basePatches = readFileSync(join(SKIN, 'patches.css'), 'utf8');
 for (const t of themes) {
   const dir = join(DIST, t.id);
   mkdirSync(join(dir, 'assets'), { recursive: true });
-  mkdirSync(join(dir, 'preview'), { recursive: true });
 
   copyFileSync(join(SKIN, 'assets', 'themes', t.wallpaper), join(dir, 'assets', t.wallpaper));
-  for (const p of readdirSync(join(SKIN, 'preview'))) copyFileSync(join(SKIN, 'preview', p), join(dir, 'preview', p));
 
   // patches.css 追加主题层（载入顺序在后，覆盖 §0 基座强调色）
   // 画布色只走 --dsw-alias-bg-base 令牌（宿主画到 html 上，壁纸层 z:-2 在其上）；
@@ -141,6 +139,7 @@ body[data-ds-dark-theme] [data-dsh-skin-layer="background"] img {
     tags: [...new Set([...(baseManifest.tags || []), 'version-theme', 'themes'])],
     accent: t.accent,
     order: t.order,
+    preview: { light: `assets/${t.wallpaper}`, dark: `assets/${t.wallpaper}` },
     contributes: {
       ...baseManifest.contributes,
       backgroundMedia: {
