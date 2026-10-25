@@ -2381,7 +2381,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   top: 0;
   bottom: 0;
   border-radius: 20px;
-  background: rgb(255 255 255 / calc(0.58 + var(--dsh-skin-bubble-alpha, 0.55) * 0.38));
+  background: rgb(255 255 255 / calc(0.82 + var(--dsh-skin-bubble-alpha, 0.55) * 0.15));
   backdrop-filter: blur(20px) saturate(1.04);
   -webkit-backdrop-filter: blur(20px) saturate(1.04);
   pointer-events: none;
@@ -2465,7 +2465,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 /* ── 13.4 亮档适配：纸面版 knock knock ── */
 body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]::after,
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]::after {
-  background: rgb(255 255 255 / calc(0.60 + var(--dsh-skin-bubble-alpha, 0.55) * 0.35));
+  background: rgb(255 255 255 / calc(0.82 + var(--dsh-skin-bubble-alpha, 0.55) * 0.15));
   border: 1.5px solid rgba(20, 20, 26, 0.35);
 }
 body:not([data-ds-dark-theme]) [class*="uV2eYG_card"],
@@ -2499,7 +2499,7 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
   /* 敲敲聊天记录：圆角方头像 + 厚白描边，嵌在磨砂条内、底部略下坠 */
   outline: 5px solid rgba(255, 255, 255, 0.92);
   outline-offset: -1px;
-  background: url("assets/avatar-fatfish.png") center / 43px 43px no-repeat,
+  background: url("assets/avatar-fatfish-128.png") center / 47px 47px no-repeat,
     linear-gradient(#eaf1ff, #d9e8ff);
   border: 1px solid rgba(20, 20, 26, 0.1);
   z-index: 2;
@@ -2531,14 +2531,13 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"] {
 }
 /* 15.2 完成态状态行：灰字 + 删除线 + ›（l_V-RG 即「已完成，用时」载体，§5.2c 实测） */
 [data-dsh-surface="conversation"] button[class*="l_V-RG"] {
-  text-decoration: line-through 1.5px rgba(169, 169, 184, 0.9);
-  opacity: 0.9;
+  text-decoration: line-through 1.5px rgba(90, 90, 105, 0.95);
 }
 [data-dsh-surface="conversation"] button[class*="l_V-RG"]::after {
   content: " ›";
   text-decoration: none;
   font-weight: 900 !important;
-  color: rgba(169, 169, 184, 0.9);
+  color: rgba(90, 90, 105, 0.95);
 }
 /* 15.3 消息间距：宽松（参考 28-30px，桌面档取 22px） */
 .EvIC1a_flowItem + .EvIC1a_flowItem {
