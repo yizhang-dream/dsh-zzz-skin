@@ -2443,8 +2443,12 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   background: #14141a !important;
   color: #f2f2f4 !important;
 }
-/* ── 13.2 己方：REPLY 蓝胶囊 + 右上尾 ── */
-.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"],
+/* ── 13.2 己方：REPLY 蓝胶囊 + 右上尾 ──
+ * [role=tooltip] 必须排除：宿主的「复制」提示复用 _bubble 类，且自带
+ * 视口坐标的 inline left/top——被这条的 position:relative 拽住后 tooltip
+ * 变成行内布局（行展宽 48px、按钮被顶走、渲染到屏幕外 1700px），悬停
+ * 就进入 挂载→挤走按钮→失焦卸载→弹回 的循环 = 不停上下抖动（用户实测）。 */
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"]:not([role="tooltip"]),
 .EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] .Sixlwa_userStack {
   background: rgb(52 81 211 / var(--dsh-skin-bubble-alpha, 0.96)) !important;
   color: #ffffff !important;
