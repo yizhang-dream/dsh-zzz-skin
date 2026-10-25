@@ -2365,19 +2365,17 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    ::after 伪元素画条会被 backdrop-filter 合成顺序盖到文字上面（字隔奶白透
    5% 成幽灵字，实测隐藏条后文字清晰实锤）；改用本体背景 + background-clip:
    content-box（背景只进内容盒=从 68px 起），天然垫底零层叠问题。 */
-/* 2026-10-25 用户裁定：AI 消息=与人类气泡同款设计，仅换颜色——
-   fit-content 收边 + 镜像圆角（人类泡右上小角 / AI 泡左上小角）+ 同款硬影；
-   暗档=奶白底深字，亮档=深炭底白字（翻转裁定维持）；头像照旧挂左槽 */
+/* AI 消息=与人类气泡同款家族（fit-content/镜像角/硬影），颜色跟档位走；
+   头像按原图像素实测叠在条左端（非分离）——文字与头像保持 20px+ 净距 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
   background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
-  background-clip: content-box !important;
   color: #f4f4f6 !important;
   width: fit-content;
   max-width: min(100%, 74ch);
   box-sizing: border-box;
-  padding: 12px 22px 12px 68px !important;
-  border-radius: 2px 26px 26px 26px !important;
+  padding: 12px 22px 12px 92px !important;
+  border-radius: 2px 24px 24px 24px !important;
   box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
   position: relative;
 }
@@ -2448,7 +2446,6 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
   background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
-  background-clip: content-box !important;
   color: #303030 !important;
   box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.65);
 }
@@ -2482,9 +2479,11 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
 }
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before,
 [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before {
+  /* 原图像素实测：头像叠在条左端上（条从头像左后延伸、左侧露条 13px、
+     头像底出挑条底 6px、文字距头像右缘 20px+）；条左上角近直角 */
   content: "";
   position: absolute;
-  left: 0;
+  left: 12px;
   top: 10px;
   width: 47px;
   height: 47px;
