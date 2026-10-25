@@ -2628,9 +2628,13 @@ body:not([data-ds-dark-theme]) [role="dialog"] {
     3px 4px 0 rgba(20, 20, 26, 0.08),
     6px 10px 30px rgba(20, 20, 26, 0.16) !important;
 }
-/* 双层描边（§5.4 ::before 外圈）：亮档弱化为极浅灰环 */
+/* 双层描边（§5.4 ::before 外圈）：2026-10-25 用户裁定「角落的黄色太不明显」
+ * → 贴纸回全浓度黄。注意 §9.16 贴纸与 §5.4 双层描边共用同一个 ::before，
+ *   785 行的 opacity:0.4 + blur(2px) 会合并进来压暗贴纸，这里显式抬回。 */
 body:not([data-ds-dark-theme]) [role="dialog"]::before {
-  opacity: 0.35;
+  opacity: 1;
+  filter: none;
+  z-index: -1; /* 压到「设置」标题下层 = 荧光笔垫底，字仍可读 */
 }
 /* 结构分隔线（侧栏竖线/顶栏横线等 hairline 载体）降浅墨 */
 body:not([data-ds-dark-theme]) [role="dialog"] [class*="_nav"],
@@ -2676,6 +2680,32 @@ body:not([data-ds-dark-theme]) .cm-num,
 body:not([data-ds-dark-theme]) [data-dsh-usage-foot-card] output,
 body:not([data-ds-dark-theme]) [data-dsh-usage-foot-card] [data-value] {
   color: #14141a !important;
+}
+
+/* ═══ §15.9 顶栏标签反色（2026-10-25 用户裁定「顶部的灰色不明显，改成反色」）═══
+ * 暗档：灰字(128,128,144) → 灰底墨字芯片（字色与框色互换，同马克笔语汇）；
+ * 非激活 tab 提亮一档（激活 tab 已是黄底墨字）；亮档同位灰字 → 墨字。 */
+body[data-ds-dark-theme] [class*="VoX2oq_triggerLabel"],
+body[data-ds-dark-theme] [class*="SVAs4q_label"] {
+  background: rgb(128, 128, 144) !important;
+  color: #101016 !important;
+  border-radius: 4px;
+  padding: 1px 8px;
+}
+body[data-ds-dark-theme] [class*="wSkVaW_tab"]:not([class*="wSkVaW_tabs"]):not([class*="tabActive"]) {
+  color: rgb(206, 206, 218) !important;
+}
+body:not([data-ds-dark-theme]) [class*="VoX2oq_triggerLabel"],
+body:not([data-ds-dark-theme]) [class*="SVAs4q_label"] {
+  color: rgba(26, 26, 30, 0.78) !important;
+}
+/* 亮档 INTERKNOT.SYNC 装饰串：黄底墨字小牌（原来黄字压纸底不明显） */
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_header"]::before {
+  background: var(--zzz-accent);
+  color: #14141a !important;
+  padding: 1px 7px;
+  border-radius: 3px;
+  box-shadow: 1.5px 1.5px 0 rgba(20, 20, 26, 0.35);
 }
 
 
