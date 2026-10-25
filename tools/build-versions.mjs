@@ -101,6 +101,14 @@ for (const t of themes) {
 
   copyFileSync(join(SKIN, 'assets', 'themes', t.wallpaper), join(dir, 'assets', t.wallpaper));
 
+  // CSS url("assets/…") 引用到的资产全部随包——按引用拷，不维护手工清单
+  // （2026-10-26 教训：§14 头像改引 avatar-fatfish-128.png 后没进包，变体头像 404 只剩渐变底）
+  const cssText = basePatches + '\n' + baseSkinCss;
+  const assetRefs = new Set(
+    [...cssText.matchAll(/url\(\s*["']?assets\/([^"')\s]+)["']?\s*\)/g)].map(m => m[1]),
+  );
+  for (const ref of assetRefs) copyFileSync(join(SKIN, 'assets', ref), join(dir, 'assets', ref));
+
   // patches.css 追加主题层（载入顺序在后，覆盖 §0 基座强调色）
   // 画布色只走 --dsw-alias-bg-base 令牌（宿主画到 html 上，壁纸层 z:-2 在其上）；
   // 不能直接给 body 刷不透明底色——那会把壁纸层整个盖死（2026-10-25 实测教训）。
