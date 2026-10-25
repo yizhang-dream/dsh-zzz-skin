@@ -2371,7 +2371,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
   background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
-  background-clip: content-box;
+  background-clip: content-box !important;
   color: #f4f4f6 !important;
   width: fit-content;
   max-width: min(100%, 74ch);
@@ -2448,6 +2448,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
   background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
+  background-clip: content-box !important;
   color: #303030 !important;
   box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.65);
 }
