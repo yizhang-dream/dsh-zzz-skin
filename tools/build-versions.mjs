@@ -19,6 +19,7 @@ function hexA(hex, a) {
 export const THEMES = [
   {
     id: 'zzz-zenless-welcome',
+    wallL: 106.6,
     name: '新艾利都 · 迎新',
     verName: '迎新',
     verNameEn: 'Welcome to New Eridu',
@@ -31,6 +32,7 @@ export const THEMES = [
   },
   {
     id: 'zzz-zenless-sixth-street',
+    wallL: 111.1,
     name: '新艾利都 · 六分街',
     verName: '六分街',
     verNameEn: 'Sixth Street',
@@ -43,6 +45,7 @@ export const THEMES = [
   },
   {
     id: 'zzz-zenless-hollow',
+    wallL: 96.9,
     name: '新艾利都 · 空洞威胁',
     verName: '空洞威胁',
     verNameEn: 'Hollow Threat',
@@ -55,6 +58,7 @@ export const THEMES = [
   },
   {
     id: 'zzz-zenless-v13',
+    wallL: 60.2,
     name: '新艾利都 · 1.3 虚拟杀机',
     verName: '1.3 虚拟杀机',
     verNameEn: '1.3 Virtual Revenge',
@@ -67,6 +71,7 @@ export const THEMES = [
   },
   {
     id: 'zzz-zenless-outer-ring',
+    wallL: 105.8,
     name: '新艾利都 · 外环落日',
     verName: '外环落日',
     verNameEn: 'Outer Ring Sunset',
@@ -101,6 +106,10 @@ for (const t of themes) {
   // patches.css 追加主题层（载入顺序在后，覆盖 §0 基座强调色）
   // 画布色只走 --dsw-alias-bg-base 令牌（宿主画到 html 上，壁纸层 z:-2 在其上）；
   // 不能直接给 body 刷不透明底色——那会把壁纸层整个盖死（2026-10-25 实测教训）。
+  // 壁纸亮度归一（v8.7.0 用户裁定「六套互相之间好多不同」）：
+  // 按实测均值亮度 wallL 计算 brightness——亮档统一提到 ~140，暗档压到 ~70。
+  const bl = Math.min(1.8, Math.max(1.0, +(140 / t.wallL).toFixed(2)));
+  const bd = Math.min(1.0, Math.max(0.55, +(70 / t.wallL).toFixed(2)));
   const themeLayer = `
 
 
@@ -111,6 +120,13 @@ body {
 }
 body[data-ds-dark-theme] { --dsw-alias-bg-base: ${t.canvasDark}; }
 body:not([data-ds-dark-theme]) { --dsw-alias-bg-base: ${t.canvasLight}; }
+/* 壁纸亮度归一（实测 L=${t.wallL}）：亮档 ×${bl} → ~140，暗档 ×${bd} → ~70 */
+body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
+  filter: saturate(0.84) contrast(0.95) brightness(${bl});
+}
+body[data-ds-dark-theme] [data-dsh-skin-layer="background"] img {
+  filter: saturate(0.92) contrast(0.97) brightness(${bd});
+}
 `;
   writeFileSync(join(dir, 'patches.css'), basePatches + themeLayer);
   writeFileSync(join(dir, 'skin.css'), baseSkinCss);

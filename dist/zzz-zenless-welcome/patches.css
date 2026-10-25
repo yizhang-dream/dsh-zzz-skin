@@ -2190,9 +2190,15 @@ body:not([data-ds-dark-theme]) [data-slot="sidebar.panellist"]::after {
 
 /* 10.11 壁纸印刷调（v8.1）：实测 keyart 是明亮的六分街群像插画（非夜景），
  *     白纱罩亮图=高光糊成一片。改走「印刷调」：滤镜降饱和微提亮，scrim 只留轻纱
- *     （skin.json 0.12/0.36）。背景层有稳定锚点 data-dsh-skin-layer。 */
+ *     （skin.json 0.12/0.36）。背景层有稳定锚点 data-dsh-skin-layer。
+ *     v8.7.0 用户裁定「六套壁纸互相之间好多不同」→ 按实测亮度归一：
+ *     keyart L=114，亮档统一提到 ~140（×1.23），暗档压到 ~70（×0.61）。
+ *     版本主题在各自 theme layer 里按同公式覆盖 brightness。 */
 body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
-  filter: saturate(0.84) contrast(0.97) brightness(1.02);
+  filter: saturate(0.84) contrast(0.95) brightness(1.23);
+}
+body[data-ds-dark-theme] [data-dsh-skin-layer="background"] img {
+  filter: saturate(0.92) contrast(0.97) brightness(0.61);
 }
 
 /* 10.12 设置弹窗/弹层亮色重涂（v8.2，2026-10-24）——「更多/设置发黑看不清」
@@ -2718,3 +2724,10 @@ body {
 }
 body[data-ds-dark-theme] { --dsw-alias-bg-base: #10131f; }
 body:not([data-ds-dark-theme]) { --dsw-alias-bg-base: #f2f4f8; }
+/* 壁纸亮度归一（实测 L=106.6）：亮档 ×1.31 → ~140，暗档 ×0.66 → ~70 */
+body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
+  filter: saturate(0.84) contrast(0.95) brightness(1.31);
+}
+body[data-ds-dark-theme] [data-dsh-skin-layer="background"] img {
+  filter: saturate(0.92) contrast(0.97) brightness(0.66);
+}
