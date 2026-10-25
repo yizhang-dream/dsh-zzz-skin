@@ -1669,7 +1669,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   border-radius: 16px 16px 12px 12px;
   border: 2px solid #14141a;
   box-shadow: 2px 2px 0 rgba(20, 20, 26, 0.7);
-  animation: zzz-bangboo-bounce 1.4s var(--zzz-ease-snap, ease-in-out) infinite alternate;
+  /* 2026-10-25 停跳（用户裁定：不要一直动）——邦布静态驻场 */
   pointer-events: none;
 }
 /* 眼睛：无法在伪元素内再嵌伪元素——用 box-shadow 内双点近似 */
@@ -1829,23 +1829,9 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
  * 游戏加载是圆环+缺口旋转。邦布已在 turn-tail::before——转盘挂其 ::after
  * （载体纪律：同一伪元素一演出；::before 邦布 / ::after 转盘各自独立）。
  * 仅在整列处于 busy（首字未出）时转，busy 结束 CSS 动画自然停。*/
-[data-dsh-part="turn-tail"]::after {
-  content: "";
-  position: absolute;
-  left: 58px;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  margin-top: -7px;
-  border-radius: 50%;
-  border: 2.5px solid rgba(20, 20, 26, 0.25);
-  border-top-color: var(--zzz-accent);
-  animation: zzz-loader-spin 0.8s linear infinite;
-  pointer-events: none;
-}
-@keyframes zzz-loader-spin {
-  to { transform: rotate(360deg); }
-}
+/* 2026-10-25 用户裁定「不要一直转圈，太刺眼」——转盘整节撤除：
+   原规则无 busy 门控，会话里每个历史回合的尾巴都挂一个 accent 亮环
+   永久旋转（实测 7 个同时转）。等待态由宿主自己的状态行指示。 */
 
 /* ── §9.10 委托完成横幅（v7.4）：S 评级旁的贴纸横幅 ─────────────────
  * 游戏「委托完成」结算横幅。载体：centerCol 内新会话按钮所在行不可用，
