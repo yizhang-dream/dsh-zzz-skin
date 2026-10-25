@@ -2446,9 +2446,21 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   caret-color: #3451d3;
 }
 /* ── 13.4 亮档适配：纸面版 knock knock ── */
+/* 亮色档翻转（2026-10-25 用户裁定：深浅两档要翻转配色，白条照搬亮档会怪异）：
+   AI 条=深炭底 93% + 白字；头像/蓝用户泡不变；代码块保深底 */
 body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
-  border-left: 1.5px solid transparent;
+  background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
+  color: #f4f4f6 !important;
+}
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg),
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg) {
+  color: #f4f4f6 !important;
+}
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre,
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre code {
+  background: #0c0c10 !important;
+  color: #f2f2f4 !important;
 }
 body:not([data-ds-dark-theme]) [class*="uV2eYG_card"],
 body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] [class*="card"] {
@@ -2535,7 +2547,11 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"] {
 }
 body:not([data-ds-dark-theme]) .xzv4MW_actions,
 body:not([data-ds-dark-theme]) [class*="xzv4MW_actions"] {
-  background: rgba(250, 250, 246, 0.82);
+  background: rgba(24, 24, 30, 0.78);
+}
+body:not([data-ds-dark-theme]) .xzv4MW_actions *,
+body:not([data-ds-dark-theme]) [class*="xzv4MW_actions"] * {
+  color: rgba(240, 240, 244, 0.9) !important;
 }
 /* 15.6 顶栏弱化字提亮（视频/轨迹 tab 等灰字被壁纸洗） */
 [class*="centerCol"] header span, [class*="centerCol"] header button {
