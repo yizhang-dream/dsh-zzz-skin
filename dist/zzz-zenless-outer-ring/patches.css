@@ -1151,7 +1151,7 @@ input[type="checkbox"]:checked::after {
 /* ── 5.3f Workshop / 表单页：下拉、输入、卡片标题 ────────────────── */
 
 /* 下拉：与设置页控件同一规格（深色描边胶囊）。排除外层 wrap 与文字 label */
-[data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]) {
+[data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]):not([class*="_themeCube"]):not([class*="selected"]) {
   background-color: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 10px;
@@ -1159,7 +1159,7 @@ input[type="checkbox"]:checked::after {
   font-weight: 700 !important;
   transition: border-color 120ms ease, color 120ms ease;
 }
-[data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]):hover {
+[data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]):not([class*="_themeCube"]):not([class*="selected"]):hover {
   border-color: var(--zzz-accent);
   color: var(--zzz-accent);
 }
@@ -2217,7 +2217,7 @@ body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] nav button[type="bu
 }
 /* 值块/下拉/输入/主题卡：半黑底白细边 → 白底墨细边（hover accent 规则保留生效） */
 body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_selector"],
-body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]),
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_select"]:not([class*="Wrap"]):not([class*="Label"]):not([class*="_themeCube"]):not([class*="selected"]),
 body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_themeCube"] {
   background-color: #ffffff;
   border-color: rgba(26, 26, 30, 0.30);
@@ -2236,24 +2236,54 @@ body:not([data-ds-dark-theme]) [data-dsh-part="sidebar-entry"]:hover,
 body:not([data-ds-dark-theme]) [data-dsh-part="entry"]:hover {
   background-color: rgba(26, 26, 30, 0.06);
 }
-/* 设置内的卡片/胶囊/顶栏：§5.3c 写的是暗档语汇（硬黑卡 + 白雾边），且
- * [class*="_card"] 会连第三方界面（插件市场）一起吃——那些卡片本来靠宿主
- * 令牌取色，被我们压成黑底后亮档只剩黑块。亮档统一还原成纸卡。 */
-body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_card"] {
-  background-color: #ffffff;
-  border-color: rgba(26, 26, 30, 0.16);
+/* ── 10.12c 亮档设置面板：纸纹 / 网点 / 墨线（2026-10-25 用户裁定「纹理跟花纹补回来」）
+ * 1) 卡片：§5.3c 写的是暗档语汇（硬黑卡 + 白雾边），且 [class*="_card"] 会连第三方
+ *    （插件市场）一起吃——那些卡片本靠宿主令牌取纸白，被压成黑底后只剩黑块。
+ *    亮档换纸卡 + 墨描边 + 硬影，卡片本体再叠一层网点。
+ * 2) 纹理：§9.16 叠在纸面横线上的扫描线是白色 3%、§12.2 行分隔线是白色 7%——
+ *    白画在白纸底上等于没画，整块面板是光板。亮档改用墨线等价物（横线 5.5% +
+ *    竖纹 2% + 网点 + 纸纹噪声），暗档规则一行不动。 */
+body:not([data-ds-dark-theme]) [role="dialog"] {
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0 26px, rgba(20, 20, 26, 0.055) 26px 27px),
+    repeating-linear-gradient(90deg, rgba(20, 20, 26, 0.02) 0 1px, transparent 1px 4px),
+    radial-gradient(circle, rgba(20, 20, 26, 0.05) 1px, transparent 1.35px),
+    url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.1'/%3E%3C/svg%3E") !important;
+  background-size: auto, auto, 13px 13px, 180px 180px;
 }
-body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_card"]:hover {
-  border-color: rgba(26, 26, 30, 0.34);
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_card"] {
+  background-color: #fffdf7;
+  border-color: rgba(20, 20, 26, 0.3);
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class$="_card"] {
+  background-image: radial-gradient(circle, rgba(20, 20, 26, 0.045) 1px, transparent 1.35px);
+  background-size: 11px 11px;
+  border-width: 1.5px;
+  box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.13);
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class$="_card"]:hover {
+  border-color: rgba(20, 20, 26, 0.52);
+}
+/* 设置行：白 7% 分隔线 → 墨 10%（交替行底的墨雾保留，纸面上是浅灰条） */
+body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"] {
+  border-bottom-color: rgba(20, 20, 26, 0.10);
 }
 body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_pill"],
 body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_cats"] button {
-  background-color: rgba(26, 26, 30, 0.04);
-  border-color: rgba(26, 26, 30, 0.16);
+  background-color: rgba(20, 20, 26, 0.035);
+  border-color: rgba(20, 20, 26, 0.28);
+}
+/* 选中的主题块：黄字压白底只有 1.65:1（截图里几乎看不见）→ 换马克笔块：
+   accent 实底 + 墨字，和左导航选中项同一语汇 */
+body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_themeCube"][aria-pressed="true"] {
+  background-color: var(--zzz-accent);
+  border-color: rgba(20, 20, 26, 0.55);
+  color: #14141a;
+  box-shadow: 2px 2px 0 rgba(16, 16, 22, 0.18);
 }
 body:not([data-ds-dark-theme]) [data-dsh-surface="settings"] [class*="_header"] {
-  border-bottom-color: rgba(26, 26, 30, 0.14);
-  background-image: linear-gradient(to bottom, rgba(26, 26, 30, 0.035), transparent);
+  border-bottom-color: rgba(20, 20, 26, 0.16);
+  background-image: linear-gradient(to bottom, rgba(20, 20, 26, 0.04), transparent);
 }
 
 /* ═══ §11 全局字重加粗（2026-10-25 用户裁定：字体还是要加粗）═══
