@@ -1144,6 +1144,13 @@ input[type="checkbox"]:checked::after {
   pointer-events: none;
   opacity: 0.4;
 }
+/* 2026-10-27：上面那条 opacity:0.4 是给 20×20 角括号用的，但同一个 ::before
+ * 还兼着 hero 态的半透明底板；去掉闪烁动画后它会停在 0.4，底板比原来淡。
+ * 显式抬回 1，维持「展开时」的观感。 */
+.pI_x6G_centerCol:has([data-phase="hero"])::before,
+[data-pane="conversation"]:has([data-phase="hero"])::before {
+  opacity: 1;
+}
 [data-pane="conversation"]:has([data-phase="hero"])::before {
   left: 14px;
   top: 14px;
@@ -1749,9 +1756,14 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   animation: zzz-press-key 1.6s steps(2) infinite;
   pointer-events: none;
 }
+/* 2026-10-27：改成闪「字色」而不是闪「整块 opacity」。
+ * 原来 55%~100% 那段把 opacity 压到 0.12，可 :has([data-phase="hero"]) 命中的是
+ * 整个会话根节点（1598×990 常驻），同一个 ::before 还兼着会话面板的半透明磨砂底，
+ * 于是整块面板跟着 1↔0.12 闪（用户报「屏幕左侧一闪一闪」）。
+ * 只动 color，底板不参与，文字该闪还是闪。 */
 @keyframes zzz-press-key {
-  0%, 54% { opacity: 1; }
-  55%, 100% { opacity: 0.12; }
+  0%, 54% { color: #e8e8ec; }
+  55%, 100% { color: rgba(232, 232, 236, 0.30); }
 }
 
 /* ── §9.7 角色切换闪光（v7.3）：切会话 = 换人白闪演出 ─────────────
@@ -2176,9 +2188,10 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"]:has([data-phase="hero"
   /* 亮色下 0.12 暗相位=整段消失，换高下限闪烁 */
   animation: zzz-press-key-light 1.6s steps(2) infinite;
 }
+/* 同上：只闪字色，不闪整块 */
 @keyframes zzz-press-key-light {
-  0%, 54% { opacity: 1; }
-  55%, 100% { opacity: 0.45; }
+  0%, 54% { color: #14141a; }
+  55%, 100% { color: rgba(20, 20, 26, 0.55); }
 }
 
 /* 10.8 DATA BANK 铭牌亮色变体：黑底贴纸 → 纸底墨字贴纸 */
