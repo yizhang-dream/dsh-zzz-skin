@@ -2431,8 +2431,8 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    content-box（背景只进内容盒=从 68px 起），天然垫底零层叠问题。 */
 /* AI 消息=与人类气泡同款家族（fit-content/镜像角/硬影），颜色跟档位走；
    头像按原图像素实测叠在条左端（非分离）——文字与头像保持 20px+ 净距 */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]),
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) {
   background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
   color: #f4f4f6 !important;
   width: fit-content;
@@ -2443,18 +2443,18 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
   position: relative;
 }
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg),
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg) {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg),
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg) {
   color: #f4f4f6 !important;
 }
 /* 2026-10-25 用户裁定：字体撤销（不要幼圆/大字距），回系统 UI 字体，仅保留字色 */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *,
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"] * {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *,
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) * {
   color: #1e1e1e !important;
 }
 /* AI 气泡内代码块保持深底 */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre,
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] code {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre,
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) code {
   background: #14141a !important;
   color: #f2f2f4 !important;
 }
@@ -2515,18 +2515,18 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 /* ── 13.4 亮档适配：纸面版 knock knock ── */
 /* 亮色档（2026-10-25 用户二次裁定：配色跟档位走）：AI 泡=奶白底+深字；
    头像/蓝用户泡不变；代码块保深底 */
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"],
-body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] {
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]),
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) {
   background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
   color: #303030 !important;
   box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.65);
 }
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg),
-body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"] *:not(pre):not(code):not(svg) {
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg),
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg) {
   color: #303030 !important;
 }
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre,
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre code {
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre,
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre code {
   background: #0c0c10 !important;
   color: #f2f2f4 !important;
 }
@@ -2700,7 +2700,7 @@ body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG
   text-shadow: 0 1px 0 rgba(8, 9, 20, 0.9), 0 0 3px rgba(8, 9, 20, 0.8);
 }
 /* 15.4 磨砂条上的代码块恢复深底（对比保读） */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre {
   background: #14141a !important;
 }
 
