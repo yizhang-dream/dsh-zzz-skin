@@ -2625,9 +2625,11 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"]::before {
   backdrop-filter: blur(14px) saturate(1.02);
   -webkit-backdrop-filter: blur(14px) saturate(1.02);
 }
-/* 15.2 完成态状态行：灰字 + 删除线 + ›（l_V-RG 即「已完成，用时」载体，§5.2c 实测） */
+/* 15.2 完成态状态行：灰字 + ›（l_V-RG 即「已完成，用时」载体，§5.2c 实测）
+ * 原版按敲敲聊天记录做了删除线，但那条线横穿字身、观感像划掉已完成的工作，
+ * 用户 2026-10-26 要求去掉。保留灰字与 › 作为完成态标记。 */
 [data-dsh-surface="conversation"] button[class*="l_V-RG"] {
-  text-decoration: line-through 1.5px rgba(90, 90, 105, 0.95);
+  text-decoration: none !important;
 }
 [data-dsh-surface="conversation"] button[class*="l_V-RG"]::after {
   content: " ›";
@@ -2663,6 +2665,39 @@ body:not([data-ds-dark-theme]) [class*="xzv4MW_actions"] * {
 body:not([data-ds-dark-theme]) [class*="centerCol"] header span,
 body:not([data-ds-dark-theme]) [class*="centerCol"] header button {
   text-shadow: 0 1px 2px rgba(250, 250, 246, 0.8);
+}
+/* 15.7 非激活页签：灰紫 #8a8a93 直接压在浅壁纸上实测仅 3.1:1（用户
+ * 2026-10-26「都改」）。做实心纸底胶囊 + 墨字。
+ * 两个坑记下来：①底色不能用 box-shadow 外扩——box-shadow 只画元素外圈，
+ * 元素自身背景透明，结果是空心 O 形环（实测）；②宿主 tab 左右 padding 为 0，
+ * 加底色后字会顶边，必须自己补 padding-inline。选中态一并补，让黄底也撑开。 */
+[class*="centerCol"] header [role="tab"] {
+  /* 宿主原 padding 是 0 0 9px——那 9px 是留给选中态下划线底条的，胶囊底色
+   * 连它一起染上后文字不居中。总高必须保持 25px（下划线位置不动），所以
+   * 上下 padding 对称平分多余空间；再显式钉 line-height = 内容盒高，
+   * 否则继承来的大行高会溢出内容盒、按 baseline 对齐后仍偏下 ~3px。 */
+  padding: 4.5px 11px 4.5px !important;
+  line-height: 16px !important;
+}
+body:not([data-ds-dark-theme]) [class*="centerCol"] header [role="tab"]:not([aria-selected="true"]) {
+  color: rgba(38, 38, 46, 0.92) !important;
+  background-color: rgba(253, 252, 248, 0.95) !important;
+  border-radius: 999px;
+}
+body[data-ds-dark-theme] [class*="centerCol"] header [role="tab"]:not([aria-selected="true"]) {
+  color: rgba(236, 236, 244, 0.95) !important;
+  background-color: rgba(10, 12, 28, 0.72) !important;
+  border-radius: 999px;
+}
+/* 15.8 状态行「已完成，用时 N 秒」：灰字直接压壁纸时，落在纸箱/人物这类
+ * 花色背景上对比不足（实测）。字色压深 + 双层纸色描边，保证任何壁纸区域可读。 */
+[data-dsh-surface="conversation"] button[class*="l_V-RG"] span {
+  color: rgba(58, 58, 70, 0.96) !important;
+  text-shadow: 0 1px 0 rgba(253, 252, 248, 0.92), 0 0 3px rgba(253, 252, 248, 0.85);
+}
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span {
+  color: rgba(214, 214, 226, 0.95) !important;
+  text-shadow: 0 1px 0 rgba(8, 9, 20, 0.9), 0 0 3px rgba(8, 9, 20, 0.8);
 }
 /* 15.4 磨砂条上的代码块恢复深底（对比保读） */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"] pre {
