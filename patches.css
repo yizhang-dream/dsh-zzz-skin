@@ -336,6 +336,15 @@ pre code {
   100% { opacity: 0; }
 }
 
+/* ⚠️ 入场动画一律用 animation-fill-mode: backwards，禁止用 both。
+ * 用 both 时动画结束后 Chromium 仍把 computed transform 保持成 matrix identity
+ * （即使 100% 帧写的是 transform: none），该元素于是成为 position: fixed 后代的
+ * 包含块：宿主「复制」等提示框的视口坐标被当成相对本元素偏移，实测渲染到
+ * (745,1353) 而非 inline 写的 (382,698)——悬停按钮边缘时提示框错位闪现，用户
+ * 看到的就是「弹动」（2026-10-26 排查：flowItem 的 zzz-rise 与 conversation 的
+ * zzz-cam-push 两处 identity transform）。backwards 的视觉效果与 both 相同，
+ * 但结束时不留 transform。终态本就该透明的装饰层（power-line/swap-flash/
+ * tv-static）仍需 both，它们挂在伪元素上、不承载 fixed 内容，可保留。 */
 /* P2 阶梯入：从右下 6px 处推入，末段轻微过冲 */
 @keyframes zzz-rise {
   0%   { opacity: 0; transform: translate3d(0, 8px, 0); }
@@ -401,7 +410,7 @@ pre code {
 
 /* ── 5.0 启动 ──────────────────────────────────────────────────────── */
 [data-dsh-surface="root"] {
-  animation: zzz-power-on 560ms var(--zzz-ease-crt) both;
+  animation: zzz-power-on 560ms var(--zzz-ease-crt) backwards;
   transform-origin: 50% 45%;
 }
 html::after {
@@ -463,7 +472,7 @@ html::after {
 /* 会话列表行：进入时阶梯浮现 */
 [role="treeitem"] {
   border-radius: 8px;
-  animation: zzz-rise 300ms var(--zzz-ease-snap) both;
+  animation: zzz-rise 300ms var(--zzz-ease-snap) backwards;
   transition: background-color 120ms ease, transform 140ms var(--zzz-ease-snap);
 }
 [role="treeitem"]:hover {
@@ -547,7 +556,7 @@ html::after {
 /* ── 5.2 会话区 ───────────────────────────────────────────────────── */
 /* 景别推近：切进会话时整体 1.045 再回落 */
 [data-dsh-surface="conversation"] {
-  animation: zzz-cam-push 320ms var(--zzz-ease-cam) 120ms both;
+  animation: zzz-cam-push 320ms var(--zzz-ease-cam) 120ms backwards;
   transform-origin: 50% 40%;
 }
 @keyframes zzz-cam-push {
@@ -558,7 +567,7 @@ html::after {
 
 /* 消息行阶梯入场 */
 [data-dsh-part="message-row"] {
-  animation: zzz-rise 340ms var(--zzz-ease-snap) both;
+  animation: zzz-rise 340ms var(--zzz-ease-snap) backwards;
 }
 [data-dsh-part="message-row"]:nth-child(1) { animation-delay: 0ms; }
 [data-dsh-part="message-row"]:nth-child(2) { animation-delay: 45ms; }
@@ -619,7 +628,7 @@ html::after {
 
 /* 排队区：从下方滑入 */
 [data-dsh-part="queue-dock"] {
-  animation: zzz-rise 260ms var(--zzz-ease-snap) both;
+  animation: zzz-rise 260ms var(--zzz-ease-snap) backwards;
 }
 
 /* 设置页背景巨型水印（R4）：只在这块面板里出现，不抢内容 */
@@ -749,10 +758,10 @@ button[aria-label*="删除"]:active {
 
 /* ── 5.3 弹层 / 菜单 / 设置 ────────────────────────────────────────── */
 [role="menu"] {
-  animation: zzz-slide-in 180ms var(--zzz-ease-pop) both;
+  animation: zzz-slide-in 180ms var(--zzz-ease-pop) backwards;
 }
 [role="menuitem"] {
-  animation: zzz-rise 220ms var(--zzz-ease-snap) both;
+  animation: zzz-rise 220ms var(--zzz-ease-snap) backwards;
   transition: background-color 100ms var(--zzz-ease-hard), color 100ms var(--zzz-ease-hard);
 }
 [role="menuitem"]:nth-child(1) { animation-delay: 0ms; }
@@ -775,7 +784,7 @@ button[aria-label*="删除"]:active {
 /* 弹窗：双层（幽灵层从右后推入 → 实层落下） */
 [role="dialog"] {
   position: relative;
-  animation: zzz-win-snap 260ms var(--zzz-ease-pop) both;
+  animation: zzz-win-snap 260ms var(--zzz-ease-pop) backwards;
 }
 @keyframes zzz-win-snap {
   0%   { opacity: 0; transform: scale(0.94) translateY(6px); }
@@ -798,7 +807,7 @@ button[aria-label*="删除"]:active {
 
 /* 遮罩：轻微故障撕裂后稳定 */
 [data-dsh-surface="overlay"] {
-  animation: zzz-overlay-in 200ms var(--zzz-ease-crt) both;
+  animation: zzz-overlay-in 200ms var(--zzz-ease-crt) backwards;
 }
 @keyframes zzz-overlay-in {
   0%   { opacity: 0; transform: scale(1.02); filter: blur(3px); }
@@ -832,7 +841,7 @@ button[aria-label*="删除"]:active {
   background-color: #0a0a0c;
   border: 1px solid var(--zzz-line);
   border-radius: 8px;
-  animation: zzz-tip-in 140ms var(--zzz-ease-pop) both;
+  animation: zzz-tip-in 140ms var(--zzz-ease-pop) backwards;
 }
 @keyframes zzz-tip-in {
   from { opacity: 0; transform: translateY(3px); }
@@ -1260,14 +1269,14 @@ input[type="checkbox"]:checked::after {
   ) !important;
 }
 [data-dsh-usage-foot-card] {
-  animation: zzz-rise 320ms var(--zzz-ease-snap) 180ms both;
+  animation: zzz-rise 320ms var(--zzz-ease-snap) 180ms backwards;
 }
 /* P9 数字滚动：数值节点每次更新重新触发 */
 .cm-num,
 [data-dsh-usage-foot-card] output,
 [data-dsh-usage-foot-card] [data-value] {
   font-variant-numeric: tabular-nums;
-  animation: zzz-odometer 260ms var(--zzz-ease-snap) both;
+  animation: zzz-odometer 260ms var(--zzz-ease-snap) backwards;
 }
 
 /* ── 5.6 拖拽把手 ─────────────────────────────────────────────────── */
@@ -2325,7 +2334,7 @@ pre, code, kbd, samp, [class*="code"], [class*="Code"] {
 /* ── 12.2 设置行：交替底 + 细分隔 + 逐行弹入 ── */
 [role="dialog"] [class*="_row"] {
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  animation: zzz-row-in 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) both;
+  animation: zzz-row-in 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) backwards;
 }
 [role="dialog"] [class*="_row"]:nth-child(odd)  { background-color: rgba(26, 26, 30, 0.22); }
 [role="dialog"] [class*="_row"]:nth-child(even) { background-color: rgba(26, 26, 30, 0.06); }
@@ -2566,18 +2575,49 @@ body:not([data-ds-dark-theme]) [data-chat-anchor-key*=":assistant-step"]:not([da
 /* ═══ §15 敲敲聊天记录还原（2026-10-25，对照 wiki「敲敲的聊天记录」页）═══
    参考（352px 裁切图实测）：消息直接浮在重度模糊的壁纸上（无面板托底）、
    磨砂白消息卡、完成态状态行=大号灰字+删除线+›、消息间距宽松 28-30px。 */
-/* 15.1 会话列：玻璃面板 → 近透磨砂，壁纸成为聊天底 */
+/* 15.1 会话列：玻璃面板 → 近透磨砂，壁纸成为聊天底
+ * ⚠️ 磨砂必须画在 ::before 上，不能直接挂在 centerCol 自己身上。
+ * backdrop-filter 非 none 会让元素成为 position: fixed 后代的包含块——宿主的
+ * 「复制」等提示框用视口坐标 + fixed 定位，被拽成相对 centerCol 偏移，实测
+ * x 偏了 280px（侧栏宽），悬停复制键边缘时提示框错位闪现 = 用户看到的「弹动」
+ * （2026-10-26）。伪元素不是祖先，不参与包含块计算，视觉完全一致。 */
 body[data-ds-dark-theme] .pI_x6G_centerCol,
 body[data-ds-dark-theme] [data-pane="conversation"] {
-  background-color: rgba(12, 14, 35, 0.12) !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  position: relative;
+  isolation: isolate;
+  border-left-color: rgba(255, 255, 255, 0.06);
+}
+body[data-ds-dark-theme] .pI_x6G_centerCol::before,
+body[data-ds-dark-theme] [data-pane="conversation"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgba(12, 14, 35, 0.12);
   /* 2026-10-25 用户裁定：切主题有的套过于模糊 → 两档统一 14px 中庸磨砂 */
   backdrop-filter: blur(14px) saturate(1.02);
   -webkit-backdrop-filter: blur(14px) saturate(1.02);
-  border-left-color: rgba(255, 255, 255, 0.06);
 }
 body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
 body:not([data-ds-dark-theme]) [data-pane="conversation"] {
-  background-color: rgba(250, 250, 246, 0.22) !important;
+  background-color: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  position: relative;
+  isolation: isolate;
+}
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol::before,
+body:not([data-ds-dark-theme]) [data-pane="conversation"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: rgba(250, 250, 246, 0.22);
   backdrop-filter: blur(14px) saturate(1.02);
   -webkit-backdrop-filter: blur(14px) saturate(1.02);
 }
