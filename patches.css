@@ -2465,7 +2465,11 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
  * 就进入 挂载→挤走按钮→失焦卸载→弹回 的循环 = 不停上下抖动（用户实测）。 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"]:not([role="tooltip"]),
 .EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] .Sixlwa_userStack {
-  background: rgb(52 81 211 / var(--dsh-skin-bubble-alpha, 0.96)) !important;
+  /* 己方胶囊固定白字，底色就不能随便透——皮肤中心「气泡不透明度」滑块
+   * 默认 0.5 时蓝底只剩半透明，浅壁纸透上来白字直接看不清（2026-10-26
+   * 用户报「复制用户的发言的字是白色的看不清」）。取 max(0.88, 滑块值)：
+   * 仍然跟随滑块变浓，但不会低于白字的可读下限。 */
+  background: rgb(52 81 211 / max(0.88, var(--dsh-skin-bubble-alpha, 0.96))) !important;
   color: #ffffff !important;
   border: none !important;
   border-radius: 26px 2px 26px 26px !important;
