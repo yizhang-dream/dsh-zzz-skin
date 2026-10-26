@@ -20,6 +20,7 @@ export const THEMES = [
   {
     id: 'zzz-zenless-welcome',
     wallL: 106.6,
+    balL: 0.33, balR: 0.0,
     name: '新艾利都 · 迎新',
     verName: '迎新',
     verNameEn: 'Welcome to New Eridu',
@@ -33,6 +34,7 @@ export const THEMES = [
   {
     id: 'zzz-zenless-sixth-street',
     wallL: 111.1,
+    balL: 0.0, balR: 0.06,
     name: '新艾利都 · 六分街',
     verName: '六分街',
     verNameEn: 'Sixth Street',
@@ -46,6 +48,7 @@ export const THEMES = [
   {
     id: 'zzz-zenless-hollow',
     wallL: 96.9,
+    balL: 0.26, balR: 0.0,
     name: '新艾利都 · 空洞威胁',
     verName: '空洞威胁',
     verNameEn: 'Hollow Threat',
@@ -59,6 +62,7 @@ export const THEMES = [
   {
     id: 'zzz-zenless-v13',
     wallL: 60.2,
+    balL: 0.0, balR: 0.55,
     name: '新艾利都 · 1.3 虚拟杀机',
     verName: '1.3 虚拟杀机',
     verNameEn: '1.3 Virtual Revenge',
@@ -72,6 +76,7 @@ export const THEMES = [
   {
     id: 'zzz-zenless-outer-ring',
     wallL: 105.8,
+    balL: 0.35, balR: 0.0,
     name: '新艾利都 · 外环落日',
     verName: '外环落日',
     verNameEn: 'Outer Ring Sunset',
@@ -125,6 +130,8 @@ body {
   --zzz-accent-soft: ${t.accentSoft};
 }
 body[data-ds-dark-theme] { --dsw-alias-bg-base: ${t.canvasDark}; }
+/* 这张壁纸左右亮度天然不均（实测左 ${t.wallL} 附近的分布），按实测差值压暗对应一侧 */
+body { --zzz-bal-left: ${t.balL ?? 0}; --zzz-bal-right: ${t.balR ?? 0}; }
 body:not([data-ds-dark-theme]) { --dsw-alias-bg-base: ${t.canvasLight}; }
 /* 壁纸亮度归一（实测 L=${t.wallL}）：亮档 ×${bl} → ~140，暗档 ×${bd} → ~70 */
 body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {

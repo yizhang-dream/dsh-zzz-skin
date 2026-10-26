@@ -2223,20 +2223,28 @@ body[data-ds-dark-theme] [data-dsh-skin-layer="background"] img {
   filter: saturate(0.92) contrast(0.97) brightness(0.61);
 }
 /* 10.11b 壁纸左右亮度配平（2026-10-27 用户报「左半边亮，右半边不亮，不对称」）
- * 实测原图本身就不对称：左半均值 127.9 / 右半 86.0（差 42），构图上左侧是街景亮部、
- * 右侧是车厢暗部。聊天文字压在亮部时对比度明显吃亏。这里沿 X 轴补一层压暗，
- * 左侧 la→50% 处降到底，把两侧拉平；数值取到实测差值的 3/4，保留插画层次不糊成一片。
- * 想更均衡就调大 0.30/0.10 这两个 alpha，想完全保留原图就把这条规则删掉。 */
+ * 六张版本壁纸的左右均值差各不相同（实测：welcome +41.9 / outer-ring +43.0 /
+ * hollow +27.0 / keyart +1.6 / sixth-street -5.2 / v13 -52.4），
+ * 所以压暗量按版本各自给，不在皮肤层写死：
+ *   --zzz-bal-left / --zzz-bal-right 由 build-versions 在 §T 块按实测注入。
+ * 梯度从左端值线性过渡到右端值（中点取平均）；两侧都为 0 时此规则无视觉影响。 */
 [data-dsh-skin-layer="background"]::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* 形状按实测：最左 5% 被侧栏盖住不必压；压暗峰值落在 18%~38%（插画里那片
+   * 浅灰墙面+黄梯+灰纸箱堆，是整张图最亮的区域）；56% 后快速退到 0；
+   * 需要压右侧的版本（v13 右边比左边亮 52）由 bal-right 在 84%~100% 收口。 */
   background: linear-gradient(
     90deg,
-    rgba(8, 9, 22, 0.44) 0%,
-    rgba(8, 9, 22, 0.15) 52%,
-    rgba(8, 9, 22, 0.00) 84%
+    rgba(8, 9, 22, 0) 5%,
+    rgba(8, 9, 22, calc(var(--zzz-bal-left, 0) * 1.27)) 18%,
+    rgba(8, 9, 22, calc(var(--zzz-bal-left, 0) * 1.15)) 38%,
+    rgba(8, 9, 22, calc(var(--zzz-bal-left, 0) * 0.45)) 58%,
+    rgba(8, 9, 22, 0) 76%,
+    rgba(8, 9, 22, calc(var(--zzz-bal-right, 0) * 0.75)) 86%,
+    rgba(8, 9, 22, var(--zzz-bal-right, 0)) 100%
   );
 }
 
@@ -2851,6 +2859,8 @@ body {
   --zzz-accent-soft: #ff6a70;
 }
 body[data-ds-dark-theme] { --dsw-alias-bg-base: #141826; }
+/* 这张壁纸左右亮度天然不均（实测左 96.9 附近的分布），按实测差值压暗对应一侧 */
+body { --zzz-bal-left: 0.26; --zzz-bal-right: 0; }
 body:not([data-ds-dark-theme]) { --dsw-alias-bg-base: #f4f0f0; }
 /* 壁纸亮度归一（实测 L=96.9）：亮档 ×1.44 → ~140，暗档 ×0.72 → ~70 */
 body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
