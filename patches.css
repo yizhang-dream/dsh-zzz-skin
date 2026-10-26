@@ -2563,6 +2563,20 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
   color: #14141a !important;
 }
 
+/* ── 13.5 变更文件卡「已编辑 N 个文件」填充（2026-10-27 用户报「太亮了」）
+ * 宿主把头栏底色写成 var(--changes-fill)，而 --changes-fill 指到
+ * --dsw-static-neutral-850。本皮肤的静态色阶整体做了明暗反转（设计如此：
+ * 代码块吃 neutral-00、主按钮吃 neutral-300，都靠这个反转成立），于是这条头栏
+ * 暗档拿到 #c9c9d2 的浅灰、亮档拿到 #0c0c0e 的墨黑——两头都反了。
+ * 不动全局色阶，只在本组件里把填充改回「比卡片底色亮一档 / 暗一档」。
+ * 锚点用宿主给的 data-changed-files，不用猜哈希类名。 */
+body[data-ds-dark-theme] [data-changed-files="true"] {
+  --changes-fill: rgba(255, 255, 255, 0.07);
+}
+body:not([data-ds-dark-theme]) [data-changed-files="true"] {
+  --changes-fill: rgba(20, 20, 26, 0.07);
+}
+
 /* ═══ §14 大肥鱼头像（2026-10-25 用户裁定：敲敲头像风格 × DeepSeek 人设胖鲸，放 AI 消息左侧）═══
    样式规格取自敲敲官方头像（wiki.biligame.com/zzz/敲敲）：正圆无外环、
    平涂浅底、主体居中 55-100%、细线软上色、眼睛高光是灵魂、无黑粗描边。
