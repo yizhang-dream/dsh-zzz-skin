@@ -2209,6 +2209,23 @@ body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
 body[data-ds-dark-theme] [data-dsh-skin-layer="background"] img {
   filter: saturate(0.92) contrast(0.97) brightness(0.61);
 }
+/* 10.11b 壁纸左右亮度配平（2026-10-27 用户报「左半边亮，右半边不亮，不对称」）
+ * 实测原图本身就不对称：左半均值 127.9 / 右半 86.0（差 42），构图上左侧是街景亮部、
+ * 右侧是车厢暗部。聊天文字压在亮部时对比度明显吃亏。这里沿 X 轴补一层压暗，
+ * 左侧 la→50% 处降到底，把两侧拉平；数值取到实测差值的 3/4，保留插画层次不糊成一片。
+ * 想更均衡就调大 0.30/0.10 这两个 alpha，想完全保留原图就把这条规则删掉。 */
+[data-dsh-skin-layer="background"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(8, 9, 22, 0.44) 0%,
+    rgba(8, 9, 22, 0.15) 52%,
+    rgba(8, 9, 22, 0.00) 84%
+  );
+}
 
 /* 10.12 设置弹窗/弹层亮色重涂（v8.2，2026-10-24）——「更多/设置发黑看不清」
  *     根源：§3/§5 给弹窗(0.88)/菜单(0.9)/左导航(#070709)/值块(黑0.5)/输入(黑0.45)
@@ -2429,10 +2446,15 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    ::after 伪元素画条会被 backdrop-filter 合成顺序盖到文字上面（字隔奶白透
    5% 成幽灵字，实测隐藏条后文字清晰实锤）；改用本体背景 + background-clip:
    content-box（背景只进内容盒=从 68px 起），天然垫底零层叠问题。 */
+/* 2026-10-27：选择器末尾统一带 :not([hidden])——宿主把回合流程成员标成
+   hidden="until-found"（原生 = content-visibility:hidden + 高度 0），
+   这些行本来不该画；但元素自身背景仍绘制，§13.1/§14 的 padding 在 border-box
+   下把 0 高撑成 12+12=24px、把宽度撑成 68+22=90px，屏幕上就多出一列空胶囊
+   （实测 65 个）。排除后隐藏行维持高度 0，真展开时属性移除即恢复气泡样式。 */
 /* AI 消息=与人类气泡同款家族（fit-content/镜像角/硬影），颜色跟档位走；
    头像按原图像素实测叠在条左端（非分离）——文字与头像保持 20px+ 净距 */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]),
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
   background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
   color: #f4f4f6 !important;
   width: fit-content;
@@ -2443,18 +2465,18 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
   position: relative;
 }
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg),
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg) {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg),
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg) {
   color: #f4f4f6 !important;
 }
 /* 2026-10-25 用户裁定：字体撤销（不要幼圆/大字距），回系统 UI 字体，仅保留字色 */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *,
-[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) * {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *,
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) * {
   color: #1e1e1e !important;
 }
 /* AI 气泡内代码块保持深底 */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre,
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) code {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) pre,
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) code {
   background: #14141a !important;
   color: #f2f2f4 !important;
 }
@@ -2515,18 +2537,18 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 /* ── 13.4 亮档适配：纸面版 knock knock ── */
 /* 亮色档（2026-10-25 用户二次裁定：配色跟档位走）：AI 泡=奶白底+深字；
    头像/蓝用户泡不变；代码块保深底 */
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]),
-body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) {
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
   background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
   color: #303030 !important;
   box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.65);
 }
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg),
-body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) *:not(pre):not(code):not(svg) {
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg),
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg) {
   color: #303030 !important;
 }
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre,
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre code {
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) pre,
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) pre code {
   background: #0c0c10 !important;
   color: #f2f2f4 !important;
 }
@@ -2545,12 +2567,12 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
    样式规格取自敲敲官方头像（wiki.biligame.com/zzz/敲敲）：正圆无外环、
    平涂浅底、主体居中 55-100%、细线软上色、眼睛高光是灵魂、无黑粗描边。
    形象 = DeepSeek 人设「大肥鱼」：品牌蓝 #4D6BFE 胖鲸 + 浅肚 + 水柱。 */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]),
-[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]) {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden]),
+[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden]) {
   padding-left: 68px !important;
 }
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before,
-[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden])::before,
+[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden])::before {
   /* 原图像素实测：头像叠在条左端上（条从头像左后延伸、左侧露条 13px、
      头像底出挑条底 6px、文字距头像右缘 20px+）；条左上角近直角 */
   content: "";
@@ -2570,8 +2592,8 @@ body:not([data-ds-dark-theme]) [class*="uV2eYG_card"] [contenteditable="true"] *
   pointer-events: none;
 }
 /* 亮档：白气泡上给一圈淡描边防糊 */
-body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before,
-body:not([data-ds-dark-theme]) [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["])::before {
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden])::before,
+body:not([data-ds-dark-theme]) [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden])::before {
   border-color: rgba(20, 20, 26, 0.18);
 }
 /* reduced-motion 无关（静态装饰） */
@@ -2700,7 +2722,7 @@ body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG
   text-shadow: 0 1px 0 rgba(8, 9, 20, 0.9), 0 0 3px rgba(8, 9, 20, 0.8);
 }
 /* 15.4 磨砂条上的代码块恢复深底（对比保读） */
-.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]) pre {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) pre {
   background: #14141a !important;
 }
 
