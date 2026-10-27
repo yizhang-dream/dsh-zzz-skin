@@ -1415,11 +1415,9 @@ input[type="checkbox"]:checked::after {
   [data-slot="sidebar.workspaces"]::after,
   [data-slot="conversation.composer.bar"]::before,
   [data-slot="conversation.composer.bar"]::after,
-  [data-streaming]::after,
   [data-dsh-part="new-session"]:active::after,
   [data-slot="sidebar.panellist"]::after,
   [role="dialog"]::before,
-  [data-streaming]::after,
   body::before,
   body::after,
   html::after {
@@ -1963,34 +1961,9 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol:has([data-dsh-part="turn-tail"]
   to   { transform: translateX(135%); }
 }
 
-/* ── §9.15 音波纹（v7.7）：流式输出 = 声波传输 ─────────────────────
- * 游戏语音/信号界面的声波条纹。宿主锚点：消息正文流式生成中（data-streaming）——
- * 正文底部挂 5 条错峰跳动的声波竖条（accent 色），随流式出现/消失。*/
-[data-streaming] {
-  position: relative;
-  padding-bottom: 14px;
-}
-[data-streaming]::after {
-  content: "";
-  position: absolute;
-  left: 4px;
-  bottom: 4px;
-  width: 5px;
-  height: 12px;
-  background: var(--zzz-accent);
-  box-shadow:
-    9px 0 0 -0.5px color-mix(in srgb, var(--zzz-accent) 80%, transparent),
-    18px 0 0 -1.5px color-mix(in srgb, var(--zzz-accent) 55%, transparent),
-    27px 0 0 -0.5px color-mix(in srgb, var(--zzz-accent) 75%, transparent),
-    36px 0 0 -2px color-mix(in srgb, var(--zzz-accent) 45%, transparent);
-  animation: zzz-wave 0.9s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes zzz-wave {
-  0%, 100% { transform: scaleY(0.5); opacity: 0.7; }
-  50% { transform: scaleY(1.35); opacity: 1; }
-}
-
+/* ── §9.15 音波纹：已撤（2026-10-27 用户裁定「不要橙色条形码」）──
+ * 原实现：流式输出时在正文左下角画 5 根 accent 竖条（box-shadow 展开 + zzz-wave 抖动），
+ * 用户看着像条形码，整块删除。 */
 /* ── §9.16 调查报告弹窗（v7.7）：设置弹窗 = 游戏内档案/报告 ──────────
  * 游戏「调查报告/HDD 档案」纸感弹窗。宿主锚点：role=dialog（设置弹窗）——
  * 顶部档案标签条（::before 内容条）+ 纸面横线底 + 角落机密章。
@@ -2846,51 +2819,48 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_header"]::before {
   box-shadow: 1.5px 1.5px 0 rgba(20, 20, 26, 0.35);
 }
 
-/* ═══ §16 浅灰小字反色底（2026-10-27 用户裁定）═══
- * 「浅灰小字在亮色和暗色下选择相反的两种框，但是都包起来，因为它在亮色和暗色下
- *   都不容易看清楚」——veil 删除后（面板透明）状态行与工具行的小字直接压在壁纸上，
- * 亮档壁纸提亮到 ~160、暗档压暗到 ~50，两种情况下灰字都吃亏。
- * 做法：给小字套一个与背景相反的框——
- *   亮档：墨底（rgba 20,20,26,0.90）+ 浅字 #f4f4f6
- *   暗档：纸底（rgba 250,250,246,0.94）+ 墨字 #14141a
- * 两档的框色与字色互为反色，无论壁纸明暗都能读。
- * 注意：选择器不能以 html 开头——skin-center 会在前面加
- * html[data-dsh-skin="..."] 前缀，写成 html body 会变成 html 套 html 永不可匹配。
- * 所以用与既有规则同级或更高的特异性，并放在文件末尾靠顺序取胜。 */
-[data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
-[data-dsh-surface="conversation"] [data-tool] {
-  border-radius: 8px !important;
-  padding: 2px 10px !important;
-  width: fit-content !important;
-}
-/* 框色跟档位同向；字色交给 contrast-color() 自动取反（2026-10-27 用户提示
- * 「有一种自动取不一样色的技术，常常用在鼠标上」）。
- * 对比色函数 Chrome 155 已支持：给它一个颜色，它返回黑或白里对比更高的那个。
- * 这样以后改框色不用再手写两套字色。 */
-body { --zzz-chip: #faf9f5; }
-body[data-ds-dark-theme] { --zzz-chip: #1a1a20; }
+/* ═══ §16 过程类小字：窄而淡的底（2026-10-27 三轮裁定合并）═══
+ * 演变：① 最初用「与背景相反」的厚底包住状态行与工具行；② 用户提示可用自动
+ * 对比色 → 字色改由 contrast-color() 取黑/白；③ 用户再裁定「不要框框叠框框，
+ * 也不要橙色条形码」——工具行本身已有宿主的行框，再包一层就是框叠框，因此
+ * 工具行完全不碰（不铺底、不改字色）；只保留没有宿主的纯文字行。
+ *
+ * 范围：状态行「已完成，用时 N 秒」文字、思考/工具流程组的标题按钮。
+ * 底：亮档纸底 / 暗档墨底，透明度 0.60 左右（比顶栏的厚底淡一档），
+ *     另加 1px 细描边把边界勾出来（暗档填充几乎与壁纸同值，只靠填充看不出是块）。
+ * 字色：contrast-color() 按不透明基色自动取黑或白，调底色深浅不会让字发糊。
+ * 坑：选择器不能以 html 开头——skin-center 会加 html[data-dsh-skin] 前缀，
+ *     写成 html body 会变成 html 套 html，永远匹配不上。 */
+body { --zzz-chip-soft: rgb(250 249 245 / 0.60); --zzz-chip-edge: rgba(20, 20, 26, 0.24); }
+body[data-ds-dark-theme] { --zzz-chip-soft: rgb(28 28 36 / 0.58); --zzz-chip-edge: rgba(255, 255, 255, 0.34); }
+
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
 body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] {
+  background: var(--zzz-chip-soft) !important;
+  border-radius: 6px !important;
+  padding: 1px 8px !important;
+  width: fit-content !important;
+  box-shadow: inset 0 0 0 1px var(--zzz-chip-edge, rgba(128, 128, 128, 0.24)) !important;
+}
+
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] *,
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
 body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] {
-  background: var(--zzz-chip) !important;
-  box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.32) !important;
-}
-/* 兜底：不支持 contrast-color() 的浏览器用这两条（按档位写死） */
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span,
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool] * {
-  color: #1a1a1e !important;
-}
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] * {
-  color: #f4f4f6 !important;
-}
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span,
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool] *,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] * {
-  color: contrast-color(var(--zzz-chip)) !important;
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] * {
+  color: contrast-color(#faf9f5) !important;
   text-shadow: none !important;
+}
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] * {
+  color: contrast-color(#1a1a20) !important;
 }
 
 /* ═══ §17 顶栏标题 / 徽章反色底（2026-10-27）═══
@@ -2927,49 +2897,4 @@ body[data-ds-dark-theme] [class*="VoX2oq_trigger"],
 body[data-ds-dark-theme] [class*="VoX2oq_triggerLabel"],
 body[data-ds-dark-theme] [class*="SVAs4q_label"] {
   color: contrast-color(var(--zzz-chip)) !important;
-}
-
-/* ── §16b 过程类小字：窄而淡的底（2026-10-27 用户追加裁定）──
- * 「还是不是很清晰，可能还是需要一个小底边作为背景，但是我希望在展现思考等
- *   不是直接输出的时候，这个可以稍微淡一点」。
- * 分两档强度：直接内容 / 顶栏用 --zzz-chip（厚底）；思考过程、工具调用、状态行
- * 用 --zzz-chip-soft（薄底 + 贴字窄条）。字色仍由 contrast-color() 按不透明基色
- * 自动取黑/白，淡底也不会读不清。 */
-body { --zzz-chip-soft: rgb(250 249 245 / 0.60); --zzz-chip-edge: rgba(20, 20, 26, 0.24); }
-body[data-ds-dark-theme] { --zzz-chip-soft: rgb(28 28 36 / 0.58); --zzz-chip-edge: rgba(255, 255, 255, 0.34); }
-
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool],
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] {
-  background: var(--zzz-chip-soft) !important;
-  border-radius: 6px !important;
-  padding: 1px 8px !important;
-  width: fit-content !important;
-  box-shadow: inset 0 0 0 1px var(--zzz-chip-edge, rgba(128, 128, 128, 0.24)) !important;
-}
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool],
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool] *,
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] *,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] *,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] * {
-  color: contrast-color(#faf9f5) !important;
-  text-shadow: none !important;
-}
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] *,
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] * {
-  color: contrast-color(#1a1a20) !important;
 }
