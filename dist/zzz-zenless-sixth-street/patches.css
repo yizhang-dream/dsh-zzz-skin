@@ -2929,6 +2929,51 @@ body[data-ds-dark-theme] [class*="SVAs4q_label"] {
   color: contrast-color(var(--zzz-chip)) !important;
 }
 
+/* ── §16b 过程类小字：窄而淡的底（2026-10-27 用户追加裁定）──
+ * 「还是不是很清晰，可能还是需要一个小底边作为背景，但是我希望在展现思考等
+ *   不是直接输出的时候，这个可以稍微淡一点」。
+ * 分两档强度：直接内容 / 顶栏用 --zzz-chip（厚底）；思考过程、工具调用、状态行
+ * 用 --zzz-chip-soft（薄底 + 贴字窄条）。字色仍由 contrast-color() 按不透明基色
+ * 自动取黑/白，淡底也不会读不清。 */
+body { --zzz-chip-soft: rgb(250 249 245 / 0.60); --zzz-chip-edge: rgba(20, 20, 26, 0.24); }
+body[data-ds-dark-theme] { --zzz-chip-soft: rgb(28 28 36 / 0.58); --zzz-chip-edge: rgba(255, 255, 255, 0.34); }
+
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] {
+  background: var(--zzz-chip-soft) !important;
+  border-radius: 6px !important;
+  padding: 1px 8px !important;
+  width: fit-content !important;
+  box-shadow: inset 0 0 0 1px var(--zzz-chip-edge, rgba(128, 128, 128, 0.24)) !important;
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool] *,
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] *,
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] *,
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] * {
+  color: contrast-color(#faf9f5) !important;
+  text-shadow: none !important;
+}
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="O_Ebla_title"] *,
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] *,
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] button[class*="l_V-RG"] span[class*="l_V-RG_label"] * {
+  color: contrast-color(#1a1a20) !important;
+}
+
 
 
 /* ═══ §T 版本主题：新艾利都 · 六分街 ═══ */
