@@ -2929,6 +2929,38 @@ body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] * {
   text-shadow: none !important;
 }
 
+/* ── §16d 思考行：宿主是 128 灰 + 全透明底，压在壁纸白字上等于没有（2026-10-27）──
+ * 用户「左边比较糊」。实测结论：像素本身是锐的（字形边缘就是 1px 抗锯齿，没有重采样），
+ * 糊在对比度——思考行正文是宿主的 rgb(128,128,144) 且底全透明，正落在壁纸
+ * 「新艾利都」白色大字上，暗档实测 2.2-3.5:1、亮档 2.3-3.3:1；同一组的工具行
+ * 有 §16c 的底，13:1，所以只有思考行看起来是糊的。
+ * 补法与工具行同源但不撞色：中性柔光底（工具行是壁纸同调的彩色底），字色由
+ * contrast-color() 取黑白；padding 用负 margin 抵消，行位置与宽度不动。
+ * 收起的步骤（hidden="until-found" / content-visibility:hidden）此时不上屏，验收要先展开。 */
+body { --zzz-think-bg: rgb(250 249 245 / 0.86); }
+body[data-ds-dark-theme] { --zzz-think-bg: rgb(26 26 34 / 0.82); }
+
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="lcKema_row"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="lcKema_row"] {
+  background: var(--zzz-think-bg) !important;
+  border-radius: 6px !important;
+  padding: 1px 8px !important;
+  margin-inline: -8px !important;
+  width: fit-content !important;
+  max-width: calc(100% + 16px) !important;
+  box-shadow: none !important;
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="lcKema_row"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="lcKema_row"] * {
+  color: contrast-color(#faf9f5) !important;
+  text-shadow: none !important;
+}
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="lcKema_row"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="lcKema_row"] * {
+  color: contrast-color(#1a1a20) !important;
+  text-shadow: none !important;
+}
+
 
 
 /* ═══ §T 版本主题：新艾利都 · 六分街 ═══ */
