@@ -469,22 +469,22 @@ html::after {
   fill: var(--zzz-ink);
 }
 
-/* 会话列表行：进入时阶梯浮现 */
+/* 会话列表行：进入时阶梯浮现（2026-10-27 加速：300→180ms，步进 40→24ms） */
 [role="treeitem"] {
   border-radius: 8px;
-  animation: zzz-rise 300ms var(--zzz-ease-snap) backwards;
+  animation: zzz-rise 180ms var(--zzz-ease-snap) backwards;
   transition: background-color 120ms ease, transform 140ms var(--zzz-ease-snap);
 }
 [role="treeitem"]:hover {
   background-color: rgba(255, 255, 255, 0.045);
   transform: translateX(2px);
 }
-[role="treeitem"]:nth-child(1) { animation-delay: 20ms; }
-[role="treeitem"]:nth-child(2) { animation-delay: 60ms; }
-[role="treeitem"]:nth-child(3) { animation-delay: 100ms; }
-[role="treeitem"]:nth-child(4) { animation-delay: 140ms; }
-[role="treeitem"]:nth-child(5) { animation-delay: 180ms; }
-[role="treeitem"]:nth-child(n + 6) { animation-delay: 220ms; }
+[role="treeitem"]:nth-child(1) { animation-delay: 12ms; }
+[role="treeitem"]:nth-child(2) { animation-delay: 36ms; }
+[role="treeitem"]:nth-child(3) { animation-delay: 60ms; }
+[role="treeitem"]:nth-child(4) { animation-delay: 84ms; }
+[role="treeitem"]:nth-child(5) { animation-delay: 108ms; }
+[role="treeitem"]:nth-child(n + 6) { animation-delay: 132ms; }
 
 /* 新建会话：主行动 = 黄绿实心 + 黑字（与选中态同一套语言），
  * hover 扫光，按下硬缩。 */
@@ -556,7 +556,7 @@ html::after {
 /* ── 5.2 会话区 ───────────────────────────────────────────────────── */
 /* 景别推近：切进会话时整体 1.045 再回落 */
 [data-dsh-surface="conversation"] {
-  animation: zzz-cam-push 320ms var(--zzz-ease-cam) 120ms backwards;
+  animation: zzz-cam-push 190ms var(--zzz-ease-cam) 70ms backwards;
   transform-origin: 50% 40%;
 }
 @keyframes zzz-cam-push {
@@ -565,16 +565,16 @@ html::after {
   100% { transform: none; }
 }
 
-/* 消息行阶梯入场 */
+/* 消息行阶梯入场（2026-10-27 用户「加快顺发」：340→200ms，步进 45→24ms） */
 [data-dsh-part="message-row"] {
-  animation: zzz-rise 340ms var(--zzz-ease-snap) backwards;
+  animation: zzz-rise 200ms var(--zzz-ease-snap) backwards;
 }
 [data-dsh-part="message-row"]:nth-child(1) { animation-delay: 0ms; }
-[data-dsh-part="message-row"]:nth-child(2) { animation-delay: 45ms; }
-[data-dsh-part="message-row"]:nth-child(3) { animation-delay: 90ms; }
-[data-dsh-part="message-row"]:nth-child(4) { animation-delay: 135ms; }
-[data-dsh-part="message-row"]:nth-child(5) { animation-delay: 180ms; }
-[data-dsh-part="message-row"]:nth-child(n + 6) { animation-delay: 225ms; }
+[data-dsh-part="message-row"]:nth-child(2) { animation-delay: 24ms; }
+[data-dsh-part="message-row"]:nth-child(3) { animation-delay: 48ms; }
+[data-dsh-part="message-row"]:nth-child(4) { animation-delay: 72ms; }
+[data-dsh-part="message-row"]:nth-child(5) { animation-delay: 96ms; }
+[data-dsh-part="message-row"]:nth-child(n + 6) { animation-delay: 120ms; }
 
 /* 回合尾巴：方块光标（P7）——已撤（2026-10-25 用户裁定「一直在刷新的框框太丑」）：
    整卡硬闪让每轮末尾的用量卡一直在闪，删除。zzz-caret 键帧保留供他处引用。 */
@@ -759,17 +759,17 @@ button[aria-label*="删除"]:active {
 
 /* ── 5.3 弹层 / 菜单 / 设置 ────────────────────────────────────────── */
 [role="menu"] {
-  animation: zzz-slide-in 180ms var(--zzz-ease-pop) backwards;
+  animation: zzz-slide-in 110ms var(--zzz-ease-pop) backwards;
 }
 [role="menuitem"] {
-  animation: zzz-rise 220ms var(--zzz-ease-snap) backwards;
+  animation: zzz-rise 130ms var(--zzz-ease-snap) backwards;
   transition: background-color 100ms var(--zzz-ease-hard), color 100ms var(--zzz-ease-hard);
 }
 [role="menuitem"]:nth-child(1) { animation-delay: 0ms; }
-[role="menuitem"]:nth-child(2) { animation-delay: 22ms; }
-[role="menuitem"]:nth-child(3) { animation-delay: 44ms; }
-[role="menuitem"]:nth-child(4) { animation-delay: 66ms; }
-[role="menuitem"]:nth-child(n + 5) { animation-delay: 88ms; }
+[role="menuitem"]:nth-child(2) { animation-delay: 13ms; }
+[role="menuitem"]:nth-child(3) { animation-delay: 26ms; }
+[role="menuitem"]:nth-child(4) { animation-delay: 39ms; }
+[role="menuitem"]:nth-child(n + 5) { animation-delay: 52ms; }
 [role="menuitem"]:hover,
 [role="menuitem"]:focus-visible {
   background-color: var(--zzz-accent);
@@ -785,7 +785,7 @@ button[aria-label*="删除"]:active {
 /* 弹窗：双层（幽灵层从右后推入 → 实层落下） */
 [role="dialog"] {
   position: relative;
-  animation: zzz-win-snap 260ms var(--zzz-ease-pop) backwards;
+  animation: zzz-win-snap 160ms var(--zzz-ease-pop) backwards;
 }
 @keyframes zzz-win-snap {
   0%   { opacity: 0; transform: scale(0.94) translateY(6px); }
@@ -808,7 +808,7 @@ button[aria-label*="删除"]:active {
 
 /* 遮罩：轻微故障撕裂后稳定 */
 [data-dsh-surface="overlay"] {
-  animation: zzz-overlay-in 200ms var(--zzz-ease-crt) backwards;
+  animation: zzz-overlay-in 130ms var(--zzz-ease-crt) backwards;
 }
 @keyframes zzz-overlay-in {
   0%   { opacity: 0; transform: scale(1.02); filter: blur(3px); }
@@ -1277,7 +1277,7 @@ input[type="checkbox"]:checked::after {
   ) !important;
 }
 [data-dsh-usage-foot-card] {
-  animation: zzz-rise 320ms var(--zzz-ease-snap) 180ms backwards;
+  animation: zzz-rise 190ms var(--zzz-ease-snap) 110ms backwards;
 }
 /* P9 数字滚动：数值节点每次更新重新触发 */
 .cm-num,
@@ -2342,22 +2342,24 @@ pre, code, kbd, samp, [class*="code"], [class*="Code"] {
   margin-right: 10px;
   font-weight: 700 !important;
 }
-/* ── 12.2 设置行：交替底 + 细分隔 + 逐行弹入 ── */
+/* ── 12.2 设置行：交替底 + 细分隔 + 逐行弹入 ──
+ * 2026-10-27 用户「加快顺发的动效速度」：0.5s→0.28s，逐行步进 0.07→0.04s，
+ * 行数多时整段铺满时间从 ~1.1s 压到 ~0.6s。 */
 [role="dialog"] [class*="_row"] {
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  animation: zzz-row-in 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) backwards;
+  animation: zzz-row-in 0.28s cubic-bezier(0.2, 1.4, 0.3, 1) backwards;
 }
 [role="dialog"] [class*="_row"]:nth-child(odd)  { background-color: rgba(26, 26, 30, 0.22); }
 [role="dialog"] [class*="_row"]:nth-child(even) { background-color: rgba(26, 26, 30, 0.06); }
-[role="dialog"] [class*="_row"]:nth-child(1) { animation-delay: 0.02s; }
-[role="dialog"] [class*="_row"]:nth-child(2) { animation-delay: 0.09s; }
-[role="dialog"] [class*="_row"]:nth-child(3) { animation-delay: 0.16s; }
-[role="dialog"] [class*="_row"]:nth-child(4) { animation-delay: 0.23s; }
-[role="dialog"] [class*="_row"]:nth-child(5) { animation-delay: 0.30s; }
-[role="dialog"] [class*="_row"]:nth-child(6) { animation-delay: 0.37s; }
-[role="dialog"] [class*="_row"]:nth-child(7) { animation-delay: 0.44s; }
-[role="dialog"] [class*="_row"]:nth-child(8) { animation-delay: 0.51s; }
-[role="dialog"] [class*="_row"]:nth-child(n+9) { animation-delay: 0.58s; }
+[role="dialog"] [class*="_row"]:nth-child(1) { animation-delay: 0.01s; }
+[role="dialog"] [class*="_row"]:nth-child(2) { animation-delay: 0.05s; }
+[role="dialog"] [class*="_row"]:nth-child(3) { animation-delay: 0.09s; }
+[role="dialog"] [class*="_row"]:nth-child(4) { animation-delay: 0.13s; }
+[role="dialog"] [class*="_row"]:nth-child(5) { animation-delay: 0.17s; }
+[role="dialog"] [class*="_row"]:nth-child(6) { animation-delay: 0.21s; }
+[role="dialog"] [class*="_row"]:nth-child(7) { animation-delay: 0.25s; }
+[role="dialog"] [class*="_row"]:nth-child(8) { animation-delay: 0.29s; }
+[role="dialog"] [class*="_row"]:nth-child(n+9) { animation-delay: 0.33s; }
 @keyframes zzz-row-in {
   from { opacity: 0; transform: translateX(-28px); }
   to { opacity: 1; transform: translateX(0); }
