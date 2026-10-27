@@ -669,9 +669,10 @@ html::after {
  * 这是和实机差距最大的一处——以前内容列和画布同色，层次是平的。 */
 [data-pane="conversation"],
 .pI_x6G_centerCol {
-  background-color: rgba(10, 10, 12, 0.6);
-  backdrop-filter: blur(7px) saturate(1.1);
-  -webkit-backdrop-filter: blur(7px) saturate(1.1);
+  /* 2026-10-27 用户裁定「直接删了 veil」：这层半透明底+磨砂只铺在面板宽度内，
+   * 右缘硬切，面板被右侧栏挤窄时竖缝正好落在屏幕中间，看着就是左右两半。
+   * 整层删除，面板改为完全透明，壁纸直接透上来。 */
+  background-color: transparent;
 }
 [data-pane="conversation"]::before,
 .pI_x6G_centerCol::before {
@@ -1468,7 +1469,8 @@ input[type="checkbox"]:checked::after {
 /* 3) 亮色档玻璃（DSH 亮色 = body 无 data-ds-dark-theme）：暗玻璃换浅玻璃 */
 body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
 body:not([data-ds-dark-theme]) [data-pane="conversation"] {
-  background-color: rgba(243, 244, 249, 0.72);
+  /* veil 已删（2026-10-27）：面板不再自铺底色，壁纸直接透上来 */
+  background-color: transparent;
 }
 body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol,
 body:not([data-ds-dark-theme]) [data-pane="sidebar"] {
@@ -1551,10 +1553,8 @@ button[class*="primary"],
 /* 8.6 亮色档 = 白纸漫画（白底黑描边 lime 点缀，不是暗玻璃的浅色版） */
 body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
 body:not([data-ds-dark-theme]) [data-pane="conversation"] {
-  /* 2026-10-25 用户裁定：亮色档壁纸明显可见——纸面 0.82→0.62 + 6px 磨砂保正文可读 */
-  background-color: rgba(250, 250, 246, 0.35);
-  backdrop-filter: blur(6px) saturate(1.02);
-  -webkit-backdrop-filter: blur(6px) saturate(1.02);
+  /* veil 已删（2026-10-27 用户裁定）：不再铺纸面底色与磨砂，只留左边框做面板分界 */
+  background-color: transparent;
   border-left: 2px solid #14141a;
 }
 body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol,
@@ -2658,10 +2658,7 @@ body[data-ds-dark-theme] [data-pane="conversation"]::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: rgba(12, 14, 35, 0.12);
-  /* 2026-10-25 用户裁定：切主题有的套过于模糊 → 两档统一 14px 中庸磨砂 */
-  backdrop-filter: blur(14px) saturate(1.02);
-  -webkit-backdrop-filter: blur(14px) saturate(1.02);
+  /* veil 已按 2026-10-27 裁定删除；::before 本身保留（角括号 / PRESS ANY KEY 共用） */
 }
 body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
 body:not([data-ds-dark-theme]) [data-pane="conversation"] {
@@ -2678,9 +2675,7 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"]::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: rgba(250, 250, 246, 0.22);
-  backdrop-filter: blur(14px) saturate(1.02);
-  -webkit-backdrop-filter: blur(14px) saturate(1.02);
+  /* veil 已按 2026-10-27 裁定删除；::before 本身保留（角括号 / PRESS ANY KEY 共用） */
 }
 /* 15.2 完成态状态行：灰字 + ›（l_V-RG 即「已完成，用时」载体，§5.2c 实测）
  * 原版按敲敲聊天记录做了删除线，但那条线横穿字身、观感像划掉已完成的工作，
