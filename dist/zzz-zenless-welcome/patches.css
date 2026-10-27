@@ -2899,6 +2899,36 @@ body[data-ds-dark-theme] [class*="SVAs4q_label"] {
   color: contrast-color(var(--zzz-chip)) !important;
 }
 
+/* ── §16c 命令 / 工具行：与思考不同的底色，取自壁纸色调（2026-10-27）──
+ * 用户：「只有思考有框，我希望别的命令也有底色不一样的框，这个框和壁纸色配」。
+ * 思考行用中性纸/墨薄底（--zzz-chip-soft），命令行改用壁纸同调的彩色薄底，
+ * 两者一眼能分辨；底色仍走 contrast-color() 自动取字色。
+ * 只上底色不再加描边——上一轮的「框框叠框框」就是描边 + 行内块叠出来的。 */
+body {
+  --zzz-tool-bg: rgb(246 241 229 / 0.80);   /* 亮档：暖米纸，跟迎新壁纸的暖调 */
+}
+body[data-ds-dark-theme] {
+  --zzz-tool-bg: rgb(40 34 58 / 0.86);      /* 暗档：深靛紫，跟夜航壁纸的蓝紫 */
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] {
+  background: var(--zzz-tool-bg) !important;
+  border-radius: 6px !important;
+  padding: 1px 8px !important;
+  width: fit-content !important;
+  box-shadow: none !important;
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [data-tool] * {
+  color: contrast-color(#f6f1e5) !important;
+  text-shadow: none !important;
+}
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] * {
+  color: contrast-color(#28223a) !important;
+  text-shadow: none !important;
+}
+
 
 
 /* ═══ §T 版本主题：新艾利都 · 迎新 ═══ */
