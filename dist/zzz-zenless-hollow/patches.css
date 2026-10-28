@@ -2931,25 +2931,32 @@ body[data-ds-dark-theme] [data-dsh-surface="conversation"] [data-tool] * {
   text-shadow: none !important;
 }
 
-/* ── §16d 思考行：宿主是 128 灰 + 全透明底，压在壁纸白字上等于没有（2026-10-27）──
- * 用户「左边比较糊」。实测结论：像素本身是锐的（字形边缘就是 1px 抗锯齿，没有重采样），
- * 糊在对比度——思考行正文是宿主的 rgb(128,128,144) 且底全透明，正落在壁纸
- * 「新艾利都」白色大字上，暗档实测 2.2-3.5:1、亮档 2.3-3.3:1；同一组的工具行
- * 有 §16c 的底，13:1，所以只有思考行看起来是糊的。
- * 补法与工具行同源但不撞色：中性柔光底（工具行是壁纸同调的彩色底），字色由
- * contrast-color() 取黑白；padding 用负 margin 抵消，行位置与宽度不动。
- * 收起的步骤（hidden="until-found" / content-visibility:hidden）此时不上屏，验收要先展开。 */
-body { --zzz-think-bg: rgb(250 249 245 / 0.86); }
-body[data-ds-dark-theme] { --zzz-think-bg: rgb(26 26 34 / 0.82); }
+/* ── §16d 过程行的底画在「内容条」上，不铺整行（2026-10-27 二次裁定）──
+ * 用户第一轮「左边比较糊」→ §16d 初版给思考行整行铺底；
+ * 第二轮「思考大框包小框，运行命令没有框」→ 整行底把宿主自己的内容容器包了一层，
+ * 而命令行（CY-8Ka_card，不是 [data-tool]）反倒没有底。
+ * 改法：底只画在内容条 _content_1rdzk_ 上（标签 + 正文都在里面），行本身不铺底——
+ * 一层框、贴字宽度；命令行与工具行共用壁纸同调的彩色底，思考行用中性底。
+ * 字色仍由 contrast-color() 取黑白；padding 1px 8px 只加在内容条上，行位置不动。 */
+body { --zzz-think-bg: rgb(242 243 246 / 0.88); --zzz-tool-bg: rgb(246 241 229 / 0.80); }
+body[data-ds-dark-theme] { --zzz-think-bg: rgb(26 26 34 / 0.82); --zzz-tool-bg: rgb(40 34 58 / 0.86); }
 
-body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="lcKema_row"],
-body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="lcKema_row"] {
+/* 思考行：中性底 */
+[data-dsh-surface="conversation"] [class*="lcKema_row"] [class*="_content_1rdzk_"] {
   background: var(--zzz-think-bg) !important;
   border-radius: 6px !important;
   padding: 1px 8px !important;
-  margin-inline: -8px !important;
   width: fit-content !important;
-  max-width: calc(100% + 16px) !important;
+  max-width: 100% !important;
+  box-shadow: none !important;
+}
+/* 命令行（运行命令 / 执行了命令）：壁纸同调的彩色底，与工具行一致 */
+[data-dsh-surface="conversation"] [class*="CY-8Ka"] [class*="_content_1rdzk_"] {
+  background: var(--zzz-tool-bg) !important;
+  border-radius: 6px !important;
+  padding: 1px 8px !important;
+  width: fit-content !important;
+  max-width: 100% !important;
   box-shadow: none !important;
 }
 body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="lcKema_row"],
@@ -2960,6 +2967,16 @@ body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="lcKema
 body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="lcKema_row"],
 body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="lcKema_row"] * {
   color: contrast-color(#1a1a20) !important;
+  text-shadow: none !important;
+}
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="CY-8Ka"] [class*="_content_1rdzk_"],
+body:not([data-ds-dark-theme]) [data-dsh-surface="conversation"] [class*="CY-8Ka"] [class*="_content_1rdzk_"] * {
+  color: contrast-color(#f6f1e5) !important;
+  text-shadow: none !important;
+}
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="CY-8Ka"] [class*="_content_1rdzk_"],
+body[data-ds-dark-theme] [data-dsh-surface="conversation"] [class*="CY-8Ka"] [class*="_content_1rdzk_"] * {
+  color: contrast-color(#28223a) !important;
   text-shadow: none !important;
 }
 
