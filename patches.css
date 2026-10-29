@@ -2195,6 +2195,13 @@ body:not([data-ds-dark-theme]) [data-dsh-skin-layer="background"] img {
 body[data-ds-dark-theme] [data-dsh-skin-layer="background"] img {
   filter: saturate(0.92) contrast(0.97) brightness(0.61);
 }
+/* 10.11c 壁纸取景（2026-10-29 上架评审「logo 只露出一截像残留水印块」）
+ * keyart 是 16:9，桌面视口 16:10 时 cover 每边横裁 80px，右上角官方 logo
+ * （源图 x 1712-1812 / 1920）被切掉右半边。锚右上取景：右缘贴视口，logo
+ * 整体留在画面内（距右缘约 90px），裁掉的是左侧路牌边角。 */
+[data-dsh-skin-layer="background"] img {
+  object-position: 100% 0;
+}
 /* 10.11b 壁纸左右亮度配平（2026-10-27 用户报「左半边亮，右半边不亮，不对称」）
  * 六张版本壁纸的左右均值差各不相同（实测：welcome +41.9 / outer-ring +43.0 /
  * hollow +27.0 / keyart +1.6 / sixth-street -5.2 / v13 -52.4），
