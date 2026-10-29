@@ -49,3 +49,10 @@ node tools/set-wallpaper.mjs --image      # 回退静态插画
   基座 `zzz-zenless` 上，所以把 active 切回了基座；想换回去在皮肤中心点一下即可。
 - 皮肤中心的壁纸优先级：Wallpaper Engine > 用户手动壁纸 > 皮肤 backgroundMedia。
   本机没装 wallpaper-engine 插件，所以皮肤视频能直接显示。
+
+## 补：皮肤中心卡片缩略图跟着换（同日）
+
+`preview.dark/light` 原来指向静态插画 `wallpaper-zzz-keyart.jpg`，皮肤中心卡片
+还显示静态图，与实机动态壁纸不一致。改为从两条视频各抽一帧（1280 宽，q3）：
+`assets/preview-dark.jpg` / `assets/preview-light.jpg`。换壁纸时如果想让卡片也
+跟着变，重抽一帧即可。
