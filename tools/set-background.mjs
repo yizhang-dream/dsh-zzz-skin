@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
- * 换皮肤的动态壁纸（暗档 / 亮档各一条）。
+ * 换皮肤的动态背景（暗档 / 亮档各一条）。
  *
  * 用法:
- *   node tools/set-wallpaper.mjs                 # 列出可用的绝区零动态壁纸
- *   node tools/set-wallpaper.mjs 12              # 暗档换成 12 号，亮档保持默认亮色壁纸
- *   node tools/set-wallpaper.mjs 12 --light 16   # 两条分别指定
- *   node tools/set-wallpaper.mjs --image         # 回退成静态插画壁纸
- *   node tools/set-wallpaper.mjs 12 --no-deploy  # 只改本地，不推 lab-ts
+ *   node tools/set-background.mjs                 # 列出可用的绝区零动态壁纸
+ *   node tools/set-background.mjs 12              # 暗档换成 12 号，亮档保持默认亮色壁纸
+ *   node tools/set-background.mjs 12 --light 16   # 两条分别指定
+ *   node tools/set-background.mjs --image         # 回退成静态插画壁纸
+ *   node tools/set-background.mjs 12 --no-deploy  # 只改本地，不推 lab-ts
  *
  * 做的事: 把源 mp4 压成 2560x1440 / H.264 / 无音轨 / faststart 的
- * assets/video/wallpaper-zzz-{dark,light}.mp4，改写 skin.json 的
+ * assets/video/bg-{dark,light}.mp4，改写 skin.json 的
  * backgroundMedia，再 scp 到 lab-ts:~/.dsh/skins/zzz-zenless/（skin-center 热加载）。
  */
 import { execFileSync } from 'node:child_process';
@@ -46,14 +46,14 @@ function list() {
     const size = (fs.statSync(path.join(SRC_DIR, f)).size / 1048576).toFixed(0);
     console.log(`${n}\t${f}\t${size}MB`);
   }
-  console.log(`\n共 ${sources().length} 个。用法: node tools/set-wallpaper.mjs <暗档编号> [--light <亮档编号>]`);
+  console.log(`\n共 ${sources().length} 个。用法: node tools/set-background.mjs <暗档编号> [--light <亮档编号>]`);
 }
 
 function pick(num) {
   const n = String(num).padStart(2, '0');
   const f = sources().find((x) => x.startsWith(`绝区零_${n}_`));
   if (!f) {
-    console.error(`没有 ${num} 号，先跑 node tools/set-wallpaper.mjs 看列表`);
+    console.error(`没有 ${num} 号，先跑 node tools/set-background.mjs 看列表`);
     process.exit(1);
   }
   return path.join(SRC_DIR, f);
@@ -76,8 +76,8 @@ function wire(mode) {
   const bm = skin.contributes.backgroundMedia;
   for (const k of ['dark', 'light']) {
     bm[k] = mode === 'video'
-      ? { type: 'video', src: `assets/video/wallpaper-zzz-${k}.mp4`, scrim: SCRIM[k] }
-      : { type: 'image', src: 'assets/wallpaper-zzz-keyart.jpg', scrim: SCRIM[k] };
+      ? { type: 'video', src: `assets/video/bg-${k}.mp4`, scrim: SCRIM[k] }
+      : { type: 'image', src: 'assets/keyart.jpg', scrim: SCRIM[k] };
   }
   fs.writeFileSync(SKIN_JSON, JSON.stringify(skin, null, 2) + '\n');
 }
@@ -86,7 +86,7 @@ function deploy() {
   execFileSync('ssh', ['lab-ts', 'mkdir -p ~/.dsh/skins/zzz-zenless/assets/video'], { stdio: 'inherit' });
   execFileSync('scp', ['-q', SKIN_JSON, `${REMOTE}/`], { stdio: 'inherit' });
   for (const k of ['dark', 'light']) {
-    const p = path.join(VIDEO_DIR, `wallpaper-zzz-${k}.mp4`);
+    const p = path.join(VIDEO_DIR, `bg-${k}.mp4`);
     if (fs.existsSync(p)) execFileSync('scp', ['-q', p, `${REMOTE}/assets/video/`], { stdio: 'inherit' });
   }
   console.log('已部署到 lab-ts（skin-center 热加载）');
@@ -112,8 +112,8 @@ if (!rest.length) {
 
 const darkSrc = pick(rest[0]);
 const lightSrc = pick(lightNum);
-const dmb = encode(darkSrc, path.join(VIDEO_DIR, 'wallpaper-zzz-dark.mp4'));
-const lmb = encode(lightSrc, path.join(VIDEO_DIR, 'wallpaper-zzz-light.mp4'));
+const dmb = encode(darkSrc, path.join(VIDEO_DIR, 'bg-dark.mp4'));
+const lmb = encode(lightSrc, path.join(VIDEO_DIR, 'bg-light.mp4'));
 wire('video');
 if (!noDeploy) deploy();
 console.log(`暗档 ${path.basename(darkSrc)}（${dmb}MB） · 亮档 ${path.basename(lightSrc)}（${lmb}MB）`);

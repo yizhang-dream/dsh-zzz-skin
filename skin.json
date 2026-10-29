@@ -35,12 +35,12 @@
     "backgroundMedia": {
       "dark": {
         "type": "video",
-        "src": "assets/video/wallpaper-zzz-dark.mp4",
+        "src": "assets/video/bg-dark.mp4",
         "scrim": "linear-gradient(180deg, rgba(8, 9, 22, 0.06) 0%, rgba(8, 9, 22, 0.14) 60%, rgba(8, 9, 22, 0.26) 100%)"
       },
       "light": {
         "type": "video",
-        "src": "assets/video/wallpaper-zzz-light.mp4",
+        "src": "assets/video/bg-light.mp4",
         "scrim": "linear-gradient(180deg, rgba(250, 250, 246, 0.12) 0%, rgba(250, 250, 246, 0.06) 16%, rgba(250, 250, 246, 0.2) 100%)"
       }
     }
