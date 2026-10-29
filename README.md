@@ -3,7 +3,8 @@
 English | [中文](README.zh.md)
 
 A Zenless Zone Zero theme for the DSH Web GUI. The official Cunning Hares
-key art sits beneath glass panels, and the light and dark modes are two
+key art sits behind the conversation — replies are chat bubbles floating on
+it, not a panel over it — and the light and dark modes are two
 independent designs: dark is a **neon night run** (deep-violet night with
 warning-yellow accents), light is **ink on paper** (a warm paper base with
 black outlines and hard shadows) — not one palette with a filter over it;
@@ -17,9 +18,10 @@ panels, popups and menus each carry their own scheme per mode.
 - `patches.css` — the L3 patch layer: eighteen game-element effects,
   structural restyling, and third-party plugin tinting.
 - `assets/wallpaper-zzz-keyart.jpg` — the official ZZZ key art (Sixth Street
-  with the Cunning Hares). The light mode runs it through a print-shop filter
-  (desaturation plus a paper veil) to sit on the paper base; dark mode uses
-  the night look as-is.
+  with the Cunning Hares). The light mode runs it through a print-tone filter
+  (slight desaturation and lift) with a light paper veil; dark mode uses the
+  night look as-is. The image is anchored right-top so the official mark in
+  its top-right corner stays in frame at 16:10.
 - `preview/light.jpg` / `preview/dark.jpg` — the running skin, 1440×900
   captures.
 
