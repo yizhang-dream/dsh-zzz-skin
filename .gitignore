@@ -6,3 +6,4 @@ video-work/*.mp4
 video-work/*.mp3
 bili-cat.log
 tools/cdp-profile/
+tools/cdp-profile*/

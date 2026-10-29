@@ -79,13 +79,32 @@ if (cmd === 'goto') {
   writeFileSync(out, Buffer.from(m.result.data, 'base64'));
   console.log('saved', out);
 } else if (cmd === 'shotclip') {
-  // shotclip <name.png> <x> <y> <w> <h>  视口内裁剪截图（CSS px）
+  // shotclip <name.(png|jpg)> <x> <y> <w> <h>  视口内裁剪截图（CSS px）
   await send('Page.enable');
   const [, x, y, w, h] = args;
-  const m = await send('Page.captureScreenshot', { format: 'png', clip: { x: +x, y: +y, width: +w, height: +h, scale: 1 } });
+  const jpeg = /\.jpe?g$/i.test(args[0]);
+  const m = await send('Page.captureScreenshot', { format: jpeg ? 'jpeg' : 'png', quality: jpeg ? 92 : undefined, clip: { x: +x, y: +y, width: +w, height: +h, scale: 1 } });
   const out = args[0].match(/^[A-Za-z]:|^[/\\]/) ? args[0] : join(SHOTS, args[0]);
   writeFileSync(out, Buffer.from(m.result.data, 'base64'));
   console.log('saved', out);
+} else if (cmd === 'shot1440') {
+  // shot1440 <name.(png|jpg)>  固定 1440x900 CSS 视口 @DPR1 截整屏（评审用）
+  await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+  await sleep(900);
+  await send('Page.enable');
+  const jpeg = /\.jpe?g$/i.test(args[0]);
+  const m = await send('Page.captureScreenshot', { format: jpeg ? 'jpeg' : 'png', quality: jpeg ? 92 : undefined });
+  const out = args[0].match(/^[A-Za-z]:|^[/\\]/) ? args[0] : join(SHOTS, args[0]);
+  writeFileSync(out, Buffer.from(m.result.data, 'base64'));
+  await send('Emulation.clearDeviceMetricsOverride');
+  console.log('saved', out);
+} else if (cmd === 'viewport') {
+  // viewport <w> <h> [dpr]  固定视口（评审截图统一 1440x900 DPR1）
+  await send('Emulation.setDeviceMetricsOverride', {
+    width: +args[0], height: +args[1], deviceScaleFactor: +(args[2] || 1), mobile: false,
+  });
+  await sleep(900);
+  console.log('viewport', args.join('x'));
 } else if (cmd === 'wait') {
   await sleep(+args[0]); console.log('waited');
 }
