@@ -464,3 +464,17 @@ body:not([data-ds-dark-theme]) {
 /* 基座皮肤：暗档 45%/54%、亮档 48%/51%（各自梯度能量质心） */
 body { --zzz-bg-pos: 45% 54%; }
 body:not([data-ds-dark-theme]) { --zzz-bg-pos: 48% 51%; }
+
+/* §9.12b 铭牌只在收起态出现（v8.9.2）
+   侧栏展开成 280px 时（窗口够宽，或悬停展宽），竖排 DATA BANK 贴纸会压在会话
+   列表文字上，很突兀；只在收起成 56px 图标轨道时才保留，当游戏 UI 的点缀。 */
+@media (min-width: 1000px) {
+  .pI_x6G_sidebarCol::after,
+  [data-pane="sidebar"]::after {
+    display: none !important;
+  }
+}
+.pI_x6G_sidebarCol:hover::after,
+[data-pane="sidebar"]:hover::after {
+  display: none !important;
+}

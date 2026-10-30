@@ -95,3 +95,24 @@ yuv420p -movflags +faststart`。37 条合计 124 MB，平涂画面压缩率很�
 - `claude-style` 是 `origin: delegated`，由宿主（dsh-web-app）委托给皮肤中心，插件
   `dsh-claude-style` 根本没装，删不掉，只能留着。
 - 结果：皮肤中心 39 张 = 37 张 `zzz-eridu-NN` + 基座 `zzz-zenless` + `claude-style`。
+
+## v8.9.2 DATA BANK 铭牌只在收起态出现
+
+侧栏展开到 280px 时，竖排 `DATA BANK` 贴纸压在会话列表文字上，很突兀。它挂在
+`sidebarCol::after`，原来无条件显示。
+
+改成两条门控（写进 skin.css，随 37 张皮肤一起分发）：
+
+```css
+@media (min-width: 1000px) {          /* 窗口够宽，宿主把侧栏钉成 280px */
+  .pI_x6G_sidebarCol::after,
+  [data-pane="sidebar"]::after { display: none !important; }
+}
+.pI_x6G_sidebarCol:hover::after,      /* 收起态悬停展宽也会压到文字 */
+[data-pane="sidebar"]:hover::after { display: none !important; }
+```
+
+断点是实测出来的：光标移开后 980px 侧栏 56px、1040px 变 280px，取 1000 兜住。
+注意**光标停在侧栏上时宽度会被 hover 展宽污染**，量断点前先把指针挪到屏幕角落。
+
+验收：1600×900 侧栏列表干净无贴纸；900×900 收起轨道下贴纸仍在底部，不压任何内容。
