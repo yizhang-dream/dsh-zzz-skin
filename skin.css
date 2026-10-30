@@ -453,3 +453,14 @@ body:not([data-ds-dark-theme]) {
   --dsw-specific-login-input: #fbf9f4;
   --dsw-specific-tip: #eae6db;
 }
+
+/* §17 动态背景适配（v8.9.1）：全屏与半屏都保住主体
+   客户端给 <video> 打了内联 object-fit:cover，这里只接管取景中心点。
+   每张皮肤在自己的 skin.css 里追加 body{--zzz-bg-pos:X% Y%}，
+   基座皮肤按亮暗两条各给一个（body 与 body:not([data-ds-dark-theme])）。 */
+[data-dsh-skin-layer="background"] video {
+  object-position: var(--zzz-bg-pos, 50% 45%) !important;
+}
+/* 基座皮肤：暗档 45%/54%、亮档 48%/51%（各自梯度能量质心） */
+body { --zzz-bg-pos: 45% 54%; }
+body:not([data-ds-dark-theme]) { --zzz-bg-pos: 48% 51%; }

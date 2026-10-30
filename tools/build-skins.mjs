@@ -67,6 +67,31 @@ function scrims(L) {
   };
 }
 
+/** 取景中心：按梯度能量加权求质心，返回 CSS object-position 用的百分比。 */
+function focusPoint(mp4) {
+  const tmp = path.join(OUT, '_focus.png');
+  sh('ffmpeg', ['-v', 'error', '-y', '-ss', '2', '-i', mp4, '-frames:v', '1', '-vf', 'scale=96:-1', tmp]);
+  const raw = execFileSync('ffmpeg', ['-v', 'error', '-i', tmp, '-f', 'rawvideo', '-pix_fmt', 'gray', '-'], { maxBuffer: 1 << 22 });
+  fs.rmSync(tmp, { force: true });
+  const W = 96, H = Math.floor(raw.length / W);
+  const at = (x, y) => raw[y * W + x] || 0;
+  let sx = 0, sy = 0, sw = 0;
+  for (let y = 1; y < H - 1; y++) {
+    for (let x = 1; x < W - 1; x++) {
+      const gx = at(x + 1, y) - at(x - 1, y);
+      const gy = at(x, y + 1) - at(x, y - 1);
+      const w = Math.hypot(gx, gy);
+      if (w < 12) continue;
+      sx += x * w; sy += y * w; sw += w;
+    }
+  }
+  if (!sw) return { x: 50, y: 45 };
+  const px = (sx / sw) / (W - 1) * 100;
+  const py = (sy / sw) / (H - 1) * 100;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  return { x: Math.round(clamp(px, 28, 72)), y: Math.round(clamp(py, 30, 68)) };
+}
+
 function encode(src, target) {
   sh('ffmpeg', ['-v', 'error', '-y', '-i', src, '-an', '-vf', 'scale=2560:1440',
     '-c:v', 'libx264', '-preset', 'slow', '-crf', '30', '-pix_fmt', 'yuv420p',
@@ -124,9 +149,17 @@ srcs.forEach((file, idx) => {
     dark: { type: 'video', src: 'assets/video/bg.mp4', scrim: sc.dark },
     light: { type: 'video', src: 'assets/video/bg.mp4', scrim: sc.light },
   };
+  const fp = focusPoint(mp4);
+  fs.appendFileSync(path.join(dir, 'skin.css'),
+    `
+/* §17 取景中心（梯度能量质心） */
+body{--zzz-bg-pos:${fp.x}% ${fp.y}%;}
+`
+    + `body:not([data-ds-dark-theme]){--zzz-bg-pos:${fp.x}% ${fp.y}%;}
+`);
   fs.writeFileSync(path.join(dir, 'skin.json'), JSON.stringify(manifest, null, 2) + '\n');
 
-  console.log(`${id}  L=${L.toFixed(0)}  ${mb.toFixed(1)}MB`);
+  console.log(`${id}  L=${L.toFixed(0)}  ${mb.toFixed(1)}MB  焦点 ${fp.x}%/${fp.y}%`);
 });
 
 console.log(`\n共 ${srcs.length} 张，视频合计 ${total.toFixed(0)}MB`);

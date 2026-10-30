@@ -58,3 +58,40 @@ yuv420p -movflags +faststart`。37 条合计 124 MB，平涂画面压缩率很�
 - 应用 `zzz-eridu-37`（暗壁纸，L=76）亮档：白纱 0.6 下纸白面板立得住、正文可读
 - 坑：Chrome 窗口最小化时 `document.hidden=true`，Chrome 会暂停背景视频，
   这时 `video.paused` 恒为 true，别误判成 autoplay 被拦——把窗口恢复前台再测
+
+## v8.9.1 全屏 / 半屏都站得住
+
+客户端的 `<video>` 带内联 `object-fit: cover`，窗口一窄就只截到画面中间一条，主体容易被切。
+修法是只接管取景中心：skin.css §17 加
+
+```css
+[data-dsh-skin-layer="background"] video {
+  object-position: var(--zzz-bg-pos, 50% 45%) !important;
+}
+```
+
+`--zzz-bg-pos` 由 `build-skins.mjs` 逐张算：抽第 3 秒一帧缩到 96px 宽，按梯度能量加权
+求质心，clamp 到 28–72% / 30–68%，写进该皮肤自己的 skin.css 末尾。基座皮肤亮暗两条
+视频各算一次（暗 45%/54%、亮 48%/51%），分别挂在 `body` 与 `body:not([data-ds-dark-theme])` 上。
+
+**特异性坑**：`body:not([data-ds-dark-theme])` 比 `body` 高一级，37 张皮肤如果只写 `body{}`，
+亮档会被基座残留的那条规则盖掉——所以每张都补一条同值的高特异性规则。
+
+验收（真实 Chrome + CDP，`tools/shot-size.mjs` 用 `Emulation.setDeviceMetricsOverride` 覆盖视口）：
+
+- 1600×900 全屏：双人构图完整，侧栏/输入卡/hero 文案都可读
+- 780×900 半屏：竖切后仍保住左侧人物全脸与右侧角色，输入卡可读
+- 视频实测 readyState 4、`paused=false`、`currentTime` 递增
+
+**另一个坑**：Chrome 窗口被遮挡或最小化时 `document.hidden=true`，Chrome 会暂停背景视频，
+`readyState` 掉到 0、`paused` 恒 true。要验动态背景必须用
+`--disable-background-media-suspend --disable-backgrounding-occluded-windows` 起一个专用实例，
+否则截出来只有纱罩和底色。
+
+## 只留动态皮肤
+
+- 内置 `blue-fantasy`：皮肤中心包 `skins/blue-fantasy/` 整个删掉（目录指纹变化会自动失效缓存，
+  不用重启）；备份在服务器 `/tmp/blue-fantasy.bak`。
+- `claude-style` 是 `origin: delegated`，由宿主（dsh-web-app）委托给皮肤中心，插件
+  `dsh-claude-style` 根本没装，删不掉，只能留着。
+- 结果：皮肤中心 39 张 = 37 张 `zzz-eridu-NN` + 基座 `zzz-zenless` + `claude-style`。
