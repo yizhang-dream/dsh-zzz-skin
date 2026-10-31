@@ -2441,10 +2441,15 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 }
 
 /* ═══ §13 knock knock 主对话框（2026-10-25 用户裁定：滴滴聊天=主对话框参考样本）═══
-   游戏内私信应用「knock knock」还原：AI 侧=纯白圆角气泡（黑粗字、左上小尾）、
-   己方=REPLY 蓝胶囊（白字、右上尾）、输入卡=蓝外壳+黑内胆+REPLY 贴纸。
-   色样取自官方截图：白 #fff / 蓝输入栏 #3451d3 / 黑内胆 #0b0b0e / 正文黑 #1e1e1e。 */
-/* ── 13.1 AI 侧：白色气泡 + 左上尾 ── */
+   游戏内私信应用「knock knock」还原：AI 侧=纯白圆角气泡（黑粗字）、
+   己方=REPLY 蓝胶囊（白字）、输入卡=蓝外壳+黑内胆+REPLY 贴纸。
+   色样取自官方截图：白 #fff / 蓝输入栏 #3451d3 / 黑内胆 #0b0b0e / 正文黑 #1e1e1e。
+   2026-10-31 形状裁定：气泡圆角改 zenless.tools 聊天生成器同款——四角统一
+   15px 圆角矩形（该站 .chat-item-message-wrapper 实测 border-radius
+   0.9375em=15px，四角一致，无尾无描边无阴影；像素复核蓝泡 y0 起 13/y3 4/
+   y8 1/y17 0 与 15px 圆弧吻合）。镜像尖角方案（2px/24px、26px/2px）退役；
+   fit-content/74ch/硬影/配色跟档位走维持不变。 */
+/* ── 13.1 AI 侧：白色气泡（暗档深炭）── */
 /* 敲敲聊天记录：头像与句子分开——条只画文字区。2026-10-25 三改结构：
    ::after 伪元素画条会被 backdrop-filter 合成顺序盖到文字上面（字隔奶白透
    5% 成幽灵字，实测隐藏条后文字清晰实锤）；改用本体背景 + background-clip:
@@ -2454,7 +2459,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    这些行本来不该画；但元素自身背景仍绘制，§13.1/§14 的 padding 在 border-box
    下把 0 高撑成 12+12=24px、把宽度撑成 68+22=90px，屏幕上就多出一列空胶囊
    （实测 65 个）。排除后隐藏行维持高度 0，真展开时属性移除即恢复气泡样式。 */
-/* AI 消息=与人类气泡同款家族（fit-content/镜像角/硬影），颜色跟档位走；
+/* AI 消息=与人类气泡同款家族（fit-content/统一 15px 圆角/硬影），颜色跟档位走；
    头像按原图像素实测叠在条左端（非分离）——文字与头像保持 20px+ 净距 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
@@ -2464,7 +2469,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   max-width: min(100%, 74ch);
   box-sizing: border-box;
   padding: 12px 22px 12px 92px !important;
-  border-radius: 2px 24px 24px 24px !important;
+  border-radius: 15px !important;   /* 参考站同款四角统一 15px */
   box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
   position: relative;
 }
@@ -2483,7 +2488,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   background: #14141a !important;
   color: #f2f2f4 !important;
 }
-/* ── 13.2 己方：REPLY 蓝胶囊 + 右上尾 ──
+/* ── 13.2 己方：REPLY 蓝胶囊 ──
  * [role=tooltip] 必须排除：宿主的「复制」提示复用 _bubble 类，且自带
  * 视口坐标的 inline left/top——被这条的 position:relative 拽住后 tooltip
  * 变成行内布局（行展宽 48px、按钮被顶走、渲染到屏幕外 1700px），悬停
@@ -2497,7 +2502,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   background: rgb(52 81 211 / max(0.88, var(--dsh-skin-bubble-alpha, 0.96))) !important;
   color: #ffffff !important;
   border: none !important;
-  border-radius: 26px 2px 26px 26px !important;
+  border-radius: 15px !important;   /* 参考站同款四角统一 15px */
   box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.55) !important;
   position: relative;
 }
