@@ -2488,6 +2488,27 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   background: #14141a !important;
   color: #f2f2f4 !important;
 }
+/* ── 13.1a AI 气泡左上箭头（2026-10-31 用户裁定「仔细在意细节」）──
+ * 参考站气泡的真形状 = 15px 圆角 + 外上角一枚小旗箭头：它不在 wrapper 的
+ * computed 里（半径四角一致、无伪元素），是兄弟节点画的——
+ *   <div style="background-image:url(/images/chat_message_arrow_left.webp);
+ *     width:.75em;height:.75em;top:.125em;left:-.4375em;position:absolute">
+ * （12×12 显示、左出 7px、顶 2px；右侧镜像 right:-.34375em）。素材已随包
+ * （assets/bubble-arrow-left.webp，16×16 纯白带 alpha），mask 取 alpha 轮廓、
+ * 填色跟气泡本体走，两档自动对色。 */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden])::after,
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden])::after {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  -webkit-mask: url("assets/bubble-arrow-left.webp") center / contain no-repeat;
+  mask: url("assets/bubble-arrow-left.webp") center / contain no-repeat;
+  background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10));
+  pointer-events: none;
+}
 /* ── 13.2 己方：REPLY 蓝胶囊 ──
  * [role=tooltip] 必须排除：宿主的「复制」提示复用 _bubble 类，且自带
  * 视口坐标的 inline left/top——被这条的 position:relative 拽住后 tooltip
@@ -2505,6 +2526,21 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   border-radius: 15px !important;   /* 参考站同款四角统一 15px */
   box-shadow: 3px 3px 0 rgba(20, 20, 26, 0.55) !important;
   position: relative;
+}
+/* 己方右上箭头：同 §13.1a，右侧镜像（参考站 right:-.34375em 顶 .125em）。
+ * 实测笔记（2026-10-31，三轮排查）：输入行级伪元素（::before/::after）在该
+ * 宿主上不落墨；气泡级 ::after 无 mask 时落墨（品红探针实测），带 mask 时
+ * 不落墨（同 URL 隔离注入正常——伪元素 + mask 组合在该元素上渲染不出来）。
+ * 故用预上色变体直铺：bubble-arrow-right-blue.webp = 白模重着色 rgb(52,81,211)。 */
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"]:not([role="tooltip"])::after {
+  content: "";
+  position: absolute;
+  right: -5.5px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  background: url("assets/bubble-arrow-right-blue.webp") center / contain no-repeat;
+  pointer-events: none;
 }
 .EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"] *,
 .EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] .Sixlwa_userStack * {
@@ -2550,6 +2586,10 @@ body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*
   background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
   color: #303030 !important;
   box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.65);
+}
+body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden])::after,
+body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden])::after {
+  background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09));
 }
 body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg),
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg) {
