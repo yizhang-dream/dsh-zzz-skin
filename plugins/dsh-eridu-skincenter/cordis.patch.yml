@@ -1,0 +1,4 @@
+# eridu skincenter bundle patch: registers the client bundle into the web roster.
+- insert:
+    - id: eridu-skincenter
+      name: 'dsh-eridu-skincenter'

@@ -1,0 +1,18 @@
+{
+  "name": "dsh-eridu-skincenter",
+  "description": "新艾利都自研皮肤中心——38 张动态背景 + 233 枚代理人头像的换装页面；服务端直读 ~/.dsh/skins，首屏由 index-inject 注入，客户端含背景装饰层渲染与本页换装 UI（取代第三方 skin-center 的自建链路）",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "engines": { "dsh": ">=0.2.1-rc.2" },
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "inject": [], "platform": "web" }
+  },
+  "license": "MIT"
+}
