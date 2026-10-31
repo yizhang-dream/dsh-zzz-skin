@@ -1,16 +1,15 @@
 #!/usr/bin/env node
-// 代理人头像选择器（2026-10-31）——素材库 assets/avatars/（zenless.tools 抓取，
-// 见 tools/scrape-avatars.mjs），换的是 §14 AI 消息头像槽：
-//   assets/avatar-agent.webp 盖在 avatar-fatfish-128.png 上，缺文件=回落大肥鱼。
+// 代理人头像选择器（2026-10-31，v2 大肥鱼已下架）——素材库 assets/avatars/
+// （zenless.tools 抓取，见 tools/scrape-avatars.mjs），换的是 §14 AI 消息头像槽：
+//   assets/avatar-agent.webp 只用代理人头像，默认「铃」（聊天图标组）。
 //
 // 用法：
 //   node tools/set-avatar.mjs                 # 起本地挑选页（127.0.0.1，点击即应用+部署）
 //   node tools/set-avatar.mjs --list          # 列出全部头像
 //   node tools/set-avatar.mjs 艾莲            # 按名字直选（重名时提示加 --group）
 //   node tools/set-avatar.mjs 艾莲 --group 角色
-//   node tools/set-avatar.mjs --fatfish       # 换回大肥鱼（默认）
 //
-// 应用 = 拷图到 assets/avatar-agent.webp + 改 patches.css §14 圆角（圆=50%/方=15px）
+// 应用 = 拷图到 assets/avatar-agent.webp + 改 patches.css §14 圆角行（正圆 50%）
 //        + scp 到 lab-ts 全部 zzz-* 皮肤目录 + 记录 assets/avatars/active.json。
 // DSH 端看效果需硬刷新（Ctrl+Shift+R）或设置→皮肤→重新应用（CSS/资产启发式缓存）。
 import fs from 'node:fs';
@@ -63,19 +62,10 @@ function deploy(files) {
 }
 
 function apply(entry) {
-  // entry = { name, dir, file } 或 null（=大肥鱼）
-  if (entry) {
-    const src = path.join(AV_DIR, entry.dir, entry.file);
-    fs.copyFileSync(src, AGENT_FILE);
-    setShape('50%');
-  } else {
-    fs.rmSync(AGENT_FILE, { force: true });
-    setShape('15px');
-  }
-  const dirs = deploy({
-    'patches.css': PATCHES,
-    'assets/avatar-agent.webp': entry ? AGENT_FILE : null,
-  });
+  // entry = { name, dir, file }（catalog 里的代理人头像）
+  fs.copyFileSync(path.join(AV_DIR, entry.dir, entry.file), AGENT_FILE);
+  setShape('50%');
+  const dirs = deploy({ 'patches.css': PATCHES, 'assets/avatar-agent.webp': AGENT_FILE });
   fs.writeFileSync(ACTIVE, JSON.stringify({ ...entry, appliedAt: new Date().toISOString() }, null, 1));
   return { entry, skins: dirs };
 }
@@ -90,26 +80,20 @@ if (argv.includes('--list')) {
   }
   process.exit(0);
 }
-const fatfish = argv.includes('--fatfish');
 const gi = argv.indexOf('--group');
 const nameArg = argv.find((a, i) => !a.startsWith('--') && !(gi >= 0 && i === gi + 1));
 const groupArg = gi >= 0 ? argv[gi + 1] : null;
-if (fatfish || nameArg) {
-  if (fatfish) {
-    const r = apply(null);
-    console.log(`已换回大肥鱼（圆角方），部署到 ${r.skins} 个皮肤目录`);
-  } else {
-    const hits = findEntries(nameArg, groupArg);
-    if (!hits.length) { console.error(`没有叫「${nameArg}」的头像，--list 看全部`); process.exit(1); }
-    if (hits.length > 1) {
-      console.error(`「${nameArg}」有 ${hits.length} 个：`);
-      hits.forEach((h) => console.error(`  ${h.name}\t${GROUP_LABEL[h.dir]}\t${h.file}`));
-      console.error('加 --group 头像|聊天图标|角色 消歧');
-      process.exit(1);
-    }
-    const r = apply(hits[0]);
-    console.log(`已应用「${r.entry.name}」（${GROUP_LABEL[r.entry.dir]}），部署到 ${r.skins} 个皮肤目录`);
+if (nameArg) {
+  const hits = findEntries(nameArg, groupArg);
+  if (!hits.length) { console.error(`没有叫「${nameArg}」的头像，--list 看全部`); process.exit(1); }
+  if (hits.length > 1) {
+    console.error(`「${nameArg}」有 ${hits.length} 个：`);
+    hits.forEach((h) => console.error(`  ${h.name}\t${GROUP_LABEL[h.dir]}\t${h.file}`));
+    console.error('加 --group 头像|聊天图标|角色 消歧');
+    process.exit(1);
   }
+  const r = apply(hits[0]);
+  console.log(`已应用「${r.entry.name}」（${GROUP_LABEL[r.entry.dir]}），部署到 ${r.skins} 个皮肤目录`);
   console.log('DSH 里 Ctrl+Shift+R 硬刷新可见');
   process.exit(0);
 }
@@ -157,40 +141,35 @@ const CAT = ${JSON.stringify(cat)};
 const ACTIVE = ${JSON.stringify(active || {})};
 const GL = ${JSON.stringify(GROUP_LABEL)};
 let tab = 'all', q = '', sel = null;
-const tabs = [['all','全部'],['avatars','头像'],['chat-icons','聊天图标'],['portraits','角色'],['default','默认']];
-const curKey = ACTIVE.dir ? ACTIVE.dir + '/' + ACTIVE.file : 'default';
+const tabs = [['all','全部'],['avatars','头像'],['chat-icons','聊天图标'],['portraits','角色']];
+const curKey = ACTIVE.dir ? ACTIVE.dir + '/' + ACTIVE.file : '';
 function render() {
   const m = document.getElementById('main');
-  const gs = tab === 'all'
-    ? (q ? ['avatars', 'chat-icons', 'portraits'] : ['default', 'avatars', 'chat-icons', 'portraits'])
-    : [tab];
+  const gs = ['avatars', 'chat-icons', 'portraits'].filter(g => tab === 'all' || tab === g);
   let h = '', total = 0;
   for (const g of gs) {
-    const list = g === 'default'
-      ? (q ? [] : [{ name: '大肥鱼（DeepSeek 人设）', dir: 'default', file: 'fatfish' }])
-      : CAT.filter(e => e.dir === g && (!q || e.name.includes(q)));
+    const list = CAT.filter(e => e.dir === g && (!q || e.name.includes(q)));
     if (!list.length) continue;
     total += list.length;
-    h += '<h2>' + (g === 'default' ? '默认' : GL[g]) + ' · ' + list.length + '</h2><div class="grid">';
+    h += '<h2>' + GL[g] + ' · ' + list.length + '</h2><div class="grid">';
     for (const e of list) {
       const key = e.dir + '/' + e.file;
-      const src = e.dir === 'default' ? '/img/default.png' : '/img/' + key;
-      h += '<div class="cell' + (sel === key ? ' sel' : '') + (curKey === key ? ' cur' : '') + '" data-key="' + key + '"><img loading="lazy" src="' + src + '"><span>' + e.name + '</span></div>';
+      h += '<div class="cell' + (sel === key ? ' sel' : '') + (curKey === key ? ' cur' : '') + '" data-key="' + key + '"><img loading="lazy" src="/img/' + key + '"><span>' + e.name + '</span></div>';
     }
     h += '</div>';
   }
   m.innerHTML = h;
   m.querySelectorAll('.cell').forEach(c => c.onclick = () => pick(c.dataset.key));
-  document.getElementById('status').textContent = total + ' 个' + (ACTIVE.name ? ' · 使用中：' + ACTIVE.name : ' · 使用中：大肥鱼');
+  document.getElementById('status').textContent = total + ' 个' + (ACTIVE.name ? ' · 使用中：' + ACTIVE.name : '');
 }
 function pick(key) {
   sel = key;
   const [dir, file] = key.split('/');
-  const e = dir === 'default' ? { name: '大肥鱼', dir, file } : CAT.find(x => x.dir === dir && x.file === file);
+  const e = CAT.find(x => x.dir === dir && x.file === file);
   document.getElementById('pick').style.display = 'flex';
   document.getElementById('pname').textContent = e.name;
-  document.getElementById('pgroup').textContent = dir === 'default' ? '默认' : GL[dir];
-  document.querySelector('#pick img').src = dir === 'default' ? '/img/default.png' : '/img/' + key;
+  document.getElementById('pgroup').textContent = GL[dir];
+  document.querySelector('#pick img').src = '/img/' + key;
   document.getElementById('apply').style.display = 'block';
   render();
 }
@@ -229,23 +208,15 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const { key } = JSON.parse(body);
-        if (key === 'default/fatfish') {
-          const r = apply(null);
-          res.end(JSON.stringify({ ok: true, skins: r.skins }));
-        } else {
-          const [dir, file] = String(key).split('/');
-          const entry = readCatalog().find((e) => e.dir === dir && e.file === file && !e.file.includes('..'));
-          if (!entry) throw new Error('未知头像');
-          const r = apply(entry);
-          res.end(JSON.stringify({ ok: true, skins: r.skins, name: r.entry.name }));
-        }
+        const [dir, file] = String(key).split('/');
+        const entry = readCatalog().find((e) => e.dir === dir && e.file === file && !e.file.includes('..'));
+        if (!entry) throw new Error('未知头像');
+        const r = apply(entry);
+        res.end(JSON.stringify({ ok: true, skins: r.skins, name: r.entry.name }));
       } catch (e) {
         res.writeHead(500).end(JSON.stringify({ ok: false, error: e.message }));
       }
     });
-  } else if (url.pathname === '/img/default.png') {
-    res.writeHead(200, { 'content-type': 'image/png' });
-    res.end(fs.readFileSync(path.join(ROOT, 'assets/avatar-fatfish-128.png')));
   } else if (url.pathname.startsWith('/img/')) {
     const rel = url.pathname.slice(5);
     if (rel.includes('..')) { res.writeHead(403).end(); return; }

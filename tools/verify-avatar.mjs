@@ -73,7 +73,7 @@ const assets = await ev(`(async () => {
   const base = location.origin + '/api/skin-center/v2/skins/';
   const active = document.documentElement.getAttribute('data-dsh-skin') || '';
   const out = { active };
-  for (const f of ['avatar-agent.webp', 'avatar-fatfish-128.png']) {
+  for (const f of ['avatar-agent.webp']) {
     try { const r = await fetch(base + active + '/assets/' + f); out[f] = r.status + ' ' + (r.headers.get('content-type') || ''); }
     catch (e) { out[f] = 'ERR ' + e.message; }
   }

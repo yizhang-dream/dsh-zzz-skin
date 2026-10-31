@@ -131,7 +131,7 @@ srcs.forEach((file, idx) => {
   fs.copyFileSync(path.join(ROOT, 'patches.css'), path.join(dir, 'patches.css'));
   fs.copyFileSync(path.join(ROOT, 'LICENSE'), path.join(dir, 'LICENSE'));
   fs.copyFileSync(path.join(ROOT, 'NOTICE'), path.join(dir, 'NOTICE'));
-  for (const a of ['avatar-fatfish.png', 'avatar-fatfish-128.png']) {
+  for (const a of ['avatar-agent.webp']) {
     fs.copyFileSync(path.join(ROOT, 'assets', a), path.join(dir, 'assets', a));
   }
 

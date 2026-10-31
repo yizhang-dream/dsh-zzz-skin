@@ -1,3 +1,8 @@
 {
- "appliedAt": "2026-10-31T09:43:06.419Z"
+ "group": "聊天图标",
+ "dir": "chat-icons",
+ "name": "铃",
+ "file": "IconMessageRoleCircle32.webp",
+ "src": "/images/chat_icons/IconMessageRoleCircle32.webp",
+ "appliedAt": "2026-10-31T14:11:36.553Z"
 }

@@ -3,6 +3,12 @@
 参考 zenless.tools 聊天生成器（`/zh/chat-generator`），抓取代理人头像库，
 做成可挑选、点击即应用+部署的本地挑选页，换的是 §14 AI 消息头像槽。
 
+> **v2（同日，用户裁定「删掉大肥鱼图标，只用这些图标」）**：大肥鱼整链下架——
+> CSS 默认层删除、两枚 png 出库出包、挑选页「默认」组/`--fatfish` 移除、NOTICE
+> 撤 maid-atelier 署名；§14 只剩 `avatar-agent.webp` + 渐变垫底双层，**默认「铃」**
+> （聊天图标组 IconMessageRoleCircle32，即参考站聊天里主角用的那枚）。下文
+> 「三层背景/回落大肥鱼」为 v1 历史，机制以本段为准。
+
 ## 素材库
 
 三组共 233 枚 webp，全部圆形透明底（yuva420p）：
@@ -42,13 +48,12 @@ node tools/set-avatar.mjs               # 本地挑选页 http://127.0.0.1:4177/
                                          #   搜索/分组页签/点击选中/「应用并部署」一键到 38 个皮肤目录
 node tools/set-avatar.mjs --list        # 列全部（名字 + 文件名）
 node tools/set-avatar.mjs 艾莲          # CLI 直选；重名时列出候选，--group 头像|聊天图标|角色 消歧
-node tools/set-avatar.mjs --fatfish     # 换回默认大肥鱼
 node tools/scrape-avatars.mjs           # 重抓素材库（已存在跳过）
 ```
 
-应用流程：拷图 → `assets/avatar-agent.webp`，写形状行，scp patches.css +
-webp 到 lab-ts 全部 `zzz-*` 皮肤目录，记录 `assets/avatars/active.json`。
-DSH 端要硬刷新（Ctrl+Shift+R）或设置→皮肤→重新应用。
+应用流程：拷图 → `assets/avatar-agent.webp`，形状行恒为正圆 50%，scp
+patches.css + webp 到 lab-ts 全部 `zzz-*` 皮肤目录，记录
+`assets/avatars/active.json`。DSH 端要硬刷新（Ctrl+Shift+R）或设置→皮肤→重新应用。
 
 ## 验收（真实 Chrome + CDP）
 
