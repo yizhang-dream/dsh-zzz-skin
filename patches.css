@@ -2598,11 +2598,16 @@ body:not([data-ds-dark-theme]) [data-changed-files="true"] {
   top: 10px;
   width: 47px;
   height: 47px;
-  border-radius: 15px;
+  /* avatar-shape: 代理人头像=50%（正圆，对齐 zenless.tools 聊天生成器 rounded-full）；大肥鱼=15px 圆角方（v9 敲敲实测）。由 tools/set-avatar.mjs 写回下面这一行 */
+  border-radius: 15px; /* avatar-shape */
   /* 敲敲聊天记录：圆角方头像 + 厚白描边，嵌在磨砂条内、底部略下坠 */
   outline: 5px solid rgba(255, 255, 255, 0.92);
   outline-offset: -1px;
-  background: url("assets/avatar-fatfish-128.png") center / 47px 47px no-repeat,
+  /* 头像三层：代理人可选层（assets/avatar-agent.webp，工具换图；缺文件=404 不画，回落下一层）
+     → 大肥鱼默认层 → 浅蓝渐变垫底（代理人图是圆形透明底，垫底即网站上的彩色圆盘效果） */
+  background:
+    url("assets/avatar-agent.webp") center / 47px 47px no-repeat,
+    url("assets/avatar-fatfish-128.png") center / 47px 47px no-repeat,
     linear-gradient(#eaf1ff, #d9e8ff);
   border: 1px solid rgba(20, 20, 26, 0.1);
   z-index: 2;

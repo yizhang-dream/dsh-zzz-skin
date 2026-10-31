@@ -16,3 +16,8 @@
 - assets/video/bg-*.mp4：动态壁纸片段，取自米哈游《绝区零》官方
   桌面客户端「人工桌面」的壁纸库（个人已下载资源），重编码为 2560×1440
   H.264、去音轨；仅作本皮肤背景使用，非商业，版权归 miHoYo / HoYoverse。
+- assets/avatars/：代理人头像库（233 枚 webp，聊天图标/绳网头像/角色圆图
+  三组），经 zenless.tools 聊天生成器页面整理下载，原图为《绝区零》官方
+  游戏素材（IconMessageRoleCircle / IconInterKnotRole / IconRoleCircle
+  系列），© miHoYo / HoYoverse；仅作本皮肤头像选择素材，非商业同人，
+  感谢 zenless.tools 的整理。
