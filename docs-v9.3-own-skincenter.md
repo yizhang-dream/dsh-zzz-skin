@@ -95,8 +95,12 @@ invalid-plugin 零复发；皮肤 attr/accent/背景视频/入口签全在位；
 
 验收（真 Chrome + CDP）：带 `?t=`/`?v=` 的 CSS/资产 URL 全 200；
 重载→换基座→换回 eridu-01 三态 CSSOM 都保持 399 规则、accent 在位、
-视频 readyState 4 双向播放；多模态目检背景画面/旗标/头像图像（见
-tools/verify-assets.mjs 与 Temp/verify-assets-final.jpg）。
+视频 readyState 4 双向播放。真实会话页（新建会话+真实回复）目检：圆形
+头像里是具体人物插画（菲欧妮）✓；洋红探针证实 AI 气泡旗标箭头在画
+（12px 暗色尾巴压暗背景，对比≈1:1 故目检难辨——与旧插件时代同 CSS 同
+观感，非回归）；视频经 A/B 像素采样确认按设计透出（面板 88% 底+纱罩下
+的暗渗），旧插件背景层同为 z:-2 fixed（pnpm store 源码为证）。工具：
+tools/verify-assets.mjs、tools/probe-arrow.mjs。
 
 **教训两条：①「属性在位」≠「资产渲染」——昨天验收只查了 src 属性和
 文件落盘，没查 CSSOM 规则数与资产请求状态码，两个 404 都从这里漏过；
