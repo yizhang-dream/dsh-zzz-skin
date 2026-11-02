@@ -98,10 +98,22 @@ function transformCss(id, css, filename) {
     css = css.replace(/(url\(['"]?[^'")]*avatar-agent\.webp)(['"]?\))/g, `$1?v=${v}$2`);
   }
   // 2) 选择器前缀：行级状态机（本仓库 CSS 格式规整：顶层顶格、@media 内缩进两格）
+  //    :root / html 指的是作用域元素**自身**，加后代空格前缀会永不匹配（`:root` 不可能是
+  //    <html> 的后代），整层令牌静默失效、界面回落宿主默认色 —— 这两类必须换成 scope 本身。
+  const scopeSeg = (p) => {
+    const t = p.trim();
+    if (t === '') return p;
+    if (t === ':root' || t === 'html') return scope;
+    if (/^:root[\s>+~]/.test(t)) return scope + t.slice(':root'.length);
+    if (/^html[\s>+~]/.test(t)) return scope + t.slice('html'.length);
+    return `${scope} ${t}`;
+  };
   const out = [];
   let depth = 0;          // 花括号深度
   let stack = [];         // 每层的类型：'rule' | 'media' | 'skip'（keyframes/font-face 等）
-  for (const line of css.split('\n')) {
+  const lines = css.split('\n');
+  for (let idx = 0; idx < lines.length; idx++) {
+    const line = lines[idx];
     const opens = (line.match(/{/g) || []).length;
     const closes = (line.match(/}/g) || []).length;
     const trimmed = line.trim();
@@ -124,7 +136,7 @@ function transformCss(id, css, filename) {
         if (ch === ',' && pdepth === 0) { parts.push(cur); cur = ''; } else cur += ch;
       }
       parts.push(cur);
-      out.push(parts.map((p) => (p.trim() === '' ? p : `${scope} ${p.trimStart()}`)).join(',') + line.slice(brace));
+      out.push(parts.map(scopeSeg).join(',') + line.slice(brace));
     } else if (isSelectorLine && parent === 'media') {
       const brace = line.indexOf('{');
       const sel = line.slice(0, brace);
@@ -137,7 +149,30 @@ function transformCss(id, css, filename) {
       }
       parts.push(cur);
       const pad = line.slice(0, line.length - line.trimStart().length);
-      out.push(pad + parts.map((p) => `${scope} ${p.trim()}`).join(',') + line.slice(brace));
+      out.push(pad + parts.map(scopeSeg).join(',') + line.slice(brace));
+    } else if (brace === -1 && parent !== 'skip' && /,$/.test(trimmed) && trimmed.length > 1
+      && !trimmed.startsWith('/*') && !trimmed.startsWith('*') && !trimmed.startsWith('@')
+      && (() => {
+        // 向后看第一处「{ / ; / }」：含 { 才是选择器续行；只见 ; 或 } 的是声明值
+        const nl = lines.find((l2, j) => j > idx && (l2.includes('{') || l2.includes(';') || l2.includes('}')));
+        return !!nl && nl.includes('{');
+      })()) {
+      // 逗号续行（多行选择器的前几段，如 `.wSkVaW_root,` + 下一行 `.hHd-Xa_root {`）：
+      // 逐段独立前缀。漏掉就会整段裸奔成全局选择器，样式泄漏到皮肤作用域之外。
+      // ⚠ 只对「向后看先遇到 { 再遇到 ;」的行生效——先见 ; 的是多行 background 等
+      // 声明值（`url(...) no-repeat,` / `linear-gradient(...),`），给它们加前缀会
+      // 毒掉整条声明（2026-11-03 头像空圈事故：5 处多行背景全灭）。
+      const pad = line.slice(0, line.length - line.trimStart().length);
+      const sel = trimmed.replace(/,\s*$/, '');
+      const parts = [];
+      let pdepth = 0, cur = '';
+      for (const ch of sel) {
+        if (ch === '(') pdepth++;
+        if (ch === ')') pdepth--;
+        if (ch === ',' && pdepth === 0) { parts.push(cur); cur = ''; } else cur += ch;
+      }
+      parts.push(cur);
+      out.push(pad + parts.map(scopeSeg).join(',') + ',');
     } else {
       out.push(line);
     }
@@ -259,7 +294,8 @@ function makeRoutes() {
       const [, id, tail] = m;
       if (!SKIN_ID.test(id) || !findSkin(id)) { json(res, 404, { ok: false }); return; }
       if (tail === 'stylesheet' || tail === 'patches') serveCss(res, id, tail === 'stylesheet' ? 'skin.css' : 'patches.css');
-      else serveAsset(res, id, tail.slice('assets/'.length));
+      // 容忍 /assets/assets/ 双层前缀（旧客户端把 manifest 的 assets/ 前缀原样拼进 URL）
+      else serveAsset(res, id, tail.slice('assets/'.length).replace(/^assets\//, ''));
     } },
   ];
 }

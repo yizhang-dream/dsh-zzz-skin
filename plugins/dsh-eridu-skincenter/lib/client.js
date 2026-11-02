@@ -299,10 +299,10 @@ window.__ModuleLoader__.load({
       const b = document.createElement("button");
       b.id = "eridu-entry";
       b.textContent = "皮肤中心";
-      css(b, `position:fixed;right:0;top:46%;z-index:2147482000;writing-mode:vertical-rl;letter-spacing:.3em;
-        font:800 13px/1 "Segoe UI","Microsoft YaHei",sans-serif;color:${INK};background:${AC};
-        border:2px solid ${INK};border-right:none;padding:14px 6px 14px 8px;cursor:pointer;
-        box-shadow:-3px 3px 0 rgba(0,0,0,.6);transform:translateX(0);transition:transform .15s`);
+      css(b, `position:fixed;right:0;top:46%;z-index:2147482000;writing-mode:vertical-rl;letter-spacing:.22em;
+        font:600 12px/1 "Segoe UI","Microsoft YaHei",sans-serif;color:${AC};background:rgba(16,18,23,.92);
+        border:1px solid ${LINE};border-right:none;border-radius:6px 0 0 6px;padding:14px 7px;cursor:pointer;
+        box-shadow:none;transform:translateX(0);transition:transform .15s`);
       b.onmouseenter = () => (b.style.transform = "translateX(-5px)");
       b.onmouseleave = () => (b.style.transform = "translateX(0)");
       b.onclick = open;

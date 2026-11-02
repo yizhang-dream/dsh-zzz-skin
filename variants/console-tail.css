@@ -1,0 +1,189 @@
+/* ═══════════════════════════════════════════════════════════════════════
+ * §C CONSOLE 材质重铸（v9.4 · 2026-11-03）
+ *
+ * 参考仓：pbakaus/impeccable（反 AI 味设计纪律）+ Nutlope/hallmark
+ * （Console 材质：a theme is a material, not a plan）。
+ *
+ * 一台被认真的人保管的仪器：
+ *   · 石墨三阶地（ground / panel / well），不是夜空也不是霓虹
+ *   · 面板 = 1px 发丝线围出的同一表面，无辉光、无投影、无斜切、无贴纸歪斜
+ *   · 酸绿只留给「人」（选中/主动作/头像），青留给「仪器」（链接/信息）
+ *   · 标签一律正文小号、正常字距、正体（tracked-caps 是机器味）
+ * ZZZ 身份保留：酸绿信号色、代理人头像、气泡 15px 圆角与旗标箭头、
+ * 己方蓝胶囊（参考站原生色）。
+ *
+ * 本节全部为「后置同特异性覆盖」——排在基座 patches.css 末尾生效。
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── C0 令牌重铸（body 级——:root 会被皮肤中心前缀化打死，写这里才活） ── */
+body {
+  --zzz-canvas: #14161d;   /* graphite ground，oklch(17% .008 250) ≈ */
+  --zzz-panel: #1a1d24;    /* paper-2：面板一阶 */
+  --zzz-panel-2: #101217;  /* paper-3：最深一阶，代码/日志井 */
+  --zzz-line: #2d3039;     /* rule：发丝线 */
+  --zzz-line-2: #43474f;   /* rule-2：选中行/表头 spine */
+  --zzz-cyan: #56b6d4;     /* 仪器色（cool，oklch(77% .12 245) ≈） */
+  --zzz-red: #e25a5f;      /* 危险色压暗一档，配石墨 */
+  background-color: #14161d;
+}
+body:not([data-ds-dark-theme]) {
+  /* console paper colorway：暖纸地 + 石墨线（对应其 graphite 色系的纸面变体） */
+  --zzz-canvas: #f5f3ec;
+  --zzz-panel: #fbfaf6;
+  --zzz-panel-2: #e9e6dc;
+  --zzz-line: #d8d4c8;
+  --zzz-line-2: #b9b4a6;
+  --zzz-cyan: #2f7f9c;
+  --zzz-red: #c23439;
+  background-color: #f5f3ec;
+}
+
+/* ── C1 熄灯层：辉光 / 网点扫描线 / 巨字 / 警示纹 / 开机动画 全灭 ── */
+body::before,
+body::after,
+[data-dsh-frame]::before, .pI_x6G_frame::before,
+[data-dsh-frame]::after,  .pI_x6G_frame::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+}
+[data-dsh-surface="root"] { animation: none !important; }
+
+/* ── C2 直角与发丝线：撤全部斜切刀口与硬投影 ── */
+[data-dsh-part="composer-chip"],
+[data-slot="conversation.composer.bar"] button,
+button[class*="primary"],
+[class*="newSession"],
+[role="menuitem"],
+[data-dsh-part="message-body"],
+.pI_x6G_centerCol:has([aria-busy="true"]) [data-slot="conversation.header"]::after,
+.pI_x6G_centerCol:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"])) [data-slot="conversation.header"]::before,
+[role="dialog"]::before {
+  clip-path: none !important;
+}
+[data-dsh-part="composer-chip"] {
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 6px !important;
+}
+[data-slot="conversation.composer.bar"] button,
+button[class*="primary"],
+[class*="newSession"] {
+  box-shadow: none !important;
+  border: 1px solid var(--zzz-line) !important;
+  border-radius: 6px !important;
+}
+[role="menuitem"] {
+  border: 1px solid var(--zzz-line) !important;
+  border-left: 2px solid var(--zzz-line-2) !important;
+  border-radius: 6px !important;
+}
+[role="menuitem"]:hover { border-left-color: var(--zzz-accent) !important; }
+.cm-card {
+  box-shadow: none !important;
+  border: 1px solid var(--zzz-line) !important;
+}
+body:not([data-ds-dark-theme]) [data-slot="conversation.composer.bar"] {
+  box-shadow: none !important;
+  border: 1px solid var(--zzz-line);
+}
+body:not([data-ds-dark-theme]) pre code {
+  box-shadow: none !important;
+  border: 1px solid var(--zzz-line);
+}
+
+/* ── C3 标签去噪：贴纸转正、去拉距、去斜体、去渐变条纹 ── */
+.pI_x6G_centerCol:has([aria-busy="true"]) [data-slot="conversation.header"]::after {
+  font-style: normal !important;
+  letter-spacing: 0.04em !important;
+  background: var(--zzz-panel-2) !important;
+  border: 1px solid var(--zzz-line) !important;
+  color: var(--zzz-red) !important;
+  text-shadow: none !important;
+}
+.pI_x6G_centerCol:has([data-dsh-part="turn-tail"]):not(:has([aria-busy="true"])) [data-slot="conversation.header"]::before {
+  font-style: normal !important;
+  letter-spacing: 0.04em !important;
+  transform: translateY(-50%) !important;
+  background: var(--zzz-accent) !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #14141a !important;
+}
+[role="dialog"]::before {
+  transform: none !important;
+  letter-spacing: 0.08em !important;
+  background: var(--zzz-accent) !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+[data-slot="sidebar.brand.name"] {
+  font-style: normal !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ── C4 阅读面加固：无壁纸后面板实底化，信息层不再透 ── */
+.pI_x6G_centerCol, [data-pane="conversation"] { background-color: rgba(20, 22, 29, 0.96); }
+.pI_x6G_sidebarCol, [data-pane="sidebar"] { background-color: rgba(16, 18, 23, 0.94); }
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
+body:not([data-ds-dark-theme]) [data-pane="conversation"] { background-color: rgba(251, 250, 246, 0.96); }
+pre, [class*="codeBlock"] { background: var(--zzz-panel-2) !important; }
+
+/* ── C5 气泡：保留 15px 圆角与旗标箭头，材质换发丝线面板 ── */
+[data-dsh-part="message-body"] {
+  border: 1px solid var(--zzz-line) !important;
+  background-color: var(--zzz-panel) !important;
+  border-radius: 10px !important;
+}
+/* AI 旗标箭头填色改跟面板（石墨底下终于可见） */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden])::after,
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden])::after {
+  background: var(--zzz-panel) !important;
+}
+/* 己方蓝胶囊：去硬影，其余保留 */
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"]:not([role="tooltip"]),
+.EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] .Sixlwa_userStack {
+  box-shadow: none !important;
+}
+/* 输入卡：蓝粗框+黑内胆 → 发丝线 + 石墨面板；REPLY 贴纸转正去拉距 */
+[class*="uV2eYG_card"],
+[data-slot="conversation.composer.bar"] [class*="card"] {
+  border: 1px solid var(--zzz-line) !important;
+  background: var(--zzz-panel) !important;
+  box-shadow: none !important;
+}
+[class*="uV2eYG_card"]::before {
+  letter-spacing: 0.08em !important;
+  background: #3451d3 !important;
+  border: none !important;
+  transform: none !important;
+}
+
+/* ── C6 第二轮清扫（2026-11-03 盲评残留清单）────────────────────────
+ * 来源：多模态盲评指出的 13 处「没改干净」——贴纸牌、页签斜体、
+ * 气泡族硬投影、输入卡裁字回归。fm-widget 吉祥物是第三方插件，不在本层处理。 */
+/* 侧栏贴纸牌（COMBO / DATA BANK）与路牌前缀「//」全灭 */
+.pI_x6G_sidebarCol::before, .pI_x6G_sidebarCol::after,
+[data-pane="sidebar"]::before, [data-pane="sidebar"]::after,
+[data-slot="sidebar.workspaces"]::after,
+[data-slot="sidebar.workspaces"] > div:first-child::before,
+[data-dsh-surface="settings"] h3::before {
+  content: none !important;
+}
+/* 页签：转正体、去斜切 */
+[role="tab"] { font-style: normal !important; }
+[role="tab"], [role="tablist"] * { clip-path: none !important; }
+/* 消息行内硬投影全清（气泡/操作条/时间胶囊/用户胶囊残余） */
+.EvIC1a_flowItem :not(pre):not(code) { box-shadow: none !important; }
+/* AI 气泡本体硬影 */
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
+[data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
+  box-shadow: none !important;
+}
+/* 输入卡：边宽保持 2.5px（换色不换几何——1px 会让占位文上缘被裁） */
+[class*="uV2eYG_card"],
+[data-slot="conversation.composer.bar"] [class*="card"] {
+  border-width: 2.5px !important;
+  border-color: var(--zzz-line) !important;
+}
+/* turn-tail 状态行：去框去影，纯文字读数 */
+[data-dsh-part="turn-tail"] { border: none !important; box-shadow: none !important; }

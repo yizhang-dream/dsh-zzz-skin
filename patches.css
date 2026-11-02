@@ -31,7 +31,7 @@ body {
  *   · 叠层（纹理、辉光）一律 pointer-events: none
  * ═══════════════════════════════════════════════════════════════════════ */
 
-:root {
+body {
   /* 调色：取样值，不是设计值 */
   --zzz-yellow: var(--zzz-accent); /* 选中/主导航（设置页 Input 胶囊） */
   --zzz-gold: var(--zzz-accent-soft); /* 金色环/角标（装备页选中环） */
@@ -1379,7 +1379,9 @@ input[type="checkbox"]:checked::after {
  * 壁纸只能从边缝露头。透明化后由 centerCol/sidebarCol 的玻璃层负责底与可读性。 */
 .wSkVaW_root,
 .hHd-Xa_root {
-  background-color: transparent;
+  /* 2026-11-02 修复：宿主给右栏 root 铺 background:var(--dsw-alias-bg-base) 简写，
+     与本条同权重且后置，透明被压掉 → 壁纸层（z-index:-2）整片透不上来。加 !important 夺回。 */
+  background: transparent !important;
 }
 /* ═══════════════════════════════════════════════════════════════════════
  * §6 减少动态
