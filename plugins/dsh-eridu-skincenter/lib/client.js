@@ -4,6 +4,11 @@
 window.__ModuleLoader__.load({
   id: "dsh-eridu-skincenter",
   factory: () => {
+    // 宿主约定：factory 返回值会被当作插件模块校验（必须有 apply），
+    // 不返回 → "invalid plugin ... received undefined"（副作用虽已跑，横幅仍会弹）。
+    const module = { exports: {} };
+    const exports = module.exports;
+    Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
     const API = "/api/eridu-skins";
     const AC = "#cdf348", INK = "#14141a", BG = "#0b0c14", PANEL = "#14151f", LINE = "#2a2c3c";
     const GL = { "chat-icons": "聊天图标", avatars: "头像", portraits: "角色" };
@@ -324,5 +329,9 @@ window.__ModuleLoader__.load({
       if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mountTab);
       else mountTab();
     })();
+
+    function apply() {}
+    exports.apply = apply;
+    return module.exports;
   },
 });

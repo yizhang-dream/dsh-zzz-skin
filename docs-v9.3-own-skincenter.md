@@ -58,3 +58,32 @@ index-inject 行 `{kind:'html', placement:'head', html:<两条 link>}` + tapInde
   patches.css §0 的 body 级定义提供（#d4cf01），自引用行无行为影响。
 - 头像素材库现在有两份：本地仓 `assets/avatars/`（真源）+ lab-ts
   `~/.dsh/eridu-avatars/`（服务端用）——以后加头像要同步两边。
+
+## v9.3.1 修补（2026-11-02）：HARNESS「Failed to load plugins」
+
+用户次日报 HARNESS 横幅 `invalid plugin, expect function or object with an
+"apply" method, received undefined`——**皮肤一切照常**。根因：DSH 客户端把
+`__ModuleLoader__.load({id, factory})` 的 **factory 返回值**当插件模块校验，
+我们的 factory 只跑副作用不 return → 校验拿到 undefined → 横幅。皮肤没死
+是因为副作用在校验之前就已执行——这也是昨天功能验收全绿却漏掉它的原因
+（**副作用先跑、校验后炸的失败模式，功能验收不查控制台就看不见**）。
+
+修法（对照 dsh-backend-restart 的客户端样板）：factory 头部建
+`const module = { exports: {} }` + `Object.defineProperty(exports, Symbol.toStringTag,
+{value:"Module"})`，尾部 `exports.apply = apply; return module.exports;`
+（apply 空函数即可，副作用维持原位）。版本 bump 1.0.1。
+
+验收（真 Chrome + CDP）：硬重载/普通导航/重启后首个加载三类共 4+ 次，
+invalid-plugin 零复发；皮肤 attr/accent/背景视频/入口签全在位；线上组合包
+实拉字节含新代码；本地与 lab-ts 文件 sha256 一致。
+
+### 组合包缓存机制（排查时摸清）
+
+- 客户端插件走组合 URL `/plugins/??<各插件>/client.js,…&rev=<hash>`，
+  响应头 `cache-control: public, max-age=31536000, immutable`、无 etag。
+- rev 链：单插件 rev = `framedHash("plugin-artifact", [mtimeMs, …])`
+  （**touch 一下就会变**，与 package.json version 无关）；组合 rev =
+  各 (id, rev) 的再哈希。HTML 无缓存头、每次 F5 都重取 → manifest 里
+  带着最新组合 rev → **改文件后用户普通 F5 即自愈**，旧 immutable 条目
+  自然烂在缓存里。排查工具：`tools/verify-pluginload.mjs`、
+  `tools/probe-pluginload.mjs`（document-start 钩 factory 返回形状）。
