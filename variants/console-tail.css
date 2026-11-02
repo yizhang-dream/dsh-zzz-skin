@@ -139,6 +139,24 @@ pre, [class*="codeBlock"] { background: var(--zzz-panel-2) !important; }
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden])::after {
   background: var(--zzz-panel) !important;
 }
+/* 气泡文字跟面板材质走（2026-11-03 基座改「两档白泡深字」后 console 不跟随：
+   石墨面板上必须浅字——暗档补字色；亮档暖纸上基座的深字本来就对。
+   选择器必须镜像基座 §13.1 复合选择器再加 body 前缀，否则特异性 (0,2,x)
+   压不过基座 (0,4,x)，补了也不生效） */
+body[data-ds-dark-theme] .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg),
+body[data-ds-dark-theme] [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg),
+body[data-ds-dark-theme] .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *,
+body[data-ds-dark-theme] [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) * {
+  color: #f4f4f6 !important;
+}
+/* 外层行底守住原炭黑：基座改白泡后行底不跟随（白底会在石墨面板外圈出
+   一道白边；行底还承担旗标箭头 -7px 的落位基准，透明化会让箭头悬空，
+   故按 v9.4.1 之前的基座原值就地恢复，console 暗档观感零变化） */
+body[data-ds-dark-theme] .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
+body[data-ds-dark-theme] [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
+  background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45) !important;
+}
 /* 己方蓝胶囊：去硬影，其余保留 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] [class*="_bubble"]:not([role="tooltip"]),
 .EvIC1a_flowItem[data-chat-anchor-key*=":input-message"] .Sixlwa_userStack {

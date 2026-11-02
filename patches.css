@@ -2451,7 +2451,9 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    0.9375em=15px，四角一致，无尾无描边无阴影；像素复核蓝泡 y0 起 13/y3 4/
    y8 1/y17 0 与 15px 圆弧吻合）。镜像尖角方案（2px/24px、26px/2px）退役；
    fit-content/74ch/硬影/配色跟档位走维持不变。 */
-/* ── 13.1 AI 侧：白色气泡（暗档深炭）── */
+/* ── 13.1 AI 侧：白色气泡（2026-11-03 用户裁定「改」：暗档同白——游戏内 DM
+   路线=暗窗+白左泡+蓝右泡；zenless.tools 与 zzz-chat.auraa.moe 两个独立复刻
+   共识，推翻 10-25 的「暗档深炭」配色分档。旗标箭头随之在暗窗上终于高可见）── */
 /* 敲敲聊天记录：头像与句子分开——条只画文字区。2026-10-25 三改结构：
    ::after 伪元素画条会被 backdrop-filter 合成顺序盖到文字上面（字隔奶白透
    5% 成幽灵字，实测隐藏条后文字清晰实锤）；改用本体背景 + background-clip:
@@ -2461,31 +2463,31 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    这些行本来不该画；但元素自身背景仍绘制，§13.1/§14 的 padding 在 border-box
    下把 0 高撑成 12+12=24px、把宽度撑成 68+22=90px，屏幕上就多出一列空胶囊
    （实测 65 个）。排除后隐藏行维持高度 0，真展开时属性移除即恢复气泡样式。 */
-/* AI 消息=与人类气泡同款家族（fit-content/统一 15px 圆角/硬影），颜色跟档位走；
+/* AI 消息=与人类气泡同款家族（fit-content/统一 15px 圆角/硬影），白泡两档统一；
    2026-11-03 用户裁定「头像放正确位置」：zenless.tools 实测=头像独立在气泡
    左侧外（40px 圆、间隙 9px、顶边比气泡高 3px），条只画文字区（10-25 分离式回归，
    10-31 的「叠在条左端」系照敲敲原画非参考站，退役） */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
-  background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
-  color: #f4f4f6 !important;
+  background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
+  color: #303030 !important;
   width: fit-content;
   max-width: min(calc(100% - 52px), 74ch);
   box-sizing: border-box;
   padding: 12px 22px !important;
   margin-left: 49px;   /* 40px 头像 + 9px 间隙（参考站实测），给外置头像腾位 */
   border-radius: 15px !important;   /* 参考站同款四角统一 15px */
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+  box-shadow: 3px 3px 0 rgba(16, 16, 22, 0.65);
   position: relative;
 }
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg),
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *:not(pre):not(code):not(svg) {
-  color: #f4f4f6 !important;
+  color: #303030 !important;
 }
 /* 2026-10-25 用户裁定：字体撤销（不要幼圆/大字距），回系统 UI 字体，仅保留字色 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) *,
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) * {
-  color: #1e1e1e !important;
+  color: #303030 !important;
 }
 /* AI 气泡内代码块保持深底 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) pre,
@@ -2511,7 +2513,7 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
   height: 12px;
   -webkit-mask: url("assets/bubble-arrow-left.webp") center / contain no-repeat;
   mask: url("assets/bubble-arrow-left.webp") center / contain no-repeat;
-  background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10));
+  background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09));
   pointer-events: none;
 }
 /* ── 13.2 己方：REPLY 蓝胶囊 ──
@@ -2585,7 +2587,9 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
 }
 /* ── 13.4 亮档适配：纸面版 knock knock ── */
 /* 亮色档（2026-10-25 用户二次裁定：配色跟档位走）：AI 泡=奶白底+深字；
-   头像/蓝用户泡不变；代码块保深底 */
+   头像/蓝用户泡不变；代码块保深底。
+   2026-11-03 用户裁定「改」后基座两档同为白泡深字，本块与基座同值保留
+   （亮档独有语义仍在：纸底上的硬影深一档） */
 body:not([data-ds-dark-theme]) .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
 body:not([data-ds-dark-theme]) [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
   background: rgb(255 255 255 / calc(0.90 + var(--dsh-skin-bubble-alpha, 0.55) * 0.09)) !important;
