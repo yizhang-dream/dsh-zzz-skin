@@ -157,7 +157,8 @@ function transformCss(id, css, filename) {
 
 /* ── 静态与 CSS 服务 ──────────────────────────────── */
 function serveAsset(res, id, rel) {
-  const root = resolve(SKINS_DIR, id);
+  // 调用方已剥掉 'assets/' 前缀，这里必须以 assets/ 为根再拼，否则整棵 assets 404
+  const root = resolve(SKINS_DIR, id, 'assets');
   const abs = resolve(root, rel);
   if (!abs.startsWith(root + '/') && abs !== root) { res.writeHead(403).end(); return; }
   if (!existsSync(abs) || !statSync(abs).isFile()) { res.writeHead(404).end(); return; }
@@ -244,7 +245,7 @@ function makeRoutes() {
       json(res, 200, { ok: true, catalog, current });
     } },
     { kind: 'prefix', path: `${PREFIX}/avatar-img`, handler: (req, res) => {
-      const m = req.url.match(new RegExp(`^${PREFIX}/avatar-img/([a-z-]+)/([A-Za-z0-9_.-]+\\.webp)$`));
+      const m = req.url.split('?')[0].match(new RegExp(`^${PREFIX}/avatar-img/([a-z-]+)/([A-Za-z0-9_.-]+\\.webp)$`));
       if (!m) { res.writeHead(404).end(); return; }
       const abs = resolve(AV_DIR, m[1], m[2]);
       if (!abs.startsWith(resolve(AV_DIR) + '/') || !existsSync(abs)) { res.writeHead(404).end(); return; }
@@ -252,7 +253,8 @@ function makeRoutes() {
       res.end(readFileSync(abs));
     } },
     { kind: 'prefix', path: `${PREFIX}/skin`, handler: (req, res) => {
-      const m = req.url.match(new RegExp(`^${PREFIX}/skin/([a-z0-9-]+)/(stylesheet|patches|assets/.+)$`));
+      // req.url 带查询串（换肤 ?t=、头像 ?v= 破缓存），必须剥掉再匹配，否则整条 CSS 404
+      const m = req.url.split('?')[0].match(new RegExp(`^${PREFIX}/skin/([a-z0-9-]+)/(stylesheet|patches|assets/.+)$`));
       if (!m) { json(res, 404, { ok: false }); return; }
       const [, id, tail] = m;
       if (!SKIN_ID.test(id) || !findSkin(id)) { json(res, 404, { ok: false }); return; }

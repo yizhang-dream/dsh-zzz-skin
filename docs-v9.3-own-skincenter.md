@@ -77,6 +77,31 @@ index-inject 行 `{kind:'html', placement:'head', html:<两条 link>}` + tapInde
 invalid-plugin 零复发；皮肤 attr/accent/背景视频/入口签全在位；线上组合包
 实拉字节含新代码；本地与 lab-ts 文件 sha256 一致。
 
+### v9.3.2 修补（2026-11-02 下午）：「换肤没变化」——资产与查询串双 404
+
+用户在 SKIN LAB 换肤+换头像后「什么变化也没有」。服务端状态其实都写对了
+（active=eridu-01、头像=菲欧妮），坏在两个叠加的服务端 404：
+
+1. **serveAsset 少拼 assets/ 段**：调用方已剥 `assets/` 前缀再传 rel，
+   函数却以皮肤根目录为 root 直接拼 → `video/bg.mp4` 解析成
+   `skins/<id>/video/bg.mp4`（真身在 `assets/video/`）→ **整棵 assets 自
+   上线起全 404**（视频、头像图、旗标箭头都没加载过，CSS 渐变兜底掩盖了
+   缺失）。修：root 改 `resolve(SKINS_DIR, id, 'assets')`。
+2. **路由正则不剥查询串**：客户端免重载换肤给 link 加 `?t=`、CSS 变换给
+   头像 url 加 `?v=`，而 `req.url` 含查询串 → 正则 `$` 匹配失败 →
+   **带参 URL 一律 404** → 每次换肤/换头像后两条 CSS 链接变空
+   （CSSOM 0 规则），整个皮肤掉光，直到下次重载（首屏链接无参数才恢复）。
+   修：`req.url.split('?')[0]` 再匹配（/skin 与 /avatar-img 两处）。
+
+验收（真 Chrome + CDP）：带 `?t=`/`?v=` 的 CSS/资产 URL 全 200；
+重载→换基座→换回 eridu-01 三态 CSSOM 都保持 399 规则、accent 在位、
+视频 readyState 4 双向播放；多模态目检背景画面/旗标/头像图像（见
+tools/verify-assets.mjs 与 Temp/verify-assets-final.jpg）。
+
+**教训两条：①「属性在位」≠「资产渲染」——昨天验收只查了 src 属性和
+文件落盘，没查 CSSOM 规则数与资产请求状态码，两个 404 都从这里漏过；
+②路由拿 req.url 匹配必须先剥查询串，这是 Node 裸 http 的经典坑。**
+
 ### 组合包缓存机制（排查时摸清）
 
 - 客户端插件走组合 URL `/plugins/??<各插件>/client.js,…&rev=<hash>`，
