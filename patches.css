@@ -2462,15 +2462,18 @@ body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"]:nth-child(even) {
    下把 0 高撑成 12+12=24px、把宽度撑成 68+22=90px，屏幕上就多出一列空胶囊
    （实测 65 个）。排除后隐藏行维持高度 0，真展开时属性移除即恢复气泡样式。 */
 /* AI 消息=与人类气泡同款家族（fit-content/统一 15px 圆角/硬影），颜色跟档位走；
-   头像按原图像素实测叠在条左端（非分离）——文字与头像保持 20px+ 净距 */
+   2026-11-03 用户裁定「头像放正确位置」：zenless.tools 实测=头像独立在气泡
+   左侧外（40px 圆、间隙 9px、顶边比气泡高 3px），条只画文字区（10-25 分离式回归，
+   10-31 的「叠在条左端」系照敲敲原画非参考站，退役） */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
 [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
   background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
   color: #f4f4f6 !important;
   width: fit-content;
-  max-width: min(100%, 74ch);
+  max-width: min(calc(100% - 52px), 74ch);
   box-sizing: border-box;
-  padding: 12px 22px 12px 92px !important;
+  padding: 12px 22px !important;
+  margin-left: 49px;   /* 40px 头像 + 9px 间隙（参考站实测），给外置头像腾位 */
   border-radius: 15px !important;   /* 参考站同款四角统一 15px */
   box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
   position: relative;
@@ -2633,27 +2636,27 @@ body:not([data-ds-dark-theme]) [data-changed-files="true"] {
    形象 = DeepSeek 人设「大肥鱼」：品牌蓝 #4D6BFE 胖鲸 + 浅肚 + 水柱。 */
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden]),
 [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden]) {
-  padding-left: 68px !important;
+  margin-left: 49px;   /* 同 §13.1：外置头像腾位（40px+9px 间隙） */
 }
 .EvIC1a_flowItem[data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden])::before,
 [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden])::before {
-  /* 原图像素实测：头像叠在条左端上（条从头像左后延伸、左侧露条 13px、
-     头像底出挑条底 6px、文字距头像右缘 20px+）；条左上角近直角 */
+  /* 2026-11-03 用户裁定：zenless.tools 实测=头像独立在气泡左侧外——
+     40px 正圆、距气泡左缘 9px、顶边比气泡顶高 3px（单行时即垂直居中） */
   content: "";
   position: absolute;
-  left: 12px;
-  top: 10px;
-  width: 47px;
-  height: 47px;
+  left: -49px;
+  top: -3px;
+  width: 40px;
+  height: 40px;
   /* avatar-shape: 代理人头像=50% 正圆（对齐 zenless.tools 聊天生成器 rounded-full），由 tools/set-avatar.mjs 写回这一行 */
   border-radius: 50%; /* avatar-shape */
-  /* 敲敲聊天记录语言：厚白描边，嵌在磨砂条内、底部略下坠 */
+  /* 敲敲聊天记录语言：厚白描边（外置后成独立头像牌的白环） */
   outline: 5px solid rgba(255, 255, 255, 0.92);
   outline-offset: -1px;
   /* 头像双层：代理人头像（assets/avatar-agent.webp，tools/set-avatar.mjs 换图，默认铃）
      + 浅蓝渐变垫底（素材是圆形透明底，垫底即网站上的彩色圆盘效果） */
   background:
-    url("assets/avatar-agent.webp") center / 47px 47px no-repeat,
+    url("assets/avatar-agent.webp") center / 40px 40px no-repeat,
     linear-gradient(#eaf1ff, #d9e8ff);
   border: 1px solid rgba(20, 20, 26, 0.1);
   z-index: 2;
