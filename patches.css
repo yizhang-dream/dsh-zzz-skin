@@ -3196,7 +3196,7 @@ body:not([data-ds-dark-theme]) .pI_x6G_centerCol button.wSkVaW_tab[role="tab"]:n
   text-shadow: none !important;
 }
 /* 两层各自半透明会在白气泡上叠成实心；内部文字容器保持透明。 */
-.EvIC1a_flowItem[data-chat-anchor-key*="\u003aassistant"]:not([data-chat-anchor-key*="["]):not([hidden]) [data-dsh-part="message-body"] {
+.EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) [data-dsh-part="message-body"] {
   background: transparent !important;
   border: none;
   box-shadow: none;
@@ -3222,5 +3222,110 @@ body:not([data-ds-dark-theme]) [role="dialog"] {
     --zzz-panel-alpha: 1 !important;
     --dsh-skin-bubble-alpha: 1 !important;
     --zzz-panel-blur: 0px !important;
+  }
+}
+
+/* ZZZ 设置页使用干净材质，停用旧档案页扫描纹与遮挡内容的贴纸。 */
+body [role="dialog"]:has(.esc),
+body:not([data-ds-dark-theme]) [role="dialog"]:has(.esc) {
+  background-image: none !important;
+}
+body [role="dialog"]:has(.esc)::before,
+body [role="dialog"]:has(.esc)::after,
+body [role="dialog"]:has(.esc) [class*="_header"]::before {
+  content: none !important;
+}
+
+/* ═══ §18 ZZZ · 敲敲联系人（真实 session ID，不改宿主虚拟列表行高）═══ */
+body [role="treeitem"][data-zzz-contact] {
+  border-radius: 10px;
+  transform: none !important;
+  transition: background-color 120ms ease;
+}
+body [role="treeitem"][data-zzz-contact] > [class*="_slot"] {
+  width: 30px;
+  min-width: 30px;
+  flex-shrink: 0;
+  position: relative;
+}
+body [role="treeitem"][data-zzz-contact] [data-slot="sidebar.session.row.leading"] {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+body .zzz-contact-face,
+body .zzz-contact-head-face {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 50%;
+  background: var(--zzz-contact-avatar) center / cover no-repeat, #e2e7e0;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.22);
+  pointer-events: none;
+}
+body [role="treeitem"][data-zzz-contact] [class*="_title"] {
+  min-width: 0;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+body [role="treeitem"][data-zzz-contact][aria-selected="true"] {
+  background: rgb(205 243 72 / 0.15) !important;
+  box-shadow: inset 3px 0 0 var(--zzz-accent, #cdf348);
+}
+body:not([data-ds-dark-theme]) [role="treeitem"][data-zzz-contact][aria-selected="true"] {
+  background: rgb(92 112 12 / 0.14) !important;
+}
+body nav[data-zzz-contact-header] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+body .zzz-contact-head-face {
+  width: 34px;
+  height: 34px;
+  flex-basis: 34px;
+}
+body nav[data-zzz-contact-header]::after {
+  content: "敲敲";
+  flex-shrink: 0;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font: 700 10px/1.3 system-ui, sans-serif;
+  opacity: 0.65;
+}
+body [data-zzz-contact] [data-chat-anchor-key*=":assistant-step"]:not([data-chat-anchor-key*="["]):not([hidden])::before {
+  background-image: var(--zzz-contact-avatar), linear-gradient(#eaf1ff, #d9e8ff) !important;
+}
+body[data-ds-dark-theme] .pI_x6G_centerCol[data-zzz-contact]::before,
+body[data-ds-dark-theme] [data-pane="conversation"][data-zzz-contact]::before,
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol[data-zzz-contact]::before,
+body:not([data-ds-dark-theme]) [data-pane="conversation"][data-zzz-contact]::before {
+  content: attr(data-zzz-contact-name);
+  font-size: clamp(44px, 7vw, 112px);
+  letter-spacing: -0.04em;
+}
+@media (max-width: 1000px) {
+  body nav[data-zzz-contact-header] {
+    gap: 8px;
+  }
+  body nav[data-zzz-contact-header]::after {
+    display: none;
+  }
+  body .zzz-contact-head-face {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body [role="treeitem"][data-zzz-contact] {
+    transition: none;
   }
 }

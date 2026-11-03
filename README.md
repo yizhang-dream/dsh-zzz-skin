@@ -1,4 +1,4 @@
-# New Eridu (新艾利都)
+# ZZZ
 
 English | [中文](README.zh.md)
 
@@ -6,9 +6,11 @@ A Zenless Zone Zero theme for the DSH Web GUI. The v9.6 Inter-Knot treatment
 uses rounded charcoal windows in dark mode and pale windows in light mode,
 with the selected artwork visible through translucent surfaces. White agent
 bubbles, blue reply bubbles, diagonal texture and an INTER-KNOT watermark
-follow the game's messaging references. Settings → Skin Center → Surface
+follow the game's messaging references. Settings → ZZZ → Surface
 Material controls window opacity, bubble opacity and background blur, and
-remembers these choices in the current browser.
+remembers these choices in the current browser. Knock Knock contacts bind each
+session ID to a persistent avatar, shared by the session row, conversation
+header and assistant messages. Session titles and host actions remain available.
 
 ## What it is
 

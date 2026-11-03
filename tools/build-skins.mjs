@@ -141,8 +141,8 @@ for (const [idx, file] of srcs.entries()) {
 
   const manifest = structuredClone(BASE);
   manifest.id = id;
-  manifest.name = `新艾利都 · ${nn}`;
-  manifest.nameEn = `New Eridu ${nn}`;
+  manifest.name = `ZZZ · ${nn}`;
+  manifest.nameEn = `ZZZ ${nn}`;
   manifest.order = 200 + idx;
   manifest.version = '8.9.0';
   manifest.tagline = `动态背景 ${nn} · 亮度 ${L.toFixed(0)}`;
