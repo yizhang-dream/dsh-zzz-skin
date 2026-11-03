@@ -1,5 +1,6 @@
-// 新艾利都皮肤中心 · 客户端（2026-11-03 v1.1：并入宿主设置对话框成一页）
-// 无框架部分：背景装饰层渲染（video+scrim，跟亮暗档）、免重载换肤；
+// 新艾利都皮肤中心 · 客户端（2026-11-04 v1.2：设置页增第三 tab「界面材质」）
+// 无框架部分：背景装饰层渲染（video+scrim，跟亮暗档）、免重载换肤、界面材质
+//   （三滑块 → body CSS 变量，localStorage 持久，启动即注入）；
 // 换装 UI 从「右缘入口签 + 全屏浮层」迁移为 settings.section（ctx.slots.register），
 // React 组件由宿主 require 提供，照 dsh-backend-restart 的注册样板。
 window.__ModuleLoader__.load({
@@ -96,6 +97,51 @@ window.__ModuleLoader__.load({
       return j;
     }
 
+    /* ── 界面材质（v1.2：三滑块 → body 变量，直值无映射，localStorage 持久） ── */
+    const MAT_KEY = "dsh-eridu-material-v1";
+    const MAT_FIELDS = [
+      { key: "panel", label: "面板不透明度", hint: "中间列 / 侧栏 / 输入卡 / 对话框底色，向左更透、壁纸透进页面", min: 0.48, max: 0.9, step: 0.01, def: 0.66, css: "--zzz-panel-alpha" },
+      { key: "bubble", label: "气泡不透明度", hint: "白色气泡随滑块调节；蓝色气泡保持足够浓度，让白色文字清晰可读", min: 0.65, max: 1, step: 0.01, def: 0.86, css: "--dsh-skin-bubble-alpha" },
+      { key: "blur", label: "背景模糊", hint: "面板底下壁纸的虚化半径", min: 0, max: 18, step: 1, def: 6, unit: "px", css: "--zzz-panel-blur" },
+    ];
+    function matClamp(v, f) {
+      // 安全 parse：只收有限数，字符串先 Number 再验；null/空串/NaN/Infinity 一律回默认
+      let n;
+      if (typeof v === "number") n = v;
+      else if (typeof v === "string" && v.trim() !== "") n = Number(v);
+      else return f.def;
+      if (!Number.isFinite(n)) return f.def;
+      return Math.min(f.max, Math.max(f.min, n));
+    }
+    function matDefaults() {
+      const m = {};
+      for (const f of MAT_FIELDS) m[f.key] = f.def;
+      return m;
+    }
+    function matLoad() {
+      let raw = null;
+      try { raw = JSON.parse(localStorage.getItem(MAT_KEY) || "null"); } catch {}
+      const src = raw && typeof raw === "object" ? raw : {};
+      const m = {};
+      for (const f of MAT_FIELDS) m[f.key] = matClamp(src[f.key], f);
+      return m;
+    }
+    function matSave(m) {
+      try { localStorage.setItem(MAT_KEY, JSON.stringify(m)); } catch {}
+    }
+    function matApply(m) {
+      if (typeof document === "undefined" || !document.body) return false;
+      for (const f of MAT_FIELDS) {
+        document.body.style.setProperty(f.css, f.unit ? m[f.key] + f.unit : String(m[f.key]));
+      }
+      return true;
+    }
+    // 启动即注入（皮肤 CSS 的 body 兜底默认与本组 def 相同，无闪烁）；body 未就绪时挂 DOMContentLoaded
+    let MATERIAL = matLoad();
+    if (typeof document !== "undefined" && !matApply(MATERIAL)) {
+      document.addEventListener("DOMContentLoaded", () => matApply(MATERIAL), { once: true });
+    }
+
     /* ── 设置页 section（React，样式随包注入一次） ────── */
     const CSS_TAG = NS + "/section.css";
     const CSS = [
@@ -138,6 +184,16 @@ window.__ModuleLoader__.load({
       ".esc-apply:disabled{opacity:.5;cursor:wait}",
       ".esc-msg{font-size:12.5px;color:" + AC + ";min-width:80px}",
       ".esc-msg.bad{color:#ff7a90}",
+      /* 界面材质：平铺行，不套大框；文字走 dsw 别名跟亮暗，滑杆用 accent-color 原生双档 */
+      ".esc-mat-note{margin:0;font-size:12.5px;line-height:1.7;color:var(--dsw-alias-label-tertiary)}",
+      ".esc-mat{display:flex;flex-direction:column;gap:7px;max-width:620px}",
+      ".esc-mat .esc-mat-top{display:flex;align-items:baseline;justify-content:space-between;gap:14px}",
+      ".esc-mat .esc-mat-top label{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--dsw-alias-label-primary)}",
+      ".esc-mat .esc-mat-val{font:600 12px/1 ui-monospace,Consolas,monospace;color:var(--dsw-alias-label-secondary)}",
+      ".esc-mat input[type=range]{width:100%;margin:0;cursor:pointer;accent-color:var(--zzz-accent," + AC + ")}",
+      ".esc-mat .esc-mat-hint{font-size:11.5px;line-height:1.6;color:var(--dsw-alias-label-tertiary)}",
+      ".esc-mat-reset{background:transparent;border:1.5px solid rgba(128,132,160,.55);color:var(--dsw-alias-label-primary);border-radius:8px;padding:8px 18px;font:700 12.5px/1 inherit;letter-spacing:.08em;cursor:pointer}",
+      ".esc-mat-reset:hover{border-color:var(--zzz-accent," + AC + ");color:var(--zzz-accent," + AC + ")}",
     ].join("");
     function useStyleOnce() {
       useEffect(() => {
@@ -161,6 +217,7 @@ window.__ModuleLoader__.load({
       const [q, setQ] = useState("");
       const [msg, setMsg] = useState(null);
       const [busy, setBusy] = useState(false);
+      const [mat, setMat] = useState(MATERIAL);
 
       const refresh = useCallback(async () => {
         try {
@@ -210,6 +267,21 @@ window.__ModuleLoader__.load({
         catch (e) { say("✗ " + e.message, true); }
         setBusy(false);
       };
+      const dragMat = (f, raw) => {
+        // React 的 onChange 对 range 即逐拍 input 事件：拖动即时写 body 变量并落盘
+        const v = matClamp(raw, f);
+        MATERIAL = { ...MATERIAL, [f.key]: v };
+        setMat(MATERIAL);
+        matApply(MATERIAL);
+        matSave(MATERIAL);
+      };
+      const resetMat = () => {
+        MATERIAL = matDefaults();
+        setMat(MATERIAL);
+        matApply(MATERIAL);
+        matSave(MATERIAL);
+        say("✓ 已恢复默认材质（0.66 / 0.86 / 6px）");
+      };
 
       const kids = [
         h("div", { className: "esc-head" },
@@ -220,6 +292,7 @@ window.__ModuleLoader__.load({
         h("div", { className: "esc-tabs" },
           h("button", { className: "esc-tab" + (tab === "bg" ? " on" : ""), onClick: () => setTab("bg") }, "动态背景"),
           h("button", { className: "esc-tab" + (tab === "av" ? " on" : ""), onClick: () => setTab("av") }, "代理人头像"),
+          h("button", { className: "esc-tab" + (tab === "mt" ? " on" : ""), onClick: () => setTab("mt") }, "界面材质"),
         ),
       ];
 
@@ -247,7 +320,7 @@ window.__ModuleLoader__.load({
             );
           }),
         ));
-      } else {
+      } else if (tab === "av") {
         kids.push(
           h("input", { className: "esc-search", placeholder: "搜索代理人…", value: q, onChange: (e) => setQ(e.target.value) }),
           ...Object.entries(groups).filter(([, list]) => list.length).flatMap(([dir, list]) => [
@@ -275,6 +348,28 @@ window.__ModuleLoader__.load({
           h("button", { className: "esc-apply", onClick: pickAvatar, disabled: !avSel || busy }, "应用头像"),
           msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
         ));
+      } else if (tab === "mt") {
+        kids.push(
+          h("p", { className: "esc-mat-note" },
+            "向左更透——壁纸从页面底下透进来；向右更实。拖动即时生效并自动记住，刷新后保持。"),
+          ...MAT_FIELDS.map((f) => h("div", { key: f.key, className: "esc-mat" },
+            h("div", { className: "esc-mat-top" },
+              h("label", { htmlFor: "esc-mat-" + f.key }, f.label),
+              h("span", { className: "esc-mat-val" },
+                f.unit ? mat[f.key] + f.unit : Math.round(mat[f.key] * 100) + "%"),
+            ),
+            h("input", {
+              id: "esc-mat-" + f.key, type: "range",
+              min: f.min, max: f.max, step: f.step, value: mat[f.key],
+              onChange: (e) => dragMat(f, e.target.value),
+            }),
+            h("span", { className: "esc-mat-hint" }, f.hint),
+          )),
+          h("div", { className: "esc-bar" },
+            h("button", { className: "esc-mat-reset", onClick: resetMat }, "恢复默认材质"),
+            msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
+          ),
+        );
       }
       if (tab === "bg" && msg) kids.push(h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t));
       return h("div", { className: "esc" }, ...kids);

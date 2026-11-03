@@ -2,13 +2,13 @@
 
 English | [中文](README.zh.md)
 
-A Zenless Zone Zero theme for the DSH Web GUI. The official Cunning Hares
-key art sits behind the conversation — replies are chat bubbles floating on
-it, not a panel over it — and the light and dark modes are two
-independent designs: dark is a **neon night run** (deep-violet night with
-warning-yellow accents), light is **ink on paper** (a warm paper base with
-black outlines and hard shadows) — not one palette with a filter over it;
-panels, popups and menus each carry their own scheme per mode.
+A Zenless Zone Zero theme for the DSH Web GUI. The v9.6 Inter-Knot treatment
+uses rounded charcoal windows in dark mode and pale windows in light mode,
+with the selected artwork visible through translucent surfaces. White agent
+bubbles, blue reply bubbles, diagonal texture and an INTER-KNOT watermark
+follow the game's messaging references. Settings → Skin Center → Surface
+Material controls window opacity, bubble opacity and background blur, and
+remembers these choices in the current browser.
 
 ## What it is
 
@@ -27,15 +27,18 @@ panels, popups and menus each carry their own scheme per mode.
 
 ## Design language
 
-The visual language borrows the game's comic idiom, with colour in a
-subordinate role: 2px black outlines, chamfered `clip-path` buttons, 4px
-offset hard shadows, halftone dot screens, an SMPTE test-strip base bar,
-`-2°` sticker badges and `//` title prefixes. The accent collapses into two
-variables — `--zzz-accent` / `--zzz-accent-soft` at the top of `skin.css` —
-defaulting to the game's warning yellow `#FFD84D`; switching to cyan or
-magenta is a one-line edit.
+The main surfaces follow Inter-Knot's charcoal hierarchy, rounded windows,
+subtle diagonal texture and a large background wordmark. The artwork remains
+visible through the windows. Agent messages use white bubbles with dark text;
+user messages use blue bubbles with white text. Yellow-green is reserved for
+selected navigation and key controls. `--zzz-accent` and `--zzz-accent-soft`
+in `patches.css` control the accent colours.
 
-## Motion (eighteen game elements)
+## Motion and legacy decorations
+
+The base layer contains the effects below. v9.6 retires the COMBO / DATA BANK
+sidebar labels, contour overlay and PRESS ANY KEY decoration to keep the
+Inter-Knot windows consistent.
 
 Streaming hangs an **HDD detection alert** stripe on the header; a finished
 reply pops an **S-rank** outlined card; waiting shows the **Bangboo** loader
@@ -60,8 +63,8 @@ none across the board).
   double-hooked with semantic attributes.
 - All skin CSS goes through the skin-center safety pipeline (selectors are
   force-scoped under `html[data-dsh-skin]`); no `@import`, no remote URLs.
-- Bubble opacity, background occlusion and composer frost follow the
-  skin-center sliders.
+- The native Skin Center settings page controls window opacity, bubble opacity
+  and background blur. Blue bubbles retain a minimum opacity for readable white text.
 
 ## Copyright & licence
 

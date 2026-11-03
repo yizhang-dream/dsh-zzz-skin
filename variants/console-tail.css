@@ -154,7 +154,7 @@ body[data-ds-dark-theme] [data-pane="conversation"] [data-chat-anchor-key*=":ass
    故按 v9.4.1 之前的基座原值就地恢复，console 暗档观感零变化） */
 body[data-ds-dark-theme] .EvIC1a_flowItem[data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]),
 body[data-ds-dark-theme] [data-pane="conversation"] [data-chat-anchor-key*=":assistant"]:not([data-chat-anchor-key*="["]):not([hidden]) {
-  background: rgb(30 30 38 / calc(0.88 + var(--dsh-skin-bubble-alpha, 0.55) * 0.10)) !important;
+  background: rgb(30 30 38 / 0.935) !important; /* 石墨卡基准不受玻璃滑块影响 */
   box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45) !important;
 }
 /* 己方蓝胶囊：去硬影，其余保留 */
@@ -205,3 +205,35 @@ body[data-ds-dark-theme] [data-pane="conversation"] [data-chat-anchor-key*=":ass
 }
 /* turn-tail 状态行：去框去影，纯文字读数 */
 [data-dsh-part="turn-tail"] { border: none !important; box-shadow: none !important; }
+
+/* C7 基座 v9.6 增加绳网窗体；console 仍用自身的整片石墨地。 */
+body {
+  --zzz-window-gap: 0px;
+  --zzz-window-radius: 0px;
+}
+body[data-ds-dark-theme] .pI_x6G_centerCol,
+body[data-ds-dark-theme] [data-pane="conversation"],
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol,
+body:not([data-ds-dark-theme]) [data-pane="conversation"] {
+  background-color: var(--zzz-panel) !important;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+body[data-ds-dark-theme] .pI_x6G_centerCol::before,
+body[data-ds-dark-theme] [data-pane="conversation"]::before,
+body:not([data-ds-dark-theme]) .pI_x6G_centerCol::before,
+body:not([data-ds-dark-theme]) [data-pane="conversation"]::before {
+  content: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+body .pI_x6G_sidebarCol,
+body [data-pane="sidebar"],
+body:not([data-ds-dark-theme]) .pI_x6G_sidebarCol,
+body:not([data-ds-dark-theme]) [data-pane="sidebar"] {
+  background-color: var(--zzz-panel-2);
+  border-radius: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
