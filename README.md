@@ -65,6 +65,9 @@ none across the board).
   force-scoped under `html[data-dsh-skin]`); no `@import`, no remote URLs.
 - The native Skin Center settings page controls window opacity, bubble opacity
   and background blur. Blue bubbles retain a minimum opacity for readable white text.
+- The 37 animated backgrounds use the original MP4 files without resizing or
+  re-encoding. Content hashes version their URLs; the server streams byte ranges
+  instead of buffering an entire video for each request.
 
 ## Copyright & licence
 

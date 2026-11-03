@@ -6,11 +6,12 @@
  *   node tools/build-skins.mjs           # 生成到 build/skins/
  *   node tools/build-skins.mjs --deploy  # 生成 + 推到 lab-ts（并下架旧变体）
  *
- * 每张卡: 一条 2560x1440 / CRF30 / 无音轨的 mp4 作背景，亮暗两档各自算 scrim
+ * 每张卡直接复制原始 MP4，不缩放、不二次转码；亮暗两档各自算 scrim
  * （亮档压暗壁纸、暗档压亮壁纸），卡片缩略图取该壁纸的一帧。
  * 生成物不进 git（.gitignore 忽略 build/）。
  */
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -92,10 +93,12 @@ function focusPoint(mp4) {
   return { x: Math.round(clamp(px, 28, 72)), y: Math.round(clamp(py, 30, 68)) };
 }
 
-function encode(src, target) {
-  sh('ffmpeg', ['-v', 'error', '-y', '-i', src, '-an', '-vf', 'scale=2560:1440',
-    '-c:v', 'libx264', '-preset', 'slow', '-crf', '30', '-pix_fmt', 'yuv420p',
-    '-movflags', '+faststart', target]);
+async function copyOriginal(src, dir) {
+  const hash = createHash('sha256');
+  for await (const chunk of fs.createReadStream(src)) hash.update(chunk);
+  const name = `bg-original-${hash.digest('hex').slice(0, 12)}.mp4`;
+  fs.copyFileSync(src, path.join(dir, name));
+  return name;
 }
 
 function still(mp4, target) {
@@ -110,14 +113,15 @@ const srcs = listSources();
 console.log(`源 ${srcs.length} 张`);
 
 let total = 0;
-srcs.forEach((file, idx) => {
+for (const [idx, file] of srcs.entries()) {
   const nn = String(idx + 1).padStart(2, '0');
   const id = `zzz-eridu-${nn}`;
   const dir = path.join(OUT, id);
   fs.mkdirSync(path.join(dir, 'assets', 'video'), { recursive: true });
 
-  const mp4 = path.join(dir, 'assets', 'video', 'bg.mp4');
-  encode(path.join(SRC_DIR, file), mp4);
+  const videoName = await copyOriginal(path.join(SRC_DIR, file), path.join(dir, 'assets', 'video'));
+  const mp4 = path.join(dir, 'assets', 'video', videoName);
+  const dimensions = file.match(/_(\d+x\d+)\.mp4$/)[1].replace('x', '×');
   const L = meanLuma(mp4);
   const sc = scrims(L);
   still(mp4, path.join(dir, 'assets', 'preview-dark.jpg'));
@@ -142,12 +146,12 @@ srcs.forEach((file, idx) => {
   manifest.order = 200 + idx;
   manifest.version = '8.9.0';
   manifest.tagline = `动态背景 ${nn} · 亮度 ${L.toFixed(0)}`;
-  manifest.description = `《绝区零》动态背景第 ${nn} 张（源文件 ${file}），2560×1440 循环播放，`
+  manifest.description = `《绝区零》动态背景第 ${nn} 张（源文件 ${file}），原片 ${dimensions} 循环播放，无二次压缩，`
     + `亮暗两档各自配纱罩：${L >= 150 ? '亮壁纸，暗档加浓压暗' : L >= 100 ? '中亮壁纸，两档折中' : '暗壁纸，亮档加浓压白'}。`;
   manifest.preview = { light: 'assets/preview-light.jpg', dark: 'assets/preview-dark.jpg' };
   manifest.contributes.backgroundMedia = {
-    dark: { type: 'video', src: 'assets/video/bg.mp4', scrim: sc.dark },
-    light: { type: 'video', src: 'assets/video/bg.mp4', scrim: sc.light },
+    dark: { type: 'video', src: `assets/video/${videoName}`, scrim: sc.dark },
+    light: { type: 'video', src: `assets/video/${videoName}`, scrim: sc.light },
   };
   const fp = focusPoint(mp4);
   fs.appendFileSync(path.join(dir, 'skin.css'),
@@ -160,7 +164,7 @@ body{--zzz-bg-pos:${fp.x}% ${fp.y}%;}
   fs.writeFileSync(path.join(dir, 'skin.json'), JSON.stringify(manifest, null, 2) + '\n');
 
   console.log(`${id}  L=${L.toFixed(0)}  ${mb.toFixed(1)}MB  焦点 ${fp.x}%/${fp.y}%`);
-});
+}
 
 console.log(`\n共 ${srcs.length} 张，视频合计 ${total.toFixed(0)}MB`);
 

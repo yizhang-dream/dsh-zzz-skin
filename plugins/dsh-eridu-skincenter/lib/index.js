@@ -5,7 +5,7 @@
 //  - 头像素材库：$DSH_HOME/eridu-avatars/<group>/<file> + catalog.json
 //  - 首屏注入：webserver/index-inject 结构化行 + tapIndex 兜底（html 属性 + <link>）
 //  - CSS 变换：选择器前缀 html[data-dsh-skin="<id>"] + url() 改根相对 + 头像 ?v=mtime
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, copyFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync, copyFileSync, mkdirSync, createReadStream } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve, extname, basename } from 'node:path';
 
@@ -191,17 +191,48 @@ function transformCss(id, css, filename) {
 }
 
 /* ── 静态与 CSS 服务 ──────────────────────────────── */
-function serveAsset(res, id, rel) {
+function serveAsset(req, res, id, rel) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    res.writeHead(405, { allow: 'GET, HEAD' }).end(); return;
+  }
   // 调用方已剥掉 'assets/' 前缀，这里必须以 assets/ 为根再拼，否则整棵 assets 404
   const root = resolve(SKINS_DIR, id, 'assets');
   const abs = resolve(root, rel);
   if (!abs.startsWith(root + '/') && abs !== root) { res.writeHead(403).end(); return; }
   if (!existsSync(abs) || !statSync(abs).isFile()) { res.writeHead(404).end(); return; }
-  res.writeHead(200, {
+  const size = statSync(abs).size;
+  const headers = {
     'content-type': MIME[extname(abs).toLowerCase()] || 'application/octet-stream',
     'cache-control': 'public, max-age=604800',
-  });
-  res.end(readFileSync(abs));
+    'accept-ranges': 'bytes',
+  };
+  let start = 0, end = size - 1, status = 200;
+  // 原片按单段 Range 流式传输；不把几十至上百 MB 的 MP4 整块读进堆内存。
+  if (req.method === 'GET' && req.headers.range) {
+    const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range);
+    let valid = m && (m[1] || m[2]) && size > 0;
+    if (valid && m[1]) {
+      start = Number(m[1]);
+      end = m[2] ? Math.min(Number(m[2]), size - 1) : size - 1;
+      valid = Number.isSafeInteger(start) && Number.isSafeInteger(end) && start <= end && start < size;
+    } else if (valid) {
+      const suffix = Number(m[2]);
+      valid = Number.isSafeInteger(suffix) && suffix > 0;
+      start = Math.max(0, size - suffix);
+    }
+    if (!valid) {
+      res.writeHead(416, { ...headers, 'content-range': `bytes */${size}`, 'content-length': 0 }).end(); return;
+    }
+    status = 206;
+    headers['content-range'] = `bytes ${start}-${end}/${size}`;
+  }
+  headers['content-length'] = size ? end - start + 1 : 0;
+  res.writeHead(status, headers);
+  if (req.method === 'HEAD' || !size) { res.end(); return; }
+  const stream = createReadStream(abs, { start, end });
+  stream.on('error', () => res.destroy());
+  res.on('close', () => stream.destroy());
+  stream.pipe(res);
 }
 function serveCss(res, id, file) {
   const entry = findSkin(id);
@@ -295,7 +326,7 @@ function makeRoutes() {
       if (!SKIN_ID.test(id) || !findSkin(id)) { json(res, 404, { ok: false }); return; }
       if (tail === 'stylesheet' || tail === 'patches') serveCss(res, id, tail === 'stylesheet' ? 'skin.css' : 'patches.css');
       // 容忍 /assets/assets/ 双层前缀（旧客户端把 manifest 的 assets/ 前缀原样拼进 URL）
-      else serveAsset(res, id, tail.slice('assets/'.length).replace(/^assets\//, ''));
+      else serveAsset(req, res, id, tail.slice('assets/'.length).replace(/^assets\//, ''));
     } },
   ];
 }
