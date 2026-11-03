@@ -116,3 +116,42 @@ tools/verify-assets.mjs、tools/probe-arrow.mjs。
   带着最新组合 rev → **改文件后用户普通 F5 即自愈**，旧 immutable 条目
   自然烂在缓存里。排查工具：`tools/verify-pluginload.mjs`、
   `tools/probe-pluginload.mjs`（document-start 钩 factory 返回形状）。
+
+## v1.1 并入宿主设置对话框 + 删心情插件（2026-11-03）
+
+用户裁定「皮肤中心成为设置中的一页；删掉心情插件」。
+
+**机制（照 dsh-backend-restart 样板，宿主原生 settings.section 槽位）：**
+
+- client `factory: (require) => { const React = require("react"); … }`
+- `exports.inject = ["slots"]`；`apply(ctx)` 里
+  `ctx.effect(() => ctx.slots.inject("settings.section", () =>
+    ctx.slots.register({ name: "settings.section", id: "dsh-eridu-skincenter",
+    order: 8, label: () => "皮肤中心" }, SkinCenterSection)), …)`
+- package.json `dsh.client.inject`：
+  `["@deepseek-ai/dsh-client-runtime", "@deepseek-ai/dsh-client-ui-slots"]`
+  + `"immediately": true`（没有这两条 require("react") 不可解析）
+- order 8 落在 小黑盒(7) 与 模型 之间；其他插件 order 分布 6/7/21/30/40/51+
+
+**改版内容：** 撤右缘入口签与全屏浮层；39 卡网格（视频 hover 预览）、头像
+三组网格+搜索+应用条全部迁入 React section（`.esc-*` 样式随包注入一次，
+max-width 900px，sticky 应用条）。背景装饰层/免重载换肤链路原样保留。
+
+**心情插件删除：** `dsh-feiyu-mood@0.7.0`（=设置页「鱼的心情」+ fm-widget
+浮窗，github:Yuuyuko-uu/dsh-feiyu-mood）。删前核查：cordis.patch.yml /
+cordis.yml 无引用、无反向依赖；`dsh plugin --profile web remove
+dsh-feiyu-mood` 一步干净（CLI 连 profile bundles 列表一起清）。
+**注意 dsh-fish-memory（鱼的记忆）是另一个插件，未动。**
+
+**坑与注意：**
+- 设置只能 Ctrl+Alt+, 开（合成 click 菜单项不触发 React 处理器），且快捷键
+  是 toggle——连按两次=关。
+- 换肤卡显示 name 不显示 id；测试要恢复激活皮肤时按 name 找卡或直接
+  POST /api/eridu-skins/active。
+- 插件增删 / manifest 改动后需 `systemctl --user restart dsh-web.service`
+  （重启前先确认没有正在生成的回复）。
+
+**E2E（真实 Chrome）：** 导航 13 项含「皮肤中心」（第 4 位）、「鱼的心情」
+消失；39 卡渲染/点卡换肤（含观测台）/头像搜索南宫羽→应用→「使用中」标记/
+点回通用设置无残留，全部通过；多模态终检 4/4。右缘签、fm-widget、HARNESS
+横幅均无。
