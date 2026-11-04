@@ -24,7 +24,7 @@ dsh plugin --profile web add dsh-eridu-skincenter@1.4.0
 
 构建、安装验证与正式发布见 [发布记录](docs-plugin-release-v1.4.0.md)。
 
-1.5.0 开发版将「设置 → ZZZ」重整为资源浏览、详情预览与显式应用，见[装备页式设置记录](docs-v9.8-equipment-settings.md)。上面的 npm 命令仍安装已发布的 1.4.0。
+1.5.0 开发版将「设置 → ZZZ」重整为资源浏览、详情预览与显式应用，见[装备页式设置记录](docs-v9.8-equipment-settings.md)。1.5.1 开发版补充懒加载页面与Portal弹窗的公共组件样式，见[动态组件覆盖记录](docs-v9.9-dynamic-components.md)。上面的 npm 命令仍安装已发布的 1.4.0。
 
 ## 构成
 

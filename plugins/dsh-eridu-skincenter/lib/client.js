@@ -75,17 +75,42 @@ window.__ModuleLoader__.load({
       themeObs.observe(document.body, { attributes: true, attributeFilter: ["data-ds-dark-theme"] });
     }
 
+    /* ── 动态组件公共样式（独立 <link>，与皮肤 link / section.css 互不混用） ── */
+    const COMPONENT_CSS_HREF = API + "/components.css";
+    const COMPONENT_LINK_SEL = 'link[data-zzz-component-styles][href^="' + API + '/components.css"]';
+    function componentLink() {
+      return document.querySelector(COMPONENT_LINK_SEL);
+    }
+    // 首屏可能已由服务端注入；缺失时补一条。只查本 API 前缀 + 自家标记，不碰其他样式。
+    function ensureComponentStyles() {
+      if (!running || typeof document === "undefined" || !document.head) return null;
+      const exists = componentLink();
+      if (exists) return exists;
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.setAttribute("data-zzz-component-styles", "");
+      link.setAttribute("href", COMPONENT_CSS_HREF);
+      document.head.appendChild(link);
+      return link;
+    }
+    // 新建皮肤 link 只插到组件链之前，维持「皮肤 → 组件」层叠顺序；移动新节点不触发组件样式重载。
+    function mountSkinLink(el) {
+      const comp = componentLink();
+      if (comp && comp.parentNode === document.head) document.head.insertBefore(el, comp);
+      else document.head.appendChild(el);
+    }
+
     /* ── 免重载换肤 ──────────────────────────────────── */
     function swapLinks(id, hasPatches) {
       if (!running) return;
       MANAGED_IDS.add(id);
       const href = (f) => `${API}/skin/${id}/${f}?t=${Date.now()}`;
       let sheet = document.querySelector('link[data-dsh-skin-link="stylesheet"][href^="' + API + '/skin/"]');
-      if (!sheet) { sheet = document.createElement("link"); sheet.rel = "stylesheet"; sheet.setAttribute("data-dsh-skin-link", "stylesheet"); document.head.appendChild(sheet); }
+      if (!sheet) { sheet = document.createElement("link"); sheet.rel = "stylesheet"; sheet.setAttribute("data-dsh-skin-link", "stylesheet"); mountSkinLink(sheet); }
       sheet.href = href("stylesheet");
       let pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
       if (hasPatches) {
-        if (!pat) { pat = document.createElement("link"); pat.rel = "stylesheet"; pat.setAttribute("data-dsh-skin-link", "patches"); document.head.appendChild(pat); }
+        if (!pat) { pat = document.createElement("link"); pat.rel = "stylesheet"; pat.setAttribute("data-dsh-skin-link", "patches"); mountSkinLink(pat); }
         pat.href = href("patches");
       } else if (pat) pat.remove();
       document.documentElement.setAttribute("data-dsh-skin", id);
@@ -105,7 +130,7 @@ window.__ModuleLoader__.load({
         sheet = document.createElement("link");
         sheet.rel = "stylesheet";
         sheet.setAttribute("data-dsh-skin-link", "stylesheet");
-        document.head.appendChild(sheet);
+        mountSkinLink(sheet);
       }
       if (ownId(sheet) !== id) sheet.href = href("stylesheet");
       let pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
@@ -114,7 +139,7 @@ window.__ModuleLoader__.load({
           pat = document.createElement("link");
           pat.rel = "stylesheet";
           pat.setAttribute("data-dsh-skin-link", "patches");
-          document.head.appendChild(pat);
+          mountSkinLink(pat);
         }
         if (ownId(pat) !== id) pat.href = href("patches");
       } else if (pat && ownId(pat) !== null) {
@@ -1069,6 +1094,8 @@ window.__ModuleLoader__.load({
       const gen = ++lifecycleGen;
       const previousSkin = document.documentElement.getAttribute("data-dsh-skin");
       running = true;
+      // 组件公共样式在启用时就位，不等打开 ZZZ 设置页；卸载时随 cleanup 撤掉。
+      ensureComponentStyles();
       const ac = new AbortController();
       runtimeSignal = ac.signal;
       let stopContacts = null;
@@ -1112,6 +1139,13 @@ window.__ModuleLoader__.load({
             const id = href.slice((API + "/skin/").length).split("/")[0].split("?")[0];
             if (id) MANAGED_IDS.add(id);
             link.remove();
+          });
+        } catch {}
+        // 组件公共样式只撤自家这条；其他样式链一律不动。
+        try {
+          document.querySelectorAll('link[data-zzz-component-styles]').forEach((link) => {
+            const href = link.getAttribute("href") || "";
+            if (href.startsWith(COMPONENT_CSS_HREF)) link.remove();
           });
         } catch {}
         // 仅当 html 当前属性是本插件管理过的 ID：别把宿主或其他皮肤的值删掉

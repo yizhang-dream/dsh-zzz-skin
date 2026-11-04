@@ -30,6 +30,8 @@ See the [release and verification record](docs-plugin-release-v1.4.0.md).
 
 The 1.5.0 development version reorganizes Settings → ZZZ into resource browsing,
 a detail preview and explicit apply actions. See the [equipment-style settings record](docs-v9.8-equipment-settings.md).
+The 1.5.1 development version adds a plugin-owned shared component stylesheet for
+lazy pages and portal dialogs; see the [dynamic component coverage record](docs-v9.9-dynamic-components.md).
 The npm command above installs the published 1.4.0 version.
 
 ## What it is

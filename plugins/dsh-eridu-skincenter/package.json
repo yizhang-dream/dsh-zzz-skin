@@ -2,7 +2,7 @@
   "name": "dsh-eridu-skincenter",
   "displayName": "ZZZ",
   "description": "ZZZ · 绝区零皮肤插件：自包含官方主视觉静态背景、绳网窗体材质、233 枚代理人头像与按会话头像/壁纸选择。设置入口为 ZZZ，支持明暗主题与窄屏布局；可选原片视频皮肤单独本地导入，不随 npm 分发。",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "type": "module",
   "main": "lib/index.js",
   "exports": {

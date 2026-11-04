@@ -28,6 +28,14 @@ view. In a narrow window, the host navigation moves above the ZZZ content.
 A conversation can explicitly pin the same background or avatar it currently
 inherits, so later default changes do not silently change that choice.
 
+The 1.5.1 development version includes `lib/component-surfaces.css`. It loads
+with the skin, before Settings → ZZZ is opened, and covers shared buttons,
+dialogs, portal menus, native control colour schemes and narrow settings
+navigation. It applies to the plugin's own ZZZ IDs, including older local video
+skins. The stylesheet is served by the authenticated `/components.css` API and
+is removed and restored with the client lifecycle. Native OS popups and
+components that require a live model interaction remain separate coverage limits.
+
 ## Package contents
 
 The npm tarball is self-contained. Installing it does **not** read
@@ -95,7 +103,7 @@ are included.
 Install the packed tarball with the normal DSH plugin mechanism, for example:
 
 ```bash
-dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.0.tgz
+dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.1.tgz
 ```
 
 There is no `postinstall` network step. The plugin requires the DSH Web

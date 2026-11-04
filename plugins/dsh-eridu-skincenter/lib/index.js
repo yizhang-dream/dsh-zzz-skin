@@ -15,6 +15,9 @@ export const Config = Schema.object({
 });
 const PREFIX = '/api/eridu-skins';
 const SKIN_ID = /^[a-z0-9][a-z0-9-]*$/;
+// 动态组件公共样式：固定随插件包发的单文件，自身选择器已限定 managed ZZZ html 属性，
+// 因此不经 transformCss（也避免误改组件自带的作用域）。readFileSync 支持 file: URL。
+const COMPONENT_CSS = new URL('./component-surfaces.css', import.meta.url);
 function createSkinCenter(config = {}) {
   const store = createStore(config);
 
@@ -215,10 +218,32 @@ function createSkinCenter(config = {}) {
     res.end(css);
   }
 
+  function serveComponentCss(req, res) {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      res.writeHead(405, { allow: 'GET, HEAD', 'cache-control': 'no-store' }).end(); return;
+    }
+    let body;
+    try {
+      body = readFileSync(COMPONENT_CSS);
+    } catch (e) {
+      json(res, 404, { ok: false, error: 'component-css-missing' }); return;
+    }
+    // 组件样式是插件包内固定文件：长度按字节给，HEAD 只回头不送体。
+    res.writeHead(200, {
+      'content-type': 'text/css; charset=utf-8',
+      'cache-control': 'no-store',
+      'content-length': body.length,
+    });
+    if (req.method === 'HEAD') { res.end(); return; }
+    res.end(body);
+  }
+
   /* ── 首屏注入 ─────────────────────────────────────── */
   function linkTags(id, hasPatches) {
     const links = [`<link rel="stylesheet" href="${PREFIX}/skin/${id}/stylesheet" data-dsh-skin-link="stylesheet">`];
     if (hasPatches) links.push(`<link rel="stylesheet" href="${PREFIX}/skin/${id}/patches" data-dsh-skin-link="patches">`);
+    // 组件公共样式固定排在皮肤 link 之后（同权重冲突时皮肤先、组件后）。
+    links.push(`<link rel="stylesheet" href="${PREFIX}/components.css" data-zzz-component-styles>`);
     return links.join('');
   }
   function indexRows() {
@@ -275,6 +300,7 @@ function createSkinCenter(config = {}) {
         if (!abs) { res.writeHead(404).end(); return; }
         serveFile(req, res, abs);
       } },
+      { kind: 'exact', path: `${PREFIX}/components.css`, handler: serveComponentCss },
       { kind: 'prefix', path: `${PREFIX}/skin`, handler: (req, res) => {
         // req.url 带查询串（换肤 ?t=、头像 ?v= 破缓存），必须剥掉再匹配，否则整条 CSS 404
         const m = req.url.split('?')[0].match(new RegExp(`^${PREFIX}/skin/([a-z0-9-]+)/(stylesheet|patches|assets/.+)$`));

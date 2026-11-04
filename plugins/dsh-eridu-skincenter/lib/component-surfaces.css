@@ -1,0 +1,122 @@
+/* ZZZ shared components. Loaded with the plugin, including before lazy pages mount.
+ * Keep this layer independent of local skin files, which may predate the plugin.
+ * Roles are preferred; CSS-module suffixes below cover the host's shared UIKit.
+ * Scope excludes other skins. Preserve geometry, editor colours and destructive actions.
+ */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body {
+  --zzz-ui-text: #f2f2f4;
+  --zzz-ui-muted: #a9abbd;
+  --zzz-ui-line: rgba(255, 255, 255, .2);
+  --zzz-ui-accent-text: var(--zzz-accent, #d4cf01);
+  --zzz-ui-danger-ink: #14141a;
+  --dsw-alias-button-primary-fill: var(--zzz-accent, #d4cf01);
+  --dsw-alias-button-primary-hover: color-mix(in srgb, var(--zzz-accent, #d4cf01) 86%, white);
+  --dsw-alias-button-primary-dimmed: color-mix(in srgb, var(--zzz-accent, #d4cf01) 42%, transparent);
+  --dsw-alias-label-primary-foreground: #14141a;
+  --dsw-alias-brand-primary: var(--zzz-accent, #d4cf01);
+  --dsw-alias-brand-primary-invert: #14141a;
+  --dsw-alias-brand-primary-new-colorprimary-new-color: var(--zzz-accent, #d4cf01);
+  --dsw-alias-brand-text: var(--zzz-ui-accent-text);
+  --dsw-alias-fill-tsp-secondary: rgba(255, 255, 255, .08);
+  --dsw-alias-label-quaternary: #898b95;
+  --dsw-focus-ring-color: var(--zzz-accent, #d4cf01);
+  color-scheme: dark;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body:not([data-ds-dark-theme]) {
+  --zzz-ui-text: #1a1a1e;
+  --zzz-ui-muted: #5c5c66;
+  --zzz-ui-line: rgba(26, 26, 30, .24);
+  --zzz-ui-accent-text: #4f7000;
+  --zzz-ui-danger-ink: #fff;
+  --dsw-alias-fill-tsp-secondary: rgba(26, 26, 30, .06);
+  --dsw-alias-label-quaternary: #696b72;
+  color-scheme: light;
+}
+
+/* Shared primary buttons: use tokens so a danger button's local red override survives. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body button:is([class*="_primary_"], [class*="_primaryButton"]):not(.esc *) {
+  background: var(--dsw-alias-button-primary-fill);
+  color: var(--dsw-alias-label-primary-foreground);
+  border-radius: 10px !important;
+  clip-path: none !important;
+  font-style: normal;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body button:is([class*="_primary_"], [class*="_primaryButton"]):not(.esc *):hover:not(:disabled) {
+  background: var(--dsw-alias-button-primary-hover);
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body button[class*="_primary_"][class*="_dangerButton"] {
+  color: var(--zzz-ui-danger-ink);
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body button:is([class*="_button_"], [class*="_secondaryButton"], [class*="_addButton"]):not(.esc *) {
+  border-radius: 10px !important;
+  clip-path: none !important;
+  font-style: normal;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is(button, input, select, [role="switch"], [role="tab"]):focus-visible {
+  outline: 2px solid var(--zzz-accent, #d4cf01);
+  outline-offset: 2px;
+}
+
+/* A dialog is a reusable surface, not an investigation-report illustration. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is([role="dialog"], [role="alertdialog"]) {
+  background-image: none !important;
+  border-radius: 16px !important;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is([role="dialog"], [role="alertdialog"])::before,
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is([role="dialog"], [role="alertdialog"])::after,
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is([role="dialog"], [role="alertdialog"]) [class*="_header"]::before {
+  content: none !important;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is([role="menu"], [role="listbox"], [role="tooltip"]) {
+  border-radius: 10px !important;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="option"][aria-selected="true"] {
+  background-color: color-mix(in srgb, var(--zzz-accent, #d4cf01) 18%, transparent);
+}
+
+/* Native select stays native. Colour-scheme follows the app, not the OS default. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body select {
+  color-scheme: inherit;
+  border-radius: 10px;
+}
+
+/* The same settings navigation must fit on mobile outside the ZZZ section too. */
+@media (max-width: 600px) {
+  html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"]:has(> nav [class*="_navList"]) {
+    flex-direction: column !important;
+  }
+  html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"]:has(> nav [class*="_navList"]) > nav {
+    box-sizing: border-box;
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    padding: 12px 12px 8px !important;
+    gap: 8px !important;
+    border-right: 0 !important;
+  }
+  html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] > nav [class*="_navList"] {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    max-width: 100%;
+    gap: 4px !important;
+    padding: 2px;
+  }
+  html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] > nav [class*="_navList"] > button {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    max-width: none !important;
+    padding: 6px 10px !important;
+  }
+  html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"]:has(> nav [class*="_navList"]) > [class*="_content"] {
+    width: 100% !important;
+    min-height: 0;
+    flex: 1 1 auto !important;
+  }
+  html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"]:has(> nav [class*="_navList"]) [class*="_header"] {
+    padding: 8px 12px !important;
+  }
+  html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"]:has(> nav [class*="_navList"]) [class*="_options"] {
+    padding: 0 12px 16px !important;
+  }
+}

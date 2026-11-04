@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.1 — Unreleased
+
+- Load a scoped shared component stylesheet with the plugin, before opening
+  Settings → ZZZ, including for local original-video skins.
+- Unify primary buttons, dialog decorations, native control colour schemes and
+  narrow settings navigation across lazy pages and portal dialogs.
+- Serve component CSS through the existing authenticated API; remove and restore
+  its own stylesheet with the client lifecycle.
+
 ## 1.5.0 — Unreleased
 
 - Reorganize Settings → ZZZ around resource browsing, a separate detail preview
