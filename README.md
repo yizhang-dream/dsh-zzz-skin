@@ -20,7 +20,13 @@ These overrides persist in the current browser; material controls remain shared.
 The distributable DSH plugin lives in [plugins/dsh-eridu-skincenter](plugins/dsh-eridu-skincenter/README.md).
 Version 1.4.0 includes two themes and 233 avatars, with no Downloads folder,
 ffmpeg or preinstalled skin assets required. The 37 original-video backgrounds
-remain optional local imports. See the [release preparation record](docs-plugin-release-v1.4.0.md).
+remain optional local imports. Version 1.4.0 is [published on npm](https://www.npmjs.com/package/dsh-eridu-skincenter/v/1.4.0):
+
+```bash
+dsh plugin --profile web add dsh-eridu-skincenter@1.4.0
+```
+
+See the [release and verification record](docs-plugin-release-v1.4.0.md).
 
 ## What it is
 

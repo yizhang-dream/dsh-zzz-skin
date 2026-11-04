@@ -16,7 +16,13 @@
 发布版插件位于 [plugins/dsh-eridu-skincenter](plugins/dsh-eridu-skincenter/README.md)。
 1.4.0 安装包自带两套主题和 233 枚头像，无需本机 Downloads、ffmpeg 或预先部署资源。
 37 套原片背景作为可选本地资源导入，默认不随 npm 包分发。
-构建与实际安装验证见 [发布准备记录](docs-plugin-release-v1.4.0.md)。
+1.4.0 已[发布到 npm](https://www.npmjs.com/package/dsh-eridu-skincenter/v/1.4.0)，可直接安装：
+
+```bash
+dsh plugin --profile web add dsh-eridu-skincenter@1.4.0
+```
+
+构建、安装验证与正式发布见 [发布记录](docs-plugin-release-v1.4.0.md)。
 
 ## 构成
 

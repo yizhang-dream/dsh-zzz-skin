@@ -1,6 +1,6 @@
 # ZZZ 插件发布准备：1.4.0
 
-本轮把 `plugins/dsh-eridu-skincenter` 从本机手工部署插件改成独立 DSH 安装包。技术包名保持 `dsh-eridu-skincenter`，界面名称为 ZZZ。此记录针对安装包准备；没有执行 npm publish 或创建公开版本。
+本轮把 `plugins/dsh-eridu-skincenter` 从本机手工部署插件改成独立 DSH 安装包。技术包名保持 `dsh-eridu-skincenter`，界面名称为 ZZZ。安装包准备完成后，按用户明确指令于 2026-11-04 正式发布到 npm；没有创建 GitHub Release。
 
 ## 安装包与资源
 
@@ -72,6 +72,23 @@ npm pack ./plugins/dsh-eridu-skincenter --pack-destination ./release
 
 源码提交 `706119d` 的 [GitHub Actions](https://github.com/yizhang-dream/dsh-zzz-skin/actions/runs/41818797501) 已实际完成：Node 22 / 24 两组资源构建、完整性校验、语法和 npm pack 内容检查全部通过。这些是打包检查，真实运行验证为前述独立宿主与浏览器集成验证。
 
-独立无头浏览器、3096测试宿主与SSH隧道已停止，临时登录URL、token与cookie文件已删除，保留非敏感截图和记录。生产关键配置哈希保持一致，未替换现有部署。后续实际 npm 发布或创建发行版本尚未执行。
+独立无头浏览器、3096测试宿主与SSH隧道已停止，临时登录URL、token与cookie文件已删除，保留非敏感截图和记录。生产关键配置哈希保持一致，未替换现有部署。准备阶段没有执行 npm 发布；随后经用户明确指令正式发布，结果见下一节。
 
 [公开安装说明](https://answers.xn--ltr42g543b.cn/2026-11-04-zzz-plugin-release.html) 已发布，线上200与答案目录登记均通过，页面标题、安装命令、最终包大小和SHA-256已核对。
+
+## npm 正式发布：2026-11-04
+
+按用户明确的 `npm publish` 指令，以 npm 账号 `limiteded` 发布已验收的原始 tgz，未重新打包；使用 public access 与 latest 标签。registry 发布时间为 `2026-11-04T11:22:49.458Z`，匿名查询确认 `latest = 1.4.0`。
+
+- [npm 版本页面](https://www.npmjs.com/package/dsh-eridu-skincenter/v/1.4.0)
+- [registry tarball](https://registry.npmjs.org/dsh-eridu-skincenter/-/dsh-eridu-skincenter-1.4.0.tgz)
+- 公开下载为 1,826,035 字节，SHA-256 与上述已验收安装包完全一致。
+- registry 的 SHA-512 integrity 与 SHA-1 shasum 均按实际下载字节重新计算并验证通过。
+
+直接安装：
+
+```bash
+dsh plugin --profile web add dsh-eridu-skincenter@1.4.0
+```
+
+此次未创建 GitHub Release，未改动现有生产安装。
