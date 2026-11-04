@@ -151,6 +151,60 @@ html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-
   border-radius: 10px;
 }
 
+/* Workspace panes use the same material as the conversation, without making fixed descendants relative to a blur layer. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is(section[class*="_tabHost_"]:has([data-slot="sidebar.right.pane.tab"]), [data-sidebar-right-panel] section[data-dockkit-pane]) {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border: 1px solid var(--zzz-window-edge);
+  border-radius: var(--zzz-window-radius, 22px);
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is(section[class*="_tabHost_"]:has([data-slot="sidebar.right.pane.tab"]), [data-sidebar-right-panel] section[data-dockkit-pane])::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: rgb(var(--zzz-window-rgb, 12 13 16) / var(--zzz-panel-alpha, .66));
+  backdrop-filter: blur(var(--zzz-panel-blur, 6px));
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [data-sidebar-right-guide-entry] {
+  border-radius: 14px;
+  background: rgb(var(--zzz-window-rgb, 12 13 16) / var(--zzz-panel-alpha, .66));
+  border: 1px solid var(--zzz-window-edge);
+  color: var(--zzz-ui-text);
+  font-style: normal;
+}
+
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [data-sidebar-right-guide-entry]:hover {
+  background: rgb(var(--zzz-window-rgb, 12 13 16) / min(1, calc(var(--zzz-panel-alpha, .66) + .12)));
+  border-color: var(--zzz-ui-accent-text);
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [data-slot="sidebar.right.tab.guide.entry"] button:focus-visible {
+  outline-color: var(--zzz-ui-accent-text);
+}
+
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [data-sidebar-right-guide-entry] > button[class*="_main"] {
+  border-radius: inherit !important;
+}
+
+/* The inspector's portal uses viewport coordinates; the legacy dialog rule must not move it into document flow. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"][class*="_typeFilterPanel"] {
+  position: fixed;
+  border-radius: 10px !important;
+}
+
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [data-sidebar-right-panel="fullscreen"][data-sidebar-right-open="true"] {
+  position: fixed;
+  inset: var(--zzz-window-gap, 12px);
+  width: auto !important;
+  height: auto;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body:has([data-sidebar-right-panel="fullscreen"][data-sidebar-right-open="true"]) :is([class*="sidebarCol"], [class*="centerCol"]) {
+  visibility: hidden;
+}
+
 /* The same settings navigation must fit on mobile outside the ZZZ section too. */
 @media (max-width: 600px) {
   html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"]:has(> nav [class*="_navList"]) {

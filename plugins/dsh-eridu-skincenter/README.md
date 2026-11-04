@@ -42,6 +42,15 @@ shared actions readable neutral colours. The native disabled and selected states
 remain in control of the host. See the repository's dynamic component coverage
 record for actual inspected entries and remaining limits.
 
+The 1.5.3 development version extends the same material to the right workspace
+shell, including its start page, file preview and diagnostics panes. Its guide
+entry is a 14 px card with the host's hover, focus and pressed states; the
+diagnostics type filter keeps its viewport coordinates, and the fullscreen
+workspace stays inside the window gap and restores the collapsed columns.
+Terminal ANSI colours are left untouched. See the
+[dynamic component coverage record](../../docs-v9.9-dynamic-components.md) for
+the inspected entries and remaining limits.
+
 ## Package contents
 
 The npm tarball is self-contained. Installing it does **not** read
@@ -109,7 +118,7 @@ are included.
 Install the packed tarball with the normal DSH plugin mechanism, for example:
 
 ```bash
-dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.2.tgz
+dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.3.tgz
 ```
 
 There is no `postinstall` network step. The plugin requires the DSH Web

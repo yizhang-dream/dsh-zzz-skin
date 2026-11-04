@@ -153,3 +153,41 @@
 部署时发现生产profile提供的Schemastery 3.18.5低于包声明的^3.19.0，已在ZZZ插件自己的稳定`node_modules`内提供3.19.0及其必要依赖Cosmokit 1.9.0／standard-schema spec 1.1.0，使用真实目录，不长期链接到验证环境。未改生产profile或其他插件依赖，未改最终tgz。
 
 独立裸Node import冷解析成功；随后再次对ZZZ自身disable→enable，路由404→200，宿主PID仍为1381259，profile patch回到基线。包内容排除运行时`node_modules`后仍为268文件、79e0d783…内容树；CSS、头像和背景资源再次可读，日志异常0，临时生产jar已删除。当前实例替换、依赖收口与数据保留核对均已完成。
+
+## 2026-11-05：1.5.3 右侧工作区共享材质候选
+
+本轮只改插件自带公共层 `lib/component-surfaces.css` 与 `lib/client.js` 的一条材质滑块提示文案（面板不透明度的说明补上「右侧工作区」），不改宿主动作、数据含义或后端配置，也不给代码编辑器与终端统一涂色。终端 ANSI 配色本轮不改。
+
+| 实际改动 | 选择器与做法 |
+| --- | --- |
+| 右侧工作区外壳共享材质 | `section[class*="_tabHost_"]:has([data-slot="sidebar.right.pane.tab"])`、`[data-sidebar-right-panel] section[data-dockkit-pane]` 使用与对话相同的窗体底色与模糊；材质放在 `::before` 隔离层，避免 `position: relative` 与 `backdrop-filter` 把固定定位的后代拖进文档流 |
+| 工作区入口卡 14px | `[data-sidebar-right-guide-entry]` 为14px圆角，保留宿主 hover、focus-visible 与按下态；`> button[class*="_main"]` 继承圆角 |
+| 诊断筛选定位修正 | `[role="dialog"][class*="_typeFilterPanel"]` 恢复 `position: fixed`（视口坐标），圆角10px，不再被旧对话框规则移入文档流 |
+| 全屏边界与收起恢复 | `[data-sidebar-right-panel="fullscreen"][data-sidebar-right-open="true"]` 以 `--zzz-window-gap` 固定内缩；`:has()` 仅在全屏打开时隐藏侧栏与对话列，收起后自动恢复可见 |
+
+校验结果：
+
+- `node --check lib/client.js`、`lib/index.js`、`lib/store.js` 与两个打包脚本通过；未新增或改写任何单元测试／mock。
+- `npm run build:bundle` 从仓库源重建：254文件、2.08 MiB、233头像；`npm run verify:bundle` 通过，清单 `packageVersion` 为1.5.3。
+- 补齐包内README的记录链接后更正打包，最终 `release/dsh-eridu-skincenter-1.5.3.tgz` 为1,833,684字节，SHA-256 `c93211f1e3444790b8a5b61a5d0d312c0eb5f1dcf381876f3d1c134d45dde8b8`，268个包文件；同目录 `SHA256SUMS-1.5.3` 已复核。前候选8cb109已被更正包替代，不用于安装。
+- 包内 `lib/client.js` SHA-256 `1f6ca7716478d3748ee47f6a03ad5f8bfb096d0e203811f88b919d6d4e967fbd`，`lib/component-surfaces.css` 13,618字节、SHA-256 `ec7739165dd32f4e0e65e0e331d75b6df272658f1f46c9810b45f2e10cb72ca9`，与仓库源逐字节一致。
+- 在新建空目录解出后单独运行 `verify-bundle` 通过（不依赖仓库源树），包内无视频、用户状态文件或运行时 `node_modules`。
+
+### 右侧真实界面复验
+
+主会话只操作独立3096宿主和自有9351浏览器，未操作用户窗口。黄色选中页签保留。IAB截图报`browser screenshot activity capture failed for guest`，改用既有真实Chrome端到端工装取PNG；最终明暗开始页及全屏截图已经目视检查。
+
+| 真实场景 | 本轮结果 |
+| --- | --- |
+| 开始页·明暗两档 | 三个入口均实际出现，圆角14px，壁纸透入面板，文字可读 |
+| 工作区文件→Markdown | 读取隔离目录自建真实文件并打开预览 |
+| 新建终端→分栏 | 真实终端ANSI提示符可见，两pane各320px；正文保留宿主配色 |
+| 会话数据诊断→类型筛选 | 真实四条初始化metadata可见；浮层top113.25、bottom314.25，位于804px视口内 |
+| 材质控件 | 不透明度.66→.84、模糊6→12真实驱动pane伪元素，随后恢复原值.66／6 |
+| 全屏边界 | 原生inline width100vw由auto!important收住；1422×804视口下矩形为x12、y12、1398×780，right1410、bottom792 |
+| 全屏直接收起 | 会话区恢复visible；重新打开回到push模式 |
+| 原生进入／退出全屏 | 分别实际点击；fullscreen时底层会话hidden，退出后push／visible |
+
+浏览器解析最终CSS为32条顶层规则。最后的全屏宽度与open=true守卫已同步隔离安装并实际复验。部分控件经真实DOM调用处理函数，进入／退出全屏另由原生鼠标实际点击；未造DOM、未写单元测试或mock。分开的viewport命令不持久，本轮不宣称额外2000px或390px右工作区验收通过。审批、提问、实时模型工具卡仍不在此次覆盖内。
+
+最终包安装、当前实例替换和清理结果将在收口后追加；未执行新版npm公开发布。

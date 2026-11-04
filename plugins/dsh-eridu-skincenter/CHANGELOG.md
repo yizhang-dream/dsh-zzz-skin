@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.3 — Unreleased
+
+- Share the window material with the right workspace shell, including its start
+  page, file preview and diagnostics panes, while keeping fixed descendants
+  positioned against the viewport instead of the blurred layer.
+- Draw the right workspace guide entry as a 14 px card with the host's own
+  hover, focus and pressed states.
+- Keep the diagnostics type filter panel at its viewport coordinates; the legacy
+  dialog rule no longer moves the portal into document flow.
+- Bound the fullscreen right workspace to the window gap with a fixed inset and
+  restore the sidebar and conversation columns when the panel is collapsed.
+- Leave terminal ANSI colours untouched.
+
 ## 1.5.2 — Unreleased
 
 - Remove the legacy ruled-row background, borders and staggered animation from

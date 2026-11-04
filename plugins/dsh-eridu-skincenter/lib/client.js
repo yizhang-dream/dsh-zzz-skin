@@ -173,7 +173,7 @@ window.__ModuleLoader__.load({
     /* ── 界面材质（v1.2：三滑块 → body 变量，直值无映射，localStorage 持久） ── */
     const MAT_KEY = "dsh-eridu-material-v1";
     const MAT_FIELDS = [
-      { key: "panel", label: "面板不透明度", hint: "中间列 / 侧栏 / 输入卡 / 对话框底色，向左更透、壁纸透进页面", min: 0.48, max: 0.9, step: 0.01, def: 0.66, css: "--zzz-panel-alpha" },
+      { key: "panel", label: "面板不透明度", hint: "中间列 / 侧栏 / 右侧工作区 / 输入卡 / 对话框底色，向左更透、壁纸透进页面", min: 0.48, max: 0.9, step: 0.01, def: 0.66, css: "--zzz-panel-alpha" },
       { key: "bubble", label: "气泡不透明度", hint: "白色气泡随滑块调节；蓝色气泡保持足够浓度，让白色文字清晰可读", min: 0.65, max: 1, step: 0.01, def: 0.86, css: "--dsh-skin-bubble-alpha" },
       { key: "blur", label: "背景模糊", hint: "面板底下壁纸的虚化半径", min: 0, max: 18, step: 1, def: 6, unit: "px", css: "--zzz-panel-blur" },
     ];

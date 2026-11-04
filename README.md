@@ -35,6 +35,11 @@ lazy pages and portal dialogs; see the [dynamic component coverage record](docs-
 Version 1.5.2 additionally fixes nested row decoration, card header clipping,
 placeholder contrast and native disabled states; the same coverage record lists
 actual inspected entries and the separate deployment status.
+Version 1.5.3 shares the window material with the right workspace shell (start
+page, file preview and diagnostics panes), shows its guide entry as a 14 px card,
+keeps the diagnostics filter portal at viewport coordinates, and bounds the
+fullscreen workspace while restoring the collapsed columns. Terminal ANSI colours
+are unchanged. See the same [dynamic component coverage record](docs-v9.9-dynamic-components.md).
 The npm command above installs the published 1.4.0 version.
 
 ## What it is
