@@ -11,6 +11,13 @@
 「设置 → ZZZ」可选择设置对象：当前对话或全局默认。当前对话分别选择头像和壁纸，
 可恢复自动头像、继承全局壁纸；这些选择按会话保存于当前浏览器，材质仍通用。
 
+## 独立插件安装包
+
+发布版插件位于 [plugins/dsh-eridu-skincenter](plugins/dsh-eridu-skincenter/README.md)。
+1.4.0 安装包自带两套主题和 233 枚头像，无需本机 Downloads、ffmpeg 或预先部署资源。
+37 套原片背景作为可选本地资源导入，默认不随 npm 包分发。
+构建与实际安装验证见 [发布准备记录](docs-plugin-release-v1.4.0.md)。
+
 ## 构成
 
 - `skin.json` —— v2 清单。

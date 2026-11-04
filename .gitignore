@@ -9,3 +9,6 @@ tools/cdp-profile/
 tools/cdp-profile*/
 build/
 Temp/
+release/
+plugins/dsh-eridu-skincenter/bundle/
+plugins/dsh-eridu-skincenter/node_modules/

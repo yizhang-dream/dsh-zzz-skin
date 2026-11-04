@@ -1,0 +1,50 @@
+name: Validate ZZZ plugin package
+
+on:
+  pull_request:
+    paths:
+      - 'plugins/dsh-eridu-skincenter/**'
+      - 'assets/**'
+      - 'skin.*'
+      - 'patches.css'
+      - 'variants/console-tail.css'
+      - '.github/workflows/plugin-package.yml'
+  push:
+    paths:
+      - 'plugins/dsh-eridu-skincenter/**'
+      - 'assets/**'
+      - 'skin.*'
+      - 'patches.css'
+      - 'variants/console-tail.css'
+      - '.github/workflows/plugin-package.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22, 24]
+    defaults:
+      run:
+        working-directory: plugins/dsh-eridu-skincenter
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Build self-contained resources
+        run: node scripts/build-bundle.mjs
+      - name: Verify bundled resource integrity
+        run: node scripts/verify-bundle.mjs
+      - name: Check published entry points
+        run: |
+          node --check lib/index.js
+          node --check lib/store.js
+          node --check lib/client.js
+          node --check scripts/import-custom-skins.mjs
+      - name: Validate npm tarball contents
+        run: npm pack --dry-run --ignore-scripts

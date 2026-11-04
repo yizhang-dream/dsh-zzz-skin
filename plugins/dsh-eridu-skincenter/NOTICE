@@ -1,0 +1,40 @@
+dsh-eridu-skincenter / ZZZ — 第三方素材归属
+===========================================
+
+本包（npm 名称 dsh-eridu-skincenter，界面名称 ZZZ）的**软件代码与原创设计**
+由 flower-moon 以 MIT 许可发布，许可全文见 LICENSE。
+
+MIT 许可**仅覆盖软件代码与原创设计**，不覆盖下列第三方游戏素材。以下素材
+不适用 MIT，也不随 MIT 被再许可：
+
+1. `bundle/skins/zzz-zenless/assets/wallpaper-zzz-keyart.jpg`
+   《绝区零》(Zenless Zone Zero) 官方主视觉插画（六分街 · 狡兔屋）。
+   © miHoYo / HoYoverse。登场角色包括妮可·德玛拉 (Nicole Demara)、
+   安比·德玛拉 (Anby Demara)、比利·奇德 (Billy Kid) 与邦布 (Bangboo)。
+   该插画仅作为本皮肤的静态壁纸与卡面预览整体分发，非商业同人使用。
+
+2. `bundle/avatars/` 下 233 枚 webp 头像
+   原图为《绝区零》官方游戏素材，属 IconMessageRoleCircle /
+   IconInterKnotRole / IconRoleCircle 系列，© miHoYo / HoYoverse。
+   素材经 zenless.tools 的聊天生成器页面整理下载，感谢其整理工作。
+   仅作为本皮肤的头像选择素材，非商业同人使用。
+
+3. 皮肤色板与动效参数取样自游戏实机截图，仅用于风格参考；包内不含游戏
+   数据、游戏程序或可执行游戏内容。
+
+4. 37 套原片动态壁纸
+   取自米哈游《绝区零》官方桌面客户端「人工桌面」的壁纸库，© miHoYo /
+   HoYoverse。**这些原片不随本 npm 包分发**；仅供用户在本机通过可选导入
+   脚本使用，非商业用途。
+
+发行与授权说明
+--------------
+
+- 本皮肤为非商业同人作品，与 miHoYo / HoYoverse 无隶属、合作、授权或
+  背书关系，不宣称取得任何官方授权。
+- 《绝区零》及相关角色、插画、图标的一切权利归 miHoYo / HoYoverse 所有。
+- 包内不含真实用户会话截图、用户头像选择状态、联系人映射或材质偏好等
+  用户数据。
+- `zzz-console` 不提供预览图（`preview: null`），因为它没有可安全分发的
+  官方卡面；请勿用真实会话截图替代。
+- 如权利人认为某项素材不应分发，请联系仓库维护者移除；本项目会配合处理。

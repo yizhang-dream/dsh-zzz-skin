@@ -1,10 +1,12 @@
-// 新艾利都皮肤中心 · 客户端（2026-11-04 v1.3：设置对象切换——按对话选壁纸与头像）
+// 新艾利都皮肤中心 · 客户端（2026-11-04 v1.4：生命周期收口——初始化/异步启动/清理全在 ctx.effect）
 // 无框架部分：背景装饰层渲染（video+scrim，跟亮暗档；有效壁纸=会话专属>全局激活，仅条目变化才重建媒体）、
-//   免重载换肤、界面材质（三滑块 → body CSS 变量，localStorage 持久，启动即注入）；
+//   免重载换肤、界面材质（三滑块 → body CSS 变量，localStorage 持久，启用时注入、停用时还原）；
 // 会话外观偏好（localStorage zzz-session-appearance-v1，仅当前浏览器）：按真实会话行 ID 存
 //   手动头像（三类素材全部可用）与专属壁纸；敲敲联系人 choose 优先手动头像，否则走旧自动 CONTACT_KEY；
 // 换装 UI 从「右缘入口签 + 全屏浮层」迁移为 settings.section（ctx.slots.register），
 // React 组件由宿主 require 提供，照 dsh-backend-restart 的注册样板。
+// 卸载约定：running 守卫切断所有异步回写；cleanup 撤 themeObs/bgLayer/自身 CSS/skin link，
+//   仅当 html 的 data-dsh-skin 是本插件管理过的 ID 才移除，并还原启用前的 body 材质变量。
 window.__ModuleLoader__.load({
   id: "dsh-eridu-skincenter",
   factory: (require) => {
@@ -21,10 +23,15 @@ window.__ModuleLoader__.load({
     const AC = "#cdf348", INK = "#14141a", PANEL = "#14151f", PANEL2 = "#0e0f18", LINE = "#2a2c3c";
     const GL = { "chat-icons": "聊天图标", avatars: "头像", portraits: "角色" };
     let CATALOG = [], ACTIVE = null, AV = { catalog: [], current: null };
+    // 本插件见过/设置过的皮肤 ID：卸载时只撤自己管过的 html 属性
+    const MANAGED_IDS = new Set();
+    // running：启用期间才允许写 DOM / 回写状态；gen 防旧生命周期清理误伤新实例
+    let running = false, lifecycleGen = 0, runtimeSignal = null, runtimeCleanup = null;
 
     /* ── 背景装饰层（video + scrim，跟 body 档位） ────── */
     let bgLayer = null, bgEntry = null, themeObs = null;
     function ensureLayer() {
+      if (!running) return null;
       if (bgLayer && document.body.contains(bgLayer)) return bgLayer;
       bgLayer = document.createElement("div");
       bgLayer.setAttribute("data-dsh-skin-layer", "background");
@@ -34,8 +41,10 @@ window.__ModuleLoader__.load({
       return bgLayer;
     }
     function renderBackground(entry) {
+      if (!running) return;
       bgEntry = entry;
       const layer = ensureLayer();
+      if (!layer) return;
       layer.textContent = "";
       const bm = entry && entry.backgroundMedia;
       if (!bm) return;
@@ -61,42 +70,78 @@ window.__ModuleLoader__.load({
       }
     }
     function watchTheme() {
-      if (themeObs) return;
-      themeObs = new MutationObserver(() => renderBackground(bgEntry));
+      if (!running || themeObs) return;
+      themeObs = new MutationObserver(() => { if (running) renderBackground(bgEntry); });
       themeObs.observe(document.body, { attributes: true, attributeFilter: ["data-ds-dark-theme"] });
     }
 
     /* ── 免重载换肤 ──────────────────────────────────── */
     function swapLinks(id, hasPatches) {
+      if (!running) return;
+      MANAGED_IDS.add(id);
       const href = (f) => `${API}/skin/${id}/${f}?t=${Date.now()}`;
-      let sheet = document.querySelector('link[data-dsh-skin-link="stylesheet"]');
+      let sheet = document.querySelector('link[data-dsh-skin-link="stylesheet"][href^="' + API + '/skin/"]');
       if (!sheet) { sheet = document.createElement("link"); sheet.rel = "stylesheet"; sheet.setAttribute("data-dsh-skin-link", "stylesheet"); document.head.appendChild(sheet); }
       sheet.href = href("stylesheet");
-      let pat = document.querySelector('link[data-dsh-skin-link="patches"]');
+      let pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
       if (hasPatches) {
         if (!pat) { pat = document.createElement("link"); pat.rel = "stylesheet"; pat.setAttribute("data-dsh-skin-link", "patches"); document.head.appendChild(pat); }
         pat.href = href("patches");
       } else if (pat) pat.remove();
       document.documentElement.setAttribute("data-dsh-skin", id);
     }
+    // 启动/重新启用时补回被 cleanup 撤掉的 link；首屏已注入且 id 一致就不重载
+    function ensureSkinLinks(id, hasPatches) {
+      if (!running) return;
+      MANAGED_IDS.add(id);
+      const href = (f) => `${API}/skin/${id}/${f}?t=${Date.now()}`;
+      const ownId = (el) => {
+        const h = el && el.getAttribute("href");
+        if (!h || !h.startsWith(API + "/skin/")) return null;
+        return h.slice((API + "/skin/").length).split("/")[0].split("?")[0];
+      };
+      let sheet = document.querySelector('link[data-dsh-skin-link="stylesheet"][href^="' + API + '/skin/"]');
+      if (!sheet) {
+        sheet = document.createElement("link");
+        sheet.rel = "stylesheet";
+        sheet.setAttribute("data-dsh-skin-link", "stylesheet");
+        document.head.appendChild(sheet);
+      }
+      if (ownId(sheet) !== id) sheet.href = href("stylesheet");
+      let pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
+      if (hasPatches) {
+        if (!pat) {
+          pat = document.createElement("link");
+          pat.rel = "stylesheet";
+          pat.setAttribute("data-dsh-skin-link", "patches");
+          document.head.appendChild(pat);
+        }
+        if (ownId(pat) !== id) pat.href = href("patches");
+      } else if (pat && ownId(pat) !== null) {
+        pat.remove();
+      }
+      document.documentElement.setAttribute("data-dsh-skin", id);
+    }
     async function applySkin(id) {
-      const r = await fetch(`${API}/active`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
+      const r = await fetch(`${API}/active`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }), signal: runtimeSignal || undefined });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "失败");
+      if (!running) return j; // 卸载后才返回：只回执，不写 DOM/状态
       ACTIVE = id;
-      const entry = CATALOG.find((s) => s.id === id);
+      MANAGED_IDS.add(id);
       swapLinks(id, j.hasPatches);
       // 全局换装仍尊重当前会话的专属壁纸：有效壁纸=会话 override > 全局 ACTIVE
       renderBackgroundEffective();
       return j;
     }
     async function applyAvatar(e) {
-      const r = await fetch(`${API}/avatar`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(e) });
+      const r = await fetch(`${API}/avatar`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(e), signal: runtimeSignal || undefined });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "失败");
+      if (!running) return j;
       AV.current = { dir: e.dir, file: e.file, name: e.name };
-      const pat = document.querySelector('link[data-dsh-skin-link="patches"]');
-      if (pat) pat.href = `${API}/skin/${ACTIVE}/patches?t=${Date.now()}`;
+      const pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
+      if (pat && ACTIVE) pat.href = `${API}/skin/${ACTIVE}/patches?t=${Date.now()}`;
       return j;
     }
 
@@ -139,11 +184,23 @@ window.__ModuleLoader__.load({
       }
       return true;
     }
-    // 启动即注入（皮肤 CSS 的 body 兜底默认与本组 def 相同，无闪烁）；body 未就绪时挂 DOMContentLoaded
-    let MATERIAL = matLoad();
-    if (typeof document !== "undefined" && !matApply(MATERIAL)) {
-      document.addEventListener("DOMContentLoaded", () => matApply(MATERIAL), { once: true });
+    // 启用前快照：cleanup 只还原这三个内联变量，不碰 localStorage 里保存的选择
+    function matSnapshot() {
+      if (typeof document === "undefined" || !document.body) return null;
+      return MAT_FIELDS.map((f) => ({
+        css: f.css,
+        value: document.body.style.getPropertyValue(f.css),
+        priority: document.body.style.getPropertyPriority(f.css),
+      }));
     }
+    function matRestore(snap) {
+      if (!snap || typeof document === "undefined" || !document.body) return;
+      for (const p of snap) {
+        if (p.value) document.body.style.setProperty(p.css, p.value, p.priority);
+        else document.body.style.removeProperty(p.css);
+      }
+    }
+    let MATERIAL = matLoad();
 
     /* ── 会话外观偏好（v1.3：本浏览器 localStorage，按真实会话行 ID） ── */
     // 只存白名单形状；使用时再对 catalog 校验（皮肤/头像下架即自然回落全局/自动）。
@@ -212,6 +269,7 @@ window.__ModuleLoader__.load({
       return sessionWallpaperOf(id) || CATALOG.find((s) => s.id === ACTIVE) || null;
     }
     function renderBackgroundEffective() {
+      if (!running) return;
       const entry = effectiveBgEntry(CURRENT_CONTACT ? CURRENT_CONTACT.id : null);
       if (entry === bgEntry) return;
       renderBackground(entry);
@@ -267,6 +325,10 @@ window.__ModuleLoader__.load({
       ".esc-card:disabled{opacity:.6}",
       ".esc-card .shot{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:#000}",
       ".esc-card .shot video,.esc-card .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}",
+      /* 无 preview 的条目（如 console）用纯 CSS 占位，绝不渲染空 src 的 img 去请求页面本身 */
+      ".esc-card .shot .ph{position:absolute;inset:0;background:radial-gradient(120% 120% at 18% 0%,var(--esc-panel) 0%,var(--esc-panel-2) 68%,var(--esc-line) 100%)}",
+      ".esc-card .shot .ph::before{content:\"\";position:absolute;inset:0;background-image:linear-gradient(var(--esc-line) 1px,transparent 1px),linear-gradient(90deg,var(--esc-line) 1px,transparent 1px);background-size:24px 24px;opacity:.16}",
+      ".esc-card .shot .ph::after{content:\"\";position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border:2px solid var(--esc-line-strong);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:.42}",
       ".esc-card .shot .veil{position:absolute;inset:0;background:linear-gradient(180deg,transparent 62%,rgba(8,9,18,.82))}",
       ".esc-card .shot .nm{position:absolute;left:10px;right:10px;bottom:8px;font-weight:800;font-size:14px;color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
       ".esc-card .shot .nm small{display:block;font-weight:400;font-size:10px;color:var(--esc-shot-dim);letter-spacing:.06em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
@@ -312,7 +374,7 @@ window.__ModuleLoader__.load({
     ].join("");
     function useStyleOnce() {
       useEffect(() => {
-        if (typeof document === "undefined") return;
+        if (!running || typeof document === "undefined") return;
         if (!document.getElementById(CSS_TAG)) {
           const el = document.createElement("style");
           el.id = CSS_TAG;
@@ -324,7 +386,7 @@ window.__ModuleLoader__.load({
 
     function SkinCenterSection() {
       useStyleOnce();
-      const TABS = [["bg", "动态背景"], ["av", "代理人头像"], ["mt", "界面材质"]];
+      const TABS = [["bg", "背景"], ["av", "代理人头像"], ["mt", "界面材质"]];
       const [tab, setTab] = useState("bg");
       const [scope, setScope] = useState(() => CURRENT_CONTACT ? "session" : "global"); // 设置对象：session=当前对话 / global=全局默认
       const [contact, setContact] = useState(CURRENT_CONTACT);
@@ -349,21 +411,30 @@ window.__ModuleLoader__.load({
 
       // refresh 不再吞异常：两列表分开兜底，HTTP 状态与解析失败都浮出到界面，可重试
       const refresh = useCallback(async () => {
+        if (!running) return;
         setLoading(true); setLoadErr(null);
         const errs = [];
+        const signal = runtimeSignal || undefined;
         try {
-          const r = await fetch(`${API}/list`, { cache: "no-store" });
+          const r = await fetch(`${API}/list`, { cache: "no-store", signal });
+          if (!running) return;
           if (!r.ok) throw new Error("HTTP " + r.status);
           const j = await r.json();
-          CATALOG = j.skins || [];
-          if (j.active) ACTIVE = j.active;
-        } catch (e) { errs.push("背景列表加载失败（" + (e && e.message ? e.message : e) + "）"); }
+          if (!running) return;
+          CATALOG = Array.isArray(j.skins) ? j.skins : [];
+          for (const s of CATALOG) if (s && typeof s.id === "string") MANAGED_IDS.add(s.id);
+          // active 必须在当前目录里：指向已下架条目时显示真实空态，不回退到不存在的 ID
+          ACTIVE = j.active && CATALOG.some((s) => s.id === j.active) ? j.active : null;
+        } catch (e) { if (running) errs.push("背景列表加载失败（" + (e && e.message ? e.message : e) + "）"); }
         try {
-          const r = await fetch(`${API}/avatar/list`, { cache: "no-store" });
+          const r = await fetch(`${API}/avatar/list`, { cache: "no-store", signal });
+          if (!running) return;
           if (!r.ok) throw new Error("HTTP " + r.status);
           const j = await r.json();
-          AV = { catalog: j.catalog || [], current: j.current || null };
-        } catch (e) { errs.push("头像列表加载失败（" + (e && e.message ? e.message : e) + "）"); }
+          if (!running) return;
+          AV = { catalog: Array.isArray(j.catalog) ? j.catalog : [], current: j.current || null };
+        } catch (e) { if (running) errs.push("头像列表加载失败（" + (e && e.message ? e.message : e) + "）"); }
+        if (!running) return;
         setActive(ACTIVE); setCatalog([...CATALOG]); setAv({ catalog: [...AV.catalog], current: AV.current });
         renderBackgroundEffective();
         if (errs.length) setLoadErr(errs.join("；"));
@@ -501,8 +572,8 @@ window.__ModuleLoader__.load({
           h("span", { className: "mono" }, "// ZENLESS ZONE ZERO"),
           h("h2", null, "ZZZ"),
           h("span", { className: "cur" }, isSess
-            ? ["当前对话 ", h("b", null, contact.title || contact.id), " · 壁纸 ", h("b", null, sessWpEntry ? sessWpEntry.name : (cur ? cur.name : "—"))]
-            : ["使用中：", h("b", null, cur ? cur.name : active || "—")],
+            ? ["当前对话 ", h("b", null, contact.title || contact.id), " · 壁纸 ", h("b", null, sessWpEntry ? sessWpEntry.name : (cur ? cur.name : "宿主默认"))]
+            : ["使用中：", h("b", null, cur ? cur.name : (active || "宿主默认"))],
           ),
         ),
         h("div", { className: "esc-scope", role: "radiogroup", "aria-label": "设置对象", onKeyDown: onScopeKey },
@@ -557,9 +628,16 @@ window.__ModuleLoader__.load({
           catalog.length ? h("div", { className: "esc-grid" },
             catalog.map((s) => {
               const base = `${API}/skin/${s.id}/assets`;
-              const poster = s.preview && s.preview.dark ? `${base}/${s.preview.dark}` : "";
-              const vid = s.backgroundMedia && s.backgroundMedia.dark && s.backgroundMedia.dark.src ? `${base}/${s.backgroundMedia.dark.src}` : "";
-              const usable = !isSess || !!s.backgroundMedia; // 会话壁纸只收有动态背景的条目
+              const previewFile = s.preview
+                ? (typeof s.preview.dark === "string" && s.preview.dark
+                  ? s.preview.dark
+                  : (typeof s.preview.light === "string" ? s.preview.light : ""))
+                : "";
+              const poster = previewFile ? `${base}/${previewFile}` : "";
+              const media = s.backgroundMedia && s.backgroundMedia.dark;
+              const vidSrc = media && media.type === "video" && typeof media.src === "string" ? media.src : "";
+              const vid = vidSrc ? `${base}/${vidSrc}` : "";
+              const usable = !isSess || !!s.backgroundMedia; // 会话壁纸支持图片和视频
               const on = isSess ? !!(sessWpEntry && sessWpEntry.id === s.id) : s.id === active;
               return h("button", {
                 key: s.id, type: "button", className: "esc-card" + (on ? " on" : ""), "data-vid": vid,
@@ -567,24 +645,33 @@ window.__ModuleLoader__.load({
                 onMouseEnter: usable ? cardHover(true) : undefined, onMouseLeave: usable ? cardHover(false) : undefined,
                 onClick: () => (isSess ? pickSessionWallpaper(s) : pickSkin(s.id, s.name)),
                 disabled: busy || !usable,
-                title: usable ? undefined : "该皮肤没有动态背景，不能作为会话壁纸",
+                title: usable ? undefined : "该主题没有背景媒体，不能作为会话壁纸",
               },
                 on ? h("span", { className: "esc-sticker" }, isSess ? "本对话" : "使用中") : null,
                 h("div", { className: "shot" },
-                  vid ? h("video", { muted: true, loop: true, playsInline: true, preload: "none", poster }) : h("img", { src: poster, alt: "" }),
+                  h("div", { className: "ph", "aria-hidden": "true" }),
+                  vid
+                    ? h("video", { muted: true, loop: true, playsInline: true, preload: "none", ...(poster ? { poster } : {}) })
+                    : poster
+                      ? h("img", { src: poster, alt: "" })
+                      : null,
                   h("div", { className: "veil" }),
                   h("div", { className: "nm" }, s.name, h("small", null, (s.nameEn || s.id) + " · v" + (s.version || "?"))),
                 ),
                 h("div", { className: "meta" },
                   h("span", null, s.tagline || ""),
-                  isSess && !vid ? h("span", { className: "off" }, "无动态背景") : vid ? h("span", { className: "live" }, "动态") : null,
+                  isSess && !usable ? h("span", { className: "off" }, "无背景")
+                    : media ? h("span", { className: "live" }, vid ? "动态" : "静态") : null,
                 ),
               );
             }),
-          ) : h("p", { className: "esc-note" }, "暂无可用皮肤。"),
+          ) : h("p", { className: "esc-note" }, "当前没有可用皮肤，界面使用宿主默认外观。安装皮肤包后重新打开此页即可选择。"),
+          !isSess && catalog.length && !cur
+            ? h("p", { className: "esc-note" }, "尚未选择皮肤，当前使用宿主默认外观；点选下方卡片即可换上。")
+            : null,
           isSess ? h("div", { className: "esc-bar" },
             h("div", { className: "pick" },
-              h("span", null, "本对话壁纸：", h("b", null, sessWpEntry ? sessWpEntry.name : "跟随全局（" + (cur ? cur.name : "无") + "）")),
+              h("span", null, "本对话壁纸：", h("b", null, sessWpEntry ? sessWpEntry.name : "跟随全局（" + (cur ? cur.name : "宿主默认") + "）")),
             ),
             h("button", { type: "button", className: "esc-mat-reset", onClick: resetSessionWallpaper, disabled: !sessWpEntry }, "使用全局壁纸"),
             msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
@@ -615,7 +702,7 @@ window.__ModuleLoader__.load({
                 );
               }),
             ),
-          ]) : h("p", { className: "esc-note" }, q.trim() ? "没有匹配「" + q.trim() + "」的头像。" : "暂无可用头像。"),
+          ]) : h("p", { className: "esc-note" }, q.trim() ? "没有匹配「" + q.trim() + "」的头像。" : "当前没有可用头像素材，会话继续使用宿主默认头像。导入 .webp 头像后重新打开此页即可选择。"),
           h("div", { className: "esc-bar" },
             avSel ? h("div", { className: "pick" },
               h("img", { src: `${API}/avatar-img/${avSel.dir}/${avSel.file}`, alt: "" }),
@@ -772,7 +859,128 @@ window.__ModuleLoader__.load({
     }
 
     const inject = ["slots"];
+
+    /* ── 运行时生命周期：材质/主题观察/联系人/异步启动全部在 effect 内，启用一次、停用可逆 ── */
+    function startRuntime() {
+      // 防御重复 setup：同一实例只保留一份运行时
+      if (runtimeCleanup) { try { runtimeCleanup(); } catch {} }
+      const gen = ++lifecycleGen;
+      const previousSkin = document.documentElement.getAttribute("data-dsh-skin");
+      running = true;
+      const ac = new AbortController();
+      runtimeSignal = ac.signal;
+      let stopContacts = null;
+      let matPrev = null;
+      let onReady = null;
+      let cleaned = false;
+
+      const applyMaterial = () => {
+        if (matPrev || typeof document === "undefined" || !document.body) return !!matPrev;
+        matPrev = matSnapshot();
+        matApply(MATERIAL);
+        return true;
+      };
+      if (typeof document !== "undefined" && !applyMaterial()) {
+        onReady = () => { if (running && gen === lifecycleGen) applyMaterial(); };
+        document.addEventListener("DOMContentLoaded", onReady, { once: true });
+      }
+
+      const cleanup = () => {
+        if (cleaned) return;
+        cleaned = true;
+        if (gen !== lifecycleGen) return; // 已有新实例接管，旧清理不得拆新状态
+        if (runtimeCleanup === cleanup) runtimeCleanup = null;
+        running = false; // 先断写入口：contact cleanup 与异步返回都不得复活 bg
+        try { ac.abort(); } catch {}
+        if (runtimeSignal === ac.signal) runtimeSignal = null;
+        if (onReady && typeof document !== "undefined") {
+          document.removeEventListener("DOMContentLoaded", onReady);
+          onReady = null;
+        }
+        if (stopContacts) { try { stopContacts(); } catch {} stopContacts = null; }
+        else if (CURRENT_CONTACT) notifyContact(null);
+        if (themeObs) { try { themeObs.disconnect(); } catch {} themeObs = null; }
+        if (bgLayer) { try { bgLayer.remove(); } catch {} bgLayer = null; }
+        bgEntry = null;
+        // 只移除本 API 前缀的 skin link；顺带从 href 认领服务端首屏注入的皮肤 ID
+        try {
+          document.querySelectorAll('link[data-dsh-skin-link]').forEach((link) => {
+            const href = link.getAttribute("href") || "";
+            if (!href.startsWith(API + "/skin/")) return;
+            const id = href.slice((API + "/skin/").length).split("/")[0].split("?")[0];
+            if (id) MANAGED_IDS.add(id);
+            link.remove();
+          });
+        } catch {}
+        // 仅当 html 当前属性是本插件管理过的 ID：别把宿主或其他皮肤的值删掉
+        try {
+          const root = document.documentElement;
+          const cur = root.getAttribute("data-dsh-skin");
+          if (cur && MANAGED_IDS.has(cur)) {
+            if (previousSkin && !MANAGED_IDS.has(previousSkin)) root.setAttribute("data-dsh-skin", previousSkin);
+            else root.removeAttribute("data-dsh-skin");
+          }
+          document.getElementById(CSS_TAG)?.remove();
+        } catch {}
+        matRestore(matPrev); matPrev = null;
+        CATALOG = []; ACTIVE = null; AV = { catalog: [], current: null };
+      };
+
+      try {
+        // 生命周期先于 startContacts：主题观察与背景渲染先就位
+        watchTheme();
+        // 联系人扫描最后启动；它产生的 notifyContact 在 running 守卫下才写 DOM
+        stopContacts = startContacts();
+        bootRuntime(ac.signal, gen);
+      } catch (e) {
+        cleanup();
+        throw e;
+      }
+
+      runtimeCleanup = cleanup;
+      return cleanup;
+    }
+
+    function bootRuntime(signal, gen) {
+      const alive = () => running && gen === lifecycleGen && !signal.aborted;
+      (async () => {
+        try {
+          const r = await fetch(`${API}/list`, { cache: "no-store", signal });
+          if (!alive()) return;
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const j = await r.json();
+          if (!alive()) return;
+          CATALOG = Array.isArray(j.skins) ? j.skins : [];
+          for (const s of CATALOG) if (s && typeof s.id === "string") MANAGED_IDS.add(s.id);
+          // active 必须在目录内：不把已下架/不存在的 ID 当全局激活
+          ACTIVE = j.active && CATALOG.some((s) => s.id === j.active) ? j.active : null;
+        } catch (e) {
+          if (!alive()) return;
+          CATALOG = []; ACTIVE = null;
+        }
+        try {
+          const r = await fetch(`${API}/avatar/list`, { cache: "no-store", signal });
+          if (!alive()) return;
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const j = await r.json();
+          if (!alive()) return;
+          AV = { catalog: Array.isArray(j.catalog) ? j.catalog : [], current: j.current || null };
+        } catch {}
+        if (!alive()) return;
+        if (ACTIVE) {
+          const entry = CATALOG.find((s) => s.id === ACTIVE);
+          ensureSkinLinks(ACTIVE, !!(entry && entry.hasPatches));
+        }
+        // 启动恢复：先全局；联系人首轮扫描识别当前会话后自动切到其专属壁纸
+        renderBackgroundEffective();
+        watchTheme();
+        contactRefresh?.();
+      })();
+    }
+
     function apply(ctx) {
+      // 先注册运行时（禁用时后清理），再注册设置页（禁用时先卸载组件）
+      ctx.effect(startRuntime, "ZZZ: runtime");
       ctx.effect(
         () => ctx.slots.inject("settings.section", () =>
           ctx.slots.register(
@@ -782,28 +990,7 @@ window.__ModuleLoader__.load({
         ),
         "dsh-eridu-skincenter: settings section",
       );
-      ctx.effect(startContacts, "ZZZ: session contacts");
     }
-
-    /* ── 启动（背景层 + 档位跟随；换装 UI 已并入设置页，无独立入口） ── */
-    (async () => {
-      try {
-        const r = await fetch(`${API}/list`);
-        const j = await r.json();
-        CATALOG = j.skins || [];
-        ACTIVE = j.active || (CATALOG[0] && CATALOG[0].id) || null;
-      } catch { CATALOG = []; }
-      try {
-        const r = await fetch(`${API}/avatar/list`);
-        const j = await r.json();
-        AV = { catalog: j.catalog || [], current: j.current || null };
-      } catch {}
-      if (ACTIVE) document.documentElement.setAttribute("data-dsh-skin", ACTIVE);
-      // 启动恢复：先全局；联系人首轮扫描识别当前会话后自动切到其专属壁纸
-      renderBackgroundEffective();
-      watchTheme();
-      contactRefresh?.();
-    })();
 
     exports.apply = apply;
     exports.inject = inject;
