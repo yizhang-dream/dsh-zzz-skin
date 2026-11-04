@@ -36,6 +36,12 @@ for (const skin of snapshot.skins) {
  jobs.push({ target: `.dsh/skins/${skin.id}/patches.css`, expectedMd5: skin.patchMd5, content: skin.id === 'zzz-console' ? consoleCss : base });
 }
 for (const [rel, expectedSha] of [['lib/client.js', snapshot.client], ['package.json', snapshot.package]]) jobs.push({ target: `plugins/dsh-eridu-skincenter/${rel}`, expectedSha, content: readFileSync(join(root, 'plugins/dsh-eridu-skincenter', rel), 'utf8') });
+for (let i = jobs.length - 1; i >= 0; i--) {
+ const job = jobs[i];
+ const unchanged = job.expectedSha ? sha(job.content) === job.expectedSha
+   : createHash('md5').update(job.content).digest('hex') === job.expectedMd5;
+ if (unchanged) jobs.splice(i, 1);
+}
 const payload = join(stage, 'payload.json');
 writeFileSync(payload, JSON.stringify(jobs));
 writeFileSync(join(stage, 'before.json'), JSON.stringify(snapshot));

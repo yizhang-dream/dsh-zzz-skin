@@ -11,6 +11,9 @@ Material controls window opacity, bubble opacity and background blur, and
 remembers these choices in the current browser. Knock Knock contacts bind each
 session ID to a persistent avatar, shared by the session row, conversation
 header and assistant messages. Session titles and host actions remain available.
+Settings → ZZZ distinguishes the current conversation from global defaults.
+Each conversation can choose its own avatar and wallpaper, or inherit the defaults.
+These overrides persist in the current browser; material controls remain shared.
 
 ## What it is
 

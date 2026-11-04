@@ -1,6 +1,8 @@
-// 新艾利都皮肤中心 · 客户端（2026-11-04 v1.2：设置页增第三 tab「界面材质」）
-// 无框架部分：背景装饰层渲染（video+scrim，跟亮暗档）、免重载换肤、界面材质
-//   （三滑块 → body CSS 变量，localStorage 持久，启动即注入）；
+// 新艾利都皮肤中心 · 客户端（2026-11-04 v1.3：设置对象切换——按对话选壁纸与头像）
+// 无框架部分：背景装饰层渲染（video+scrim，跟亮暗档；有效壁纸=会话专属>全局激活，仅条目变化才重建媒体）、
+//   免重载换肤、界面材质（三滑块 → body CSS 变量，localStorage 持久，启动即注入）；
+// 会话外观偏好（localStorage zzz-session-appearance-v1，仅当前浏览器）：按真实会话行 ID 存
+//   手动头像（三类素材全部可用）与专属壁纸；敲敲联系人 choose 优先手动头像，否则走旧自动 CONTACT_KEY；
 // 换装 UI 从「右缘入口签 + 全屏浮层」迁移为 settings.section（ctx.slots.register），
 // React 组件由宿主 require 提供，照 dsh-backend-restart 的注册样板。
 window.__ModuleLoader__.load({
@@ -84,7 +86,8 @@ window.__ModuleLoader__.load({
       ACTIVE = id;
       const entry = CATALOG.find((s) => s.id === id);
       swapLinks(id, j.hasPatches);
-      renderBackground(entry);
+      // 全局换装仍尊重当前会话的专属壁纸：有效壁纸=会话 override > 全局 ACTIVE
+      renderBackgroundEffective();
       return j;
     }
     async function applyAvatar(e) {
@@ -142,6 +145,85 @@ window.__ModuleLoader__.load({
       document.addEventListener("DOMContentLoaded", () => matApply(MATERIAL), { once: true });
     }
 
+    /* ── 会话外观偏好（v1.3：本浏览器 localStorage，按真实会话行 ID） ── */
+    // 只存白名单形状；使用时再对 catalog 校验（皮肤/头像下架即自然回落全局/自动）。
+    const SESH_KEY = "zzz-session-appearance-v1";
+    const SESH_DIRS = ["avatars", "chat-icons", "portraits"];
+    function loadSessionPrefs() {
+      const out = Object.create(null);
+      try {
+        const raw = JSON.parse(localStorage.getItem(SESH_KEY) || "{}");
+        if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+        for (const [id, v] of Object.entries(raw)) {
+          if (typeof id !== "string" || !id.startsWith("session:") || id.length > 200) continue;
+          if (!v || typeof v !== "object" || Array.isArray(v)) continue;
+          const rec = {};
+          const a = v.avatar;
+          if (a && typeof a === "object" && !Array.isArray(a)
+            && SESH_DIRS.includes(a.dir)
+            && typeof a.file === "string" && /^[\w.-]+\.webp$/.test(a.file)
+          ) {
+            rec.avatar = { dir: a.dir, file: a.file, name: (typeof a.name === "string" && a.name.trim() && a.name.length <= 64) ? a.name : a.file };
+          }
+          if (typeof v.wallpaper === "string" && /^[a-z0-9][a-z0-9-]{0,63}$/.test(v.wallpaper)) rec.wallpaper = v.wallpaper;
+          if (rec.avatar || rec.wallpaper) out[id] = rec;
+        }
+      } catch {}
+      return out;
+    }
+    let SESH = loadSessionPrefs();
+    function saveSessionPrefs(id) {
+      const latest = loadSessionPrefs();
+      const next = Object.assign(Object.create(null), latest);
+      if (SESH[id]) next[id] = SESH[id];
+      else delete next[id];
+      try { localStorage.setItem(SESH_KEY, JSON.stringify(next)); }
+      catch { SESH = latest; return false; }
+      SESH = next;
+      return true;
+    }
+    function seshRec(id, create) {
+      if (!id || typeof id !== "string" || !id.startsWith("session:") || id.length > 200) return null;
+      if (!SESH[id] && create) SESH[id] = {};
+      return SESH[id] || null;
+    }
+    function sessionAvatarOf(id) {
+      const rec = seshRec(id, false);
+      const a = rec && rec.avatar;
+      if (!a) return null;
+      return AV.catalog.some((e) => e.dir === a.dir && e.file === a.file) ? a : null;
+    }
+    function sessionWallpaperOf(id) {
+      const rec = seshRec(id, false);
+      const wp = rec && rec.wallpaper;
+      if (!wp) return null;
+      const e = CATALOG.find((s) => s.id === wp);
+      return e && e.backgroundMedia ? e : null;
+    }
+    // 当前联系人（模块级，startContacts 维护，设置页订阅）：null=未识别到选中会话
+    let CURRENT_CONTACT = null;
+    const contactListeners = new Set();
+    function onContactChange(fn) {
+      contactListeners.add(fn);
+      return () => contactListeners.delete(fn);
+    }
+    // 有效壁纸：会话 override > 全局 ACTIVE；条目未变不重建媒体（80ms observer 只做身份比较）
+    function effectiveBgEntry(id) {
+      return sessionWallpaperOf(id) || CATALOG.find((s) => s.id === ACTIVE) || null;
+    }
+    function renderBackgroundEffective() {
+      const entry = effectiveBgEntry(CURRENT_CONTACT ? CURRENT_CONTACT.id : null);
+      if (entry === bgEntry) return;
+      renderBackground(entry);
+    }
+    function notifyContact(next) {
+      SESH = loadSessionPrefs();
+      CURRENT_CONTACT = next;
+      renderBackgroundEffective();
+      contactRefresh?.();
+      for (const fn of contactListeners) { try { fn(next); } catch {} }
+    }
+
     /* ── 设置页 section（React，样式随包注入一次） ────── */
     const CSS_TAG = NS + "/section.css";
     const CSS = [
@@ -162,6 +244,17 @@ window.__ModuleLoader__.load({
       ".esc-head h2{margin:0;font-size:17px;font-weight:800;letter-spacing:.06em;color:var(--esc-label)}",
       ".esc-head .cur{margin-left:auto;font-size:12px;color:var(--esc-label-3)}",
       ".esc-head .cur b{color:var(--esc-accent-text)}",
+      /* 设置对象（v1.3）：radiogroup，当前对话无会话时禁用并给出提示 */
+      ".esc-scope{display:flex;align-items:center;gap:8px;flex-wrap:wrap}",
+      ".esc-scope-key{font:600 11px/1 ui-monospace,Consolas,monospace;color:var(--esc-label-3);letter-spacing:.2em;flex-shrink:0}",
+      ".esc-radio{cursor:pointer;display:inline-flex;align-items:center;gap:7px;min-width:0;max-width:100%;border:1.5px solid var(--esc-line);background:var(--esc-panel);color:var(--esc-label-2);padding:5px 14px;font-family:inherit;font-weight:700;font-size:12px;line-height:1.5;letter-spacing:.06em;white-space:nowrap;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}",
+      ".esc-radio:hover:not(:disabled){color:var(--esc-label)}",
+      ".esc-radio.on{background:var(--esc-accent);border-color:var(--esc-accent);color:var(--esc-ink)}",
+      ".esc-radio:disabled{opacity:.55}",
+      ".esc-scope .esc-scope-name{font-weight:500;min-width:0;max-width:min(40vw,300px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+      ".esc-scope .esc-scope-name.dim{color:var(--esc-label-3);font-weight:400}",
+      ".esc-radio.on .esc-scope-name{font-weight:700;color:inherit}",
+      ".esc-scope-note{margin-left:auto;font-size:11px;color:var(--esc-label-3)}",
       ".esc-tabs{display:flex;gap:8px;flex-wrap:wrap}",
       ".esc-tab{cursor:pointer;min-width:0;border:1.5px solid var(--esc-line);background:var(--esc-panel);color:var(--esc-label-2);padding:6px 18px;font-weight:700;font-size:12.5px;letter-spacing:.1em;white-space:nowrap;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}",
       ".esc-tab:hover{color:var(--esc-label)}",
@@ -169,7 +262,7 @@ window.__ModuleLoader__.load({
       ".esc-panel{display:flex;flex-direction:column;gap:14px;min-width:0}",
       ".esc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(224px,100%),1fr));gap:14px}",
       ".esc-card{cursor:pointer;display:block;width:100%;border:2px solid var(--esc-line);background:var(--esc-panel);box-shadow:3px 3px 0 var(--esc-shadow);position:relative;transition:transform .12s,box-shadow .12s;padding:0;text-align:inherit;font:inherit}",
-      ".esc-card:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--esc-shadow-hover)}",
+      ".esc-card:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--esc-shadow-hover)}",
       ".esc-card.on{border-color:var(--esc-accent)}",
       ".esc-card:disabled{opacity:.6}",
       ".esc-card .shot{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:#000}",
@@ -180,6 +273,7 @@ window.__ModuleLoader__.load({
       ".esc-card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 11px;font-size:11px;color:var(--esc-label-2);min-width:0}",
       ".esc-card .meta>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
       ".esc-card .meta .live{color:var(--esc-accent-text);font-weight:700;flex-shrink:0}",
+      ".esc-card .meta .off{color:var(--esc-label-3);font-weight:700;flex-shrink:0}",
       ".esc-sticker{position:absolute;top:-9px;right:-7px;background:var(--esc-accent);color:var(--esc-ink);font-size:10.5px;font-weight:900;padding:2px 9px;transform:rotate(3deg);box-shadow:2px 2px 0 var(--esc-shadow);z-index:2}",
       ".esc-search{background:var(--esc-panel-2);border:1.5px solid var(--esc-line);color:var(--esc-label);border-radius:8px;padding:7px 13px;width:min(230px,100%);outline:none;font-size:13px}",
       ".esc-search::placeholder{color:var(--esc-label-3)}",
@@ -213,7 +307,8 @@ window.__ModuleLoader__.load({
       ".esc-mat input[type=range]{width:100%;max-width:100%;margin:0;cursor:pointer;accent-color:var(--esc-accent)}",
       ".esc-mat .esc-mat-hint{font-size:11.5px;line-height:1.6;color:var(--esc-label-3)}",
       ".esc-mat-reset{background:transparent;border:1.5px solid var(--esc-line-strong);color:var(--esc-label);border-radius:8px;padding:8px 18px;font-family:inherit;font-weight:700;font-size:12.5px;line-height:1;letter-spacing:.08em;cursor:pointer}",
-      ".esc-mat-reset:hover{border-color:var(--esc-accent);color:var(--esc-accent-text)}",
+      ".esc-mat-reset:hover:not(:disabled){border-color:var(--esc-accent);color:var(--esc-accent-text)}",
+      ".esc-mat-reset:disabled{opacity:.55}",
     ].join("");
     function useStyleOnce() {
       useEffect(() => {
@@ -231,6 +326,8 @@ window.__ModuleLoader__.load({
       useStyleOnce();
       const TABS = [["bg", "动态背景"], ["av", "代理人头像"], ["mt", "界面材质"]];
       const [tab, setTab] = useState("bg");
+      const [scope, setScope] = useState(() => CURRENT_CONTACT ? "session" : "global"); // 设置对象：session=当前对话 / global=全局默认
+      const [contact, setContact] = useState(CURRENT_CONTACT);
       const [active, setActive] = useState(ACTIVE);
       const [catalog, setCatalog] = useState(CATALOG);
       const [av, setAv] = useState(AV);
@@ -241,6 +338,14 @@ window.__ModuleLoader__.load({
       const [loading, setLoading] = useState(true);
       const [loadErr, setLoadErr] = useState(null);
       const [mat, setMat] = useState(MATERIAL);
+
+      // 跟随敲敲当前联系人（切换会话即更新）；会话没了自动回到全局档
+      useEffect(() => {
+        setContact(CURRENT_CONTACT);
+        return onContactChange(setContact);
+      }, []);
+      useEffect(() => { if (scope === "session" && !contact) setScope("global"); }, [scope, contact]);
+      useEffect(() => { setAvSel(null); setMsg(null); }, [contact && contact.id, scope]);
 
       // refresh 不再吞异常：两列表分开兜底，HTTP 状态与解析失败都浮出到界面，可重试
       const refresh = useCallback(async () => {
@@ -260,12 +365,16 @@ window.__ModuleLoader__.load({
           AV = { catalog: j.catalog || [], current: j.current || null };
         } catch (e) { errs.push("头像列表加载失败（" + (e && e.message ? e.message : e) + "）"); }
         setActive(ACTIVE); setCatalog([...CATALOG]); setAv({ catalog: [...AV.catalog], current: AV.current });
+        renderBackgroundEffective();
         if (errs.length) setLoadErr(errs.join("；"));
         setLoading(false);
       }, []);
       useEffect(() => { refresh(); }, [refresh]);
 
       const cur = catalog.find((s) => s.id === active);
+      const isSess = scope === "session" && !!contact;
+      const sessWpEntry = isSess ? sessionWallpaperOf(contact.id) : null;
+      const sessAv = isSess ? sessionAvatarOf(contact.id) : null;
       const say = (t, bad) => { setMsg({ t, bad }); };
 
       const groups = useMemo(() => {
@@ -286,7 +395,11 @@ window.__ModuleLoader__.load({
       };
       const pickSkin = async (id, name) => {
         setBusy(true); say("换装中…");
-        try { await applySkin(id); setActive(id); say("✓ 已换上 " + name); }
+        try {
+          await applySkin(id); setActive(id);
+          const wp = sessionWallpaperOf(CURRENT_CONTACT && CURRENT_CONTACT.id);
+          say(wp ? "✓ 已换上 " + name + "（当前对话仍使用其专属壁纸）" : "✓ 已换上 " + name);
+        }
         catch (e) { say("✗ " + e.message, true); }
         setBusy(false);
       };
@@ -296,6 +409,46 @@ window.__ModuleLoader__.load({
         try { await applyAvatar(avSel); await refresh(); say("✓ 头像已换上 " + avSel.name); setAvSel(null); }
         catch (e) { say("✗ " + e.message, true); }
         setBusy(false);
+      };
+      // 当前对话：只写本浏览器偏好，不 POST /active、不换皮肤 CSS
+      const pickSessionWallpaper = (s) => {
+        if (!isSess) return;
+        const rec = seshRec(contact.id, true);
+        if (!rec) return;
+        rec.wallpaper = s.id;
+        if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
+        renderBackgroundEffective();
+        say("✓ 已为「" + contact.title + "」设置壁纸 " + s.name + "（仅保存在本浏览器）");
+      };
+      const resetSessionWallpaper = () => {
+        if (!isSess) return;
+        const rec = seshRec(contact.id, false);
+        if (!rec || !rec.wallpaper) return;
+        delete rec.wallpaper;
+        if (!rec.avatar) delete SESH[contact.id];
+        if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
+        renderBackgroundEffective();
+        say("✓ 「" + contact.title + "」已恢复使用全局壁纸");
+      };
+      const pickSessionAvatar = () => {
+        if (!isSess || !avSel) return;
+        const rec = seshRec(contact.id, true);
+        if (!rec) return;
+        rec.avatar = { dir: avSel.dir, file: avSel.file, name: avSel.name };
+        if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
+        if (contactRefresh) contactRefresh();
+        say("✓ 已为「" + contact.title + "」设置头像 " + avSel.name + "（仅保存在本浏览器）");
+        setAvSel(null);
+      };
+      const resetSessionAvatar = () => {
+        if (!isSess) return;
+        const rec = seshRec(contact.id, false);
+        if (!rec || !rec.avatar) return;
+        delete rec.avatar;
+        if (!rec.wallpaper) delete SESH[contact.id];
+        if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
+        if (contactRefresh) contactRefresh();
+        say("✓ 「" + contact.title + "」已恢复自动分配头像");
       };
       const dragMat = (f, raw) => {
         // React 的 onChange 对 range 即逐拍 input 事件：拖动即时写 body 变量并落盘
@@ -328,12 +481,53 @@ window.__ModuleLoader__.load({
         const el = document.getElementById("esc-tab-" + ids[n]);
         if (el) el.focus();
       };
+      // 设置对象可访问性：radiogroup 左右键/Home/End；「当前对话」无会话时不可进入
+      const onScopeKey = (e) => {
+        let target = null;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") target = scope === "session" ? "global" : null;
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") target = scope === "global" ? "session" : null;
+        else if (e.key === "Home") target = "session";
+        else if (e.key === "End") target = "global";
+        if (!target || target === scope) return;
+        if (target === "session" && !contact) return;
+        e.preventDefault();
+        setScope(target);
+        const el = document.getElementById("esc-scope-" + target);
+        if (el) el.focus();
+      };
 
       const kids = [
         h("div", { className: "esc-head" },
           h("span", { className: "mono" }, "// ZENLESS ZONE ZERO"),
           h("h2", null, "ZZZ"),
-          h("span", { className: "cur" }, "使用中：", h("b", null, cur ? cur.name : active || "—")),
+          h("span", { className: "cur" }, isSess
+            ? ["当前对话 ", h("b", null, contact.title || contact.id), " · 壁纸 ", h("b", null, sessWpEntry ? sessWpEntry.name : (cur ? cur.name : "—"))]
+            : ["使用中：", h("b", null, cur ? cur.name : active || "—")],
+          ),
+        ),
+        h("div", { className: "esc-scope", role: "radiogroup", "aria-label": "设置对象", onKeyDown: onScopeKey },
+          h("span", { className: "esc-scope-key" }, "设置对象"),
+          h("button", {
+            type: "button", id: "esc-scope-session", role: "radio",
+            className: "esc-radio" + (scope === "session" ? " on" : ""),
+            "aria-checked": scope === "session" ? "true" : "false",
+            tabIndex: scope === "session" ? 0 : -1,
+            disabled: !contact,
+            title: contact ? "只为当前对话设置壁纸与头像" : "先在敲敲中打开一个对话，再回来为它单独设置",
+            onClick: () => { if (contact) setScope("session"); },
+          }, "当前对话", contact
+            ? h("span", { className: "esc-scope-name" }, contact.title || contact.id)
+            : h("span", { className: "esc-scope-name dim" }, "先打开一个对话")),
+          h("button", {
+            type: "button", id: "esc-scope-global", role: "radio",
+            className: "esc-radio" + (scope === "global" ? " on" : ""),
+            "aria-checked": scope === "global" ? "true" : "false",
+            tabIndex: scope === "global" ? 0 : -1,
+            onClick: () => setScope("global"),
+          }, "全局默认"),
+          h("span", { className: "esc-scope-note" }, isSess
+            ? "背景与头像只作用于当前对话（材质始终全局）；保存在本浏览器"
+            : "背景与头像为全局默认，材质对所有对话生效"),
         ),
         h("div", { className: "esc-tabs", role: "tablist", "aria-label": "ZZZ 皮肤中心", onKeyDown: onTabKey },
           TABS.map(([id, name]) => h("button", {
@@ -358,18 +552,24 @@ window.__ModuleLoader__.load({
 
       if (tab === "bg") {
         kids.push(h("div", { key: "panel-bg", id: "esc-panel-bg", role: "tabpanel", "aria-labelledby": "esc-tab-bg", className: "esc-panel" },
+          isSess ? h("p", { className: "esc-note" },
+            "为「", h("b", null, contact.title || contact.id), "」选择专属壁纸：只更换本对话的背景画面，不改全局皮肤与样式；设置保存在本浏览器，不跨设备同步。") : null,
           catalog.length ? h("div", { className: "esc-grid" },
             catalog.map((s) => {
               const base = `${API}/skin/${s.id}/assets`;
               const poster = s.preview && s.preview.dark ? `${base}/${s.preview.dark}` : "";
               const vid = s.backgroundMedia && s.backgroundMedia.dark && s.backgroundMedia.dark.src ? `${base}/${s.backgroundMedia.dark.src}` : "";
+              const usable = !isSess || !!s.backgroundMedia; // 会话壁纸只收有动态背景的条目
+              const on = isSess ? !!(sessWpEntry && sessWpEntry.id === s.id) : s.id === active;
               return h("button", {
-                key: s.id, type: "button", className: "esc-card" + (s.id === active ? " on" : ""), "data-vid": vid,
-                "aria-pressed": s.id === active ? "true" : "false",
-                onMouseEnter: cardHover(true), onMouseLeave: cardHover(false),
-                onClick: () => pickSkin(s.id, s.name), disabled: busy,
+                key: s.id, type: "button", className: "esc-card" + (on ? " on" : ""), "data-vid": vid,
+                "aria-pressed": on ? "true" : "false",
+                onMouseEnter: usable ? cardHover(true) : undefined, onMouseLeave: usable ? cardHover(false) : undefined,
+                onClick: () => (isSess ? pickSessionWallpaper(s) : pickSkin(s.id, s.name)),
+                disabled: busy || !usable,
+                title: usable ? undefined : "该皮肤没有动态背景，不能作为会话壁纸",
               },
-                s.id === active ? h("span", { className: "esc-sticker" }, "使用中") : null,
+                on ? h("span", { className: "esc-sticker" }, isSess ? "本对话" : "使用中") : null,
                 h("div", { className: "shot" },
                   vid ? h("video", { muted: true, loop: true, playsInline: true, preload: "none", poster }) : h("img", { src: poster, alt: "" }),
                   h("div", { className: "veil" }),
@@ -377,23 +577,33 @@ window.__ModuleLoader__.load({
                 ),
                 h("div", { className: "meta" },
                   h("span", null, s.tagline || ""),
-                  vid ? h("span", { className: "live" }, "动态") : null,
+                  isSess && !vid ? h("span", { className: "off" }, "无动态背景") : vid ? h("span", { className: "live" }, "动态") : null,
                 ),
               );
             }),
           ) : h("p", { className: "esc-note" }, "暂无可用皮肤。"),
-          msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
+          isSess ? h("div", { className: "esc-bar" },
+            h("div", { className: "pick" },
+              h("span", null, "本对话壁纸：", h("b", null, sessWpEntry ? sessWpEntry.name : "跟随全局（" + (cur ? cur.name : "无") + "）")),
+            ),
+            h("button", { type: "button", className: "esc-mat-reset", onClick: resetSessionWallpaper, disabled: !sessWpEntry }, "使用全局壁纸"),
+            msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
+          ) : (msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null),
         ));
       } else if (tab === "av") {
         const avEntries = Object.entries(groups).filter(([, list]) => list.length);
         kids.push(h("div", { key: "panel-av", id: "esc-panel-av", role: "tabpanel", "aria-labelledby": "esc-tab-av", className: "esc-panel" },
-          h("p", { className: "esc-note" }, "默认头像用于没有联系人头像的会话；敲敲联系人按会话自动分配头像。"),
+          h("p", { className: "esc-note" }, isSess
+            ? ["为「", h("b", null, contact.title || contact.id), "」挑选专属头像：三类素材全部可用，列表、聊天头部与消息气泡同步更换；保存在本浏览器，不影响其他对话与全局默认头像。"]
+            : "默认头像用于没有联系人头像的会话；敲敲联系人按会话自动分配头像。"),
           h("input", { className: "esc-search", placeholder: "搜索代理人…", value: q, onChange: (e) => setQ(e.target.value), "aria-label": "搜索代理人" }),
           avEntries.length ? avEntries.flatMap(([dir, list]) => [
             h("div", { key: "k" + dir, className: "esc-key" }, (GL[dir] || dir) + " · " + list.length),
             h("div", { key: "g" + dir, className: "esc-avgrid" },
               list.map((e) => {
-                const on = av.current && av.current.dir === e.dir && av.current.file === e.file;
+                const on = isSess
+                  ? !!(sessAv && sessAv.dir === e.dir && sessAv.file === e.file)
+                  : !!(av.current && av.current.dir === e.dir && av.current.file === e.file);
                 const sel = avSel && avSel.dir === e.dir && avSel.file === e.file;
                 return h("button", {
                   key: e.dir + "/" + e.file, type: "button", className: "esc-avcell" + (sel || on ? " on" : ""),
@@ -401,7 +611,7 @@ window.__ModuleLoader__.load({
                   onClick: () => setAvSel({ dir: e.dir, file: e.file, name: e.name }),
                 },
                   h("img", { loading: "lazy", src: `${API}/avatar-img/${e.dir}/${e.file}`, alt: e.name }),
-                  h("span", null, e.name + (on ? " · 使用中" : "")),
+                  h("span", null, e.name + (on ? (isSess ? " · 本对话" : " · 使用中") : "")),
                 );
               }),
             ),
@@ -410,15 +620,21 @@ window.__ModuleLoader__.load({
             avSel ? h("div", { className: "pick" },
               h("img", { src: `${API}/avatar-img/${avSel.dir}/${avSel.file}`, alt: "" }),
               h("span", null, "已选 ", h("b", null, avSel.name), "（" + (GL[avSel.dir] || avSel.dir) + "）"),
-            ) : null,
-            h("button", { type: "button", className: "esc-apply", onClick: pickAvatar, disabled: !avSel || busy }, "应用头像"),
+            ) : (isSess && sessAv ? h("div", { className: "pick" },
+              h("img", { src: `${API}/avatar-img/${sessAv.dir}/${sessAv.file}`, alt: "" }),
+              h("span", null, "本对话头像 ", h("b", null, sessAv.name), "（" + (GL[sessAv.dir] || sessAv.dir) + "）"),
+            ) : null),
+            isSess
+              ? h("button", { type: "button", className: "esc-apply", onClick: pickSessionAvatar, disabled: !avSel }, "设为本对话头像")
+              : h("button", { type: "button", className: "esc-apply", onClick: pickAvatar, disabled: !avSel || busy }, "应用头像"),
+            isSess ? h("button", { type: "button", className: "esc-mat-reset", onClick: resetSessionAvatar, disabled: !sessAv }, "恢复自动头像") : null,
             msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
           ),
         ));
       } else if (tab === "mt") {
         kids.push(h("div", { key: "panel-mt", id: "esc-panel-mt", role: "tabpanel", "aria-labelledby": "esc-tab-mt", className: "esc-panel" },
           h("p", { className: "esc-note" },
-            "向左更透——壁纸从页面底下透进来；向右更实。拖动即时生效并自动记住，刷新后保持。"),
+            "向左更透——壁纸从页面底下透进来；向右更实。拖动即时生效并自动记住，刷新后保持。材质为全局设置，对所有对话生效（仅本浏览器）。"),
           ...MAT_FIELDS.map((f) => h("div", { key: f.key, className: "esc-mat" },
             h("div", { className: "esc-mat-top" },
               h("label", { htmlFor: "esc-mat-" + f.key }, f.label),
@@ -460,10 +676,11 @@ window.__ModuleLoader__.load({
         for (let i = 0; i < s.length; i++) n = Math.imul(n ^ s.charCodeAt(i), 16777619);
         return n >>> 0;
       };
-      const avatarUrl = (file) => `${API}/avatar-img/chat-icons/${encodeURIComponent(file)}`;
+      // 会话头像统一走 {dir,file}：手动 override（三类素材均可）或旧自动 chat-icons 分配
+      const avatarUrlOf = (a) => `${API}/avatar-img/${a.dir}/${encodeURIComponent(a.file)}`;
       const setAttr = (el, key, value) => { if (el.getAttribute(key) !== value) el.setAttribute(key, value); };
-      const paint = (el, file) => {
-        const value = `url("${avatarUrl(file)}")`;
+      const paint = (el, a) => {
+        const value = `url("${avatarUrlOf(a)}")`;
         if (el.style.getPropertyValue("--zzz-contact-avatar") !== value) el.style.setProperty("--zzz-contact-avatar", value);
       };
       const refresh = () => {
@@ -487,12 +704,18 @@ window.__ModuleLoader__.load({
           saved[id] = file; used.add(file); dirty = true;
           return file;
         };
+        // 手动 override 优先（catalog 校验通过才认），否则回落旧自动分配；CONTACT_KEY 格式不变
+        const resolveAvatar = (id) => {
+          const ov = sessionAvatarOf(id);
+          if (ov) return ov;
+          return { dir: "chat-icons", file: choose(id) };
+        };
         const rows = document.querySelectorAll('[role="treeitem"][data-row-key^="session:"]');
         let selected = null;
         for (const row of rows) {
-          const id = row.getAttribute("data-row-key"), file = choose(id);
+          const id = row.getAttribute("data-row-key"), av = resolveAvatar(id);
           setAttr(row, "data-zzz-contact", id);
-          paint(row, file);
+          paint(row, av);
           const leading = row.querySelector('[data-slot="sidebar.session.row.leading"]');
           if (leading && !leading.querySelector(".zzz-contact-face")) {
             const face = document.createElement("span");
@@ -501,7 +724,7 @@ window.__ModuleLoader__.load({
           }
           if (row.getAttribute("aria-selected") === "true") {
             const title = row.querySelector('[class*="_title"]');
-            selected = { id, file, title: title ? title.textContent.trim() : "" };
+            selected = { id, av, title: title ? title.textContent.trim() : "" };
           }
         }
         if (dirty) { try { localStorage.setItem(CONTACT_KEY, JSON.stringify(saved)); } catch {} }
@@ -510,11 +733,12 @@ window.__ModuleLoader__.load({
         const title = nav && [...nav.childNodes].filter((el) => !el.classList?.contains("zzz-contact-head-face")).map((el) => el.textContent).join("").trim();
         if (selected && title && (title === selected.title || title.endsWith(selected.title))) current = selected;
         else if (!nav || !title || (current && !title.endsWith(current.title))) current = null;
+        if (current) current = { ...current, av: resolveAvatar(current.id) };
         const center = document.querySelector('[data-pane="center"], [class*="_centerCol"]');
         if (current && nav && center) {
           setAttr(center, "data-zzz-contact", current.id);
           setAttr(center, "data-zzz-contact-name", current.title);
-          paint(center, current.file);
+          paint(center, current.av);
           if (!nav.querySelector(".zzz-contact-head-face")) {
             const face = document.createElement("span");
             face.className = "zzz-contact-head-face"; face.setAttribute("aria-hidden", "true");
@@ -526,6 +750,10 @@ window.__ModuleLoader__.load({
           center?.style.removeProperty("--zzz-contact-avatar");
           header?.querySelector(".zzz-contact-head-face")?.remove(); nav?.removeAttribute("data-zzz-contact-header");
         }
+        // 当前联系人变化才广播 + 换有效壁纸（每 80ms 的 observer tick 只做比较，不重载媒体）
+        const prevCur = CURRENT_CONTACT;
+        const nextCur = current ? { id: current.id, title: current.title } : null;
+        if (!!prevCur !== !!nextCur || (prevCur && nextCur && (prevCur.id !== nextCur.id || prevCur.title !== nextCur.title))) notifyContact(nextCur);
       };
       const schedule = () => { if (!stopped && timer === null) timer = setTimeout(refresh, 80); };
       const observer = new MutationObserver(schedule);
@@ -534,6 +762,7 @@ window.__ModuleLoader__.load({
       schedule();
       return () => {
         stopped = true; observer.disconnect(); clearTimeout(timer); contactRefresh = null;
+        if (CURRENT_CONTACT) notifyContact(null); // 回全局壁纸 + 通知设置页
         document.querySelectorAll(".zzz-contact-face,.zzz-contact-head-face").forEach((el) => el.remove());
         document.querySelectorAll("[data-zzz-contact]").forEach((el) => {
           el.removeAttribute("data-zzz-contact"); el.removeAttribute("data-zzz-contact-name"); el.style.removeProperty("--zzz-contact-avatar");
@@ -570,7 +799,8 @@ window.__ModuleLoader__.load({
         AV = { catalog: j.catalog || [], current: j.current || null };
       } catch {}
       if (ACTIVE) document.documentElement.setAttribute("data-dsh-skin", ACTIVE);
-      renderBackground(CATALOG.find((s) => s.id === ACTIVE) || null);
+      // 启动恢复：先全局；联系人首轮扫描识别当前会话后自动切到其专属壁纸
+      renderBackgroundEffective();
       watchTheme();
       contactRefresh?.();
     })();

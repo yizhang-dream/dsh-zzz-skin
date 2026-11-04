@@ -1,7 +1,7 @@
 {
   "name": "dsh-eridu-skincenter",
   "description": "ZZZ · 绝区零皮肤插件：37 套原片动态背景、代理人头像、敲敲会话联系人与界面材质。设置入口为 ZZZ，支持明暗主题与窄屏布局。",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
