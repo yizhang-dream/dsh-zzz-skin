@@ -28,6 +28,10 @@ dsh plugin --profile web add dsh-eridu-skincenter@1.4.0
 
 See the [release and verification record](docs-plugin-release-v1.4.0.md).
 
+The 1.5.0 development version reorganizes Settings → ZZZ into resource browsing,
+a detail preview and explicit apply actions. See the [equipment-style settings record](docs-v9.8-equipment-settings.md).
+The npm command above installs the published 1.4.0 version.
+
 ## What it is
 
 - `skin.json` — the v2 manifest.

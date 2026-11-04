@@ -16,7 +16,7 @@ window.__ModuleLoader__.load({
     const exports = module.exports;
     Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
     const React = require("react");
-    const { createElement: h, useCallback, useEffect, useMemo, useState } = React;
+    const { createElement: h, useCallback, useEffect, useMemo, useRef, useState } = React;
 
     const API = "/api/eridu-skins";
     const NS = "dsh-eridu-skincenter";
@@ -287,7 +287,7 @@ window.__ModuleLoader__.load({
     const CSS = [
       /* 主题变量全部收敛在 .esc 作用域：暗色为默认值，body:not([data-ds-dark-theme]) 整组切亮色。
          组件一律只引用 --esc-*，不再硬编码暗色混宿主 token（此前亮档下深底浅字/浅字深底全糊）。 */
-      ".esc{--esc-accent:var(--zzz-accent,#cdf348);--esc-accent-text:var(--zzz-accent,#cdf348);--esc-ink:#14141a;--esc-panel:#14151f;--esc-panel-2:#0e0f18;--esc-line:#2a2c3c;--esc-line-strong:rgba(128,132,160,.55);--esc-label:#e8e9f0;--esc-label-2:#a9abbd;--esc-label-3:#808090;--esc-shot-dim:#c7c9da;--esc-shadow:rgba(0,0,0,.45);--esc-shadow-hover:rgba(0,0,0,.55);--esc-error:#ff7a90;max-width:900px;display:flex;flex-direction:column;gap:14px;min-width:0;color:var(--esc-label)}",
+      ".esc{--esc-accent:var(--zzz-accent,#cdf348);--esc-accent-text:var(--zzz-accent,#cdf348);--esc-ink:#14141a;--esc-panel:#14151f;--esc-panel-2:#0e0f18;--esc-line:#2a2c3c;--esc-line-strong:rgba(128,132,160,.55);--esc-label:#e8e9f0;--esc-label-2:#a9abbd;--esc-label-3:#808090;--esc-shot-dim:#c7c9da;--esc-shadow:rgba(0,0,0,.45);--esc-shadow-hover:rgba(0,0,0,.55);--esc-error:#ff7a90;max-width:900px;container-type:inline-size;display:flex;flex-direction:column;gap:14px;min-width:0;color:var(--esc-label)}",
       "body:not([data-ds-dark-theme]) .esc{--esc-accent-text:#4f7000;--esc-panel:#fbf9f4;--esc-panel-2:#f4f1e9;--esc-line:rgba(26,26,30,.22);--esc-line-strong:rgba(26,26,30,.4);--esc-label:#1a1a1e;--esc-label-2:#5c5c66;--esc-label-3:#65656f;--esc-shot-dim:#d8d5cc;--esc-shadow:rgba(26,24,20,.16);--esc-shadow-hover:rgba(26,24,20,.22);--esc-error:#b81c22}",
       /* :where(…) 零特异性兜底：宿主全局 button/img/input 规则不再渗进卡片与按钮；
          类名 esc- 前缀自隔离，本段也不外泄。所有 button 可靠 box-sizing/min-width。 */
@@ -297,80 +297,112 @@ window.__ModuleLoader__.load({
       ".esc :where(img,video){display:block;max-width:100%}",
       ".esc :where(button,input):focus-visible{outline:2px solid var(--esc-accent);outline-offset:2px}",
       "@media (prefers-reduced-motion:reduce){.esc :where(*){transition:none!important}}",
-      ".esc-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}",
-      ".esc-head .mono{font:600 11px/1 ui-monospace,Consolas,monospace;color:var(--esc-accent-text);letter-spacing:.22em}",
-      ".esc-head h2{margin:0;font-size:17px;font-weight:800;letter-spacing:.06em;color:var(--esc-label)}",
-      ".esc-head .cur{margin-left:auto;font-size:12px;color:var(--esc-label-3)}",
-      ".esc-head .cur b{color:var(--esc-accent-text)}",
-      /* 设置对象（v1.3）：radiogroup，当前对话无会话时禁用并给出提示 */
-      ".esc-scope{display:flex;align-items:center;gap:8px;flex-wrap:wrap}",
-      ".esc-scope-key{font:600 11px/1 ui-monospace,Consolas,monospace;color:var(--esc-label-3);letter-spacing:.2em;flex-shrink:0}",
-      ".esc-radio{cursor:pointer;display:inline-flex;align-items:center;gap:7px;min-width:0;max-width:100%;border:1.5px solid var(--esc-line);background:var(--esc-panel);color:var(--esc-label-2);padding:5px 14px;font-family:inherit;font-weight:700;font-size:12px;line-height:1.5;letter-spacing:.06em;white-space:nowrap;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}",
-      ".esc-radio:hover:not(:disabled){color:var(--esc-label)}",
+      ".esc-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:1px 2px 0}",
+      ".esc-head .mono{font:600 10px/1 ui-monospace,Consolas,monospace;color:var(--esc-accent-text);letter-spacing:.2em}",
+      ".esc-head h2{margin:0;font-size:18px;font-weight:800;letter-spacing:.08em;color:var(--esc-label)}",
+      ".esc-head .cur{margin-left:auto;font-size:11.5px;color:var(--esc-label-3);line-height:1.5}",
+      ".esc-head .cur b{color:var(--esc-accent-text);font-weight:700}",
+      /* 设置对象：胶囊 radiogroup；当前对话无会话时禁用并提示 */
+      ".esc-scope{display:flex;align-items:center;gap:6px;flex-wrap:wrap}",
+      ".esc-scope-key{font:600 10px/1 ui-monospace,Consolas,monospace;color:var(--esc-label-3);letter-spacing:.2em;flex-shrink:0;margin-right:2px}",
+      ".esc-radio{cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;border:1px solid var(--esc-line);background:var(--esc-panel);color:var(--esc-label-2);border-radius:999px;padding:4px 12px;font-family:inherit;font-weight:700;font-size:11.5px;line-height:1.5;letter-spacing:.04em;white-space:nowrap}",
+      ".esc-radio:hover:not(:disabled){color:var(--esc-label);border-color:var(--esc-line-strong)}",
       ".esc-radio.on{background:var(--esc-accent);border-color:var(--esc-accent);color:var(--esc-ink)}",
       ".esc-radio:disabled{opacity:.55}",
       ".esc-scope .esc-scope-name{font-weight:500;min-width:0;max-width:min(40vw,300px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
       ".esc-scope .esc-scope-name.dim{color:var(--esc-label-3);font-weight:400}",
       ".esc-radio.on .esc-scope-name{font-weight:700;color:inherit}",
-      ".esc-scope-note{margin-left:auto;font-size:11px;color:var(--esc-label-3)}",
-      ".esc-tabs{display:flex;gap:8px;flex-wrap:wrap}",
-      ".esc-tab{cursor:pointer;min-width:0;border:1.5px solid var(--esc-line);background:var(--esc-panel);color:var(--esc-label-2);padding:6px 18px;font-weight:700;font-size:12.5px;letter-spacing:.1em;white-space:nowrap;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}",
-      ".esc-tab:hover{color:var(--esc-label)}",
+      ".esc-scope-note{margin-left:auto;font-size:11px;color:var(--esc-label-3);line-height:1.5}",
+      ".esc-tabs{display:flex;gap:6px;flex-wrap:wrap}",
+      ".esc-tab{cursor:pointer;min-width:0;border:1px solid var(--esc-line);background:var(--esc-panel);color:var(--esc-label-2);border-radius:999px;padding:5px 16px;font-weight:700;font-size:12px;letter-spacing:.08em;white-space:nowrap}",
+      ".esc-tab:hover:not(:disabled){color:var(--esc-label);border-color:var(--esc-line-strong)}",
       ".esc-tab.on{background:var(--esc-accent);border-color:var(--esc-accent);color:var(--esc-ink)}",
-      ".esc-panel{display:flex;flex-direction:column;gap:14px;min-width:0}",
-      ".esc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(224px,100%),1fr));gap:14px}",
-      ".esc-card{cursor:pointer;display:block;width:100%;border:2px solid var(--esc-line);background:var(--esc-panel);box-shadow:3px 3px 0 var(--esc-shadow);position:relative;transition:transform .12s,box-shadow .12s;padding:0;text-align:inherit;font:inherit}",
-      ".esc-card:hover:not(:disabled){transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--esc-shadow-hover)}",
-      ".esc-card.on{border-color:var(--esc-accent)}",
-      ".esc-card:disabled{opacity:.6}",
-      ".esc-card .shot{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:#000}",
-      ".esc-card .shot video,.esc-card .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}",
-      /* 无 preview 的条目（如 console）用纯 CSS 占位，绝不渲染空 src 的 img 去请求页面本身 */
-      ".esc-card .shot .ph{position:absolute;inset:0;background:radial-gradient(120% 120% at 18% 0%,var(--esc-panel) 0%,var(--esc-panel-2) 68%,var(--esc-line) 100%)}",
-      ".esc-card .shot .ph::before{content:\"\";position:absolute;inset:0;background-image:linear-gradient(var(--esc-line) 1px,transparent 1px),linear-gradient(90deg,var(--esc-line) 1px,transparent 1px);background-size:24px 24px;opacity:.16}",
-      ".esc-card .shot .ph::after{content:\"\";position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border:2px solid var(--esc-line-strong);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:.42}",
-      ".esc-card .shot .veil{position:absolute;inset:0;background:linear-gradient(180deg,transparent 62%,rgba(8,9,18,.82))}",
-      ".esc-card .shot .nm{position:absolute;left:10px;right:10px;bottom:8px;font-weight:800;font-size:14px;color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-      ".esc-card .shot .nm small{display:block;font-weight:400;font-size:10px;color:var(--esc-shot-dim);letter-spacing:.06em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-      ".esc-card .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 11px;font-size:11px;color:var(--esc-label-2);min-width:0}",
-      ".esc-card .meta>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-      ".esc-card .meta .live{color:var(--esc-accent-text);font-weight:700;flex-shrink:0}",
-      ".esc-card .meta .off{color:var(--esc-label-3);font-weight:700;flex-shrink:0}",
-      ".esc-sticker{position:absolute;top:-9px;right:-7px;background:var(--esc-accent);color:var(--esc-ink);font-size:10.5px;font-weight:900;padding:2px 9px;transform:rotate(3deg);box-shadow:2px 2px 0 var(--esc-shadow);z-index:2}",
-      ".esc-search{background:var(--esc-panel-2);border:1.5px solid var(--esc-line);color:var(--esc-label);border-radius:8px;padding:7px 13px;width:min(230px,100%);outline:none;font-size:13px}",
+      ".esc-tab:disabled{opacity:.55}",
+      ".esc-panel{display:flex;flex-direction:column;gap:12px;min-width:0}",
+      /* 装备页：宽容器资源在左、详情在右；窄容器详情在上、资源在下，均按 .esc 自身宽度判断 */
+      ".esc-workbench{display:flex;flex-direction:column;gap:12px;min-width:0}",
+      ".esc-detail{order:-1;min-width:0;border:1px solid var(--esc-line);background:var(--esc-panel);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 26px -20px var(--esc-shadow)}",
+      "@container (min-width:520px){.esc-workbench{display:grid;grid-template-columns:minmax(240px,1fr) minmax(220px,.85fr);gap:12px;align-items:start}.esc-detail{order:0;position:sticky;top:0}}",
+      ".esc-inventory{min-width:0;border:1px solid var(--esc-line);background:var(--esc-panel);border-radius:16px;padding:11px;display:flex;flex-direction:column;gap:9px}",
+      ".esc-inv-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}",
+      ".esc-inv-head strong{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--esc-label)}",
+      ".esc-inv-head span{font-size:10.5px;color:var(--esc-label-3)}",
+      ".esc-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}",
+      ".esc-search{background:var(--esc-panel-2);border:1px solid var(--esc-line);color:var(--esc-label);border-radius:999px;padding:6px 12px;width:100%;outline:none;font-size:12.5px}",
       ".esc-search::placeholder{color:var(--esc-label-3)}",
       ".esc-search:focus{border-color:var(--esc-accent)}",
-      ".esc-note{margin:0;font-size:12.5px;line-height:1.7;color:var(--esc-label-3)}",
+      ".esc-filters{display:flex;flex-wrap:wrap;gap:5px}",
+      ".esc-chip{cursor:pointer;border:1px solid var(--esc-line);background:transparent;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--esc-label-2);line-height:1.5;white-space:nowrap}",
+      ".esc-chip:hover:not(:disabled){border-color:var(--esc-line-strong);color:var(--esc-label)}",
+      ".esc-chip.on{background:var(--esc-accent);color:var(--esc-ink);border-color:var(--esc-accent)}",
+      ".esc-chip:disabled{opacity:.55}",
+      ".esc-key{font-size:10.5px;color:var(--esc-label-3);letter-spacing:.18em;margin:5px 0 1px}",
+      /* 背景资源：紧凑 16:9 静态缩略图，绝不渲染 hover 并发视频 */
+      ".esc-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(122px,100%),1fr));gap:8px}",
+      ".esc-tiles.av{grid-template-columns:repeat(auto-fill,minmax(min(74px,100%),1fr));gap:5px}",
+      ".esc-tile{position:relative;display:block;width:100%;padding:0;cursor:pointer;text-align:left;border:1.5px solid var(--esc-line);border-radius:10px;background:var(--esc-panel-2);overflow:hidden;transition:border-color .12s,box-shadow .12s}",
+      ".esc-tile:hover:not(:disabled){border-color:var(--esc-line-strong)}",
+      ".esc-tile.sel{border-color:var(--esc-accent);box-shadow:0 0 0 2px var(--esc-accent)}",
+      ".esc-tile.inuse{border-color:var(--esc-line-strong)}",
+      ".esc-tile.sel.inuse{border-color:var(--esc-accent)}",
+      ".esc-tile:disabled{opacity:.45}",
+      ".esc-tile .thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:var(--esc-panel-2)}",
+      ".esc-tile .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}",
+      ".esc-tile .ph{position:absolute;inset:0;background:radial-gradient(120% 120% at 18% 0%,var(--esc-panel) 0%,var(--esc-panel-2) 68%,var(--esc-line) 100%)}",
+      ".esc-tile .ph::before{content:\"\";position:absolute;inset:0;background-image:linear-gradient(var(--esc-line) 1px,transparent 1px),linear-gradient(90deg,var(--esc-line) 1px,transparent 1px);background-size:20px 20px;opacity:.14}",
+      ".esc-tile .ph::after{content:\"\";position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border:2px solid var(--esc-line-strong);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:.4}",
+      ".esc-tile .nm{display:block;padding:5px 8px 1px;font-size:11.5px;font-weight:800;color:var(--esc-label);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+      ".esc-tile .meta{display:flex;justify-content:space-between;gap:6px;padding:0 8px 6px;font-size:9.5px;color:var(--esc-label-3)}",
+      ".esc-tile .meta .live{color:var(--esc-accent-text);font-weight:700;flex-shrink:0}",
+      ".esc-badge{position:absolute;top:5px;left:5px;z-index:2;background:var(--esc-accent);color:var(--esc-ink);border-radius:999px;padding:1px 7px;font-size:9px;font-weight:900;letter-spacing:.04em}",
+      ".esc-badge.draft{left:auto;right:5px;background:var(--esc-panel);color:var(--esc-accent-text);border:1px solid var(--esc-accent)}",
+      /* 头像资源：紧凑单元格；当前使用项只加角标，选中项走黄绿轮廓 */
+      ".esc-av-tile{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 3px 5px;cursor:pointer;border:1.5px solid transparent;border-radius:10px;background:transparent;transition:border-color .12s,background .12s}",
+      ".esc-av-tile img{width:52px;height:52px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 2px 5px var(--esc-shadow))}",
+      ".esc-av-tile span{display:block;width:100%;font-size:10.5px;line-height:1.3;text-align:center;color:var(--esc-label-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+      ".esc-av-tile:hover:not(:disabled){background:var(--esc-panel-2)}",
+      ".esc-av-tile.sel{border-color:var(--esc-accent);background:var(--esc-panel-2)}",
+      ".esc-av-tile.inuse::after{content:\"\";position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--esc-accent);box-shadow:0 0 0 2px var(--esc-panel)}",
+      ".esc-av-tile:disabled{opacity:.45}",
+      /* 详情：大预览 + 强标题 + 分隔事实区 + 底部显式应用 */
+      ".esc-detail .kicker{font:600 9.5px/1.4 ui-monospace,Consolas,monospace;color:var(--esc-label-3);letter-spacing:.16em;text-transform:uppercase}",
+      ".esc-detail h3{margin:2px 0 0;font-size:15.5px;font-weight:800;letter-spacing:.01em;line-height:1.3;overflow-wrap:anywhere;color:var(--esc-label)}",
+      ".esc-preview{position:relative;border:1px solid var(--esc-line);border-radius:10px;overflow:hidden;background:var(--esc-panel-2)}",
+      ".esc-preview img,.esc-preview video{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#000}",
+      ".esc-preview .ph{position:relative;aspect-ratio:16/9;display:grid;place-items:center;background:radial-gradient(120% 120% at 18% 0%,var(--esc-panel) 0%,var(--esc-panel-2) 68%,var(--esc-line) 100%)}",
+      ".esc-preview .ph::before{content:\"\";position:absolute;inset:0;background-image:linear-gradient(var(--esc-line) 1px,transparent 1px),linear-gradient(90deg,var(--esc-line) 1px,transparent 1px);background-size:22px 22px;opacity:.14}",
+      ".esc-preview .ph span{position:relative;z-index:1;font-size:10.5px;color:var(--esc-label-3);letter-spacing:.06em;text-align:center;padding:0 10px}",
+      ".esc-av-big{width:100px;height:100px;margin:0 auto;object-fit:contain;filter:drop-shadow(0 6px 16px var(--esc-shadow))}",
+      ".esc-av-ph{width:100px;height:100px;margin:0 auto;border:1px dashed var(--esc-line-strong);border-radius:16px;display:grid;place-items:center;font-size:11px;color:var(--esc-label-3)}",
+      ".esc-facts{display:flex;flex-direction:column;gap:5px;border-top:1px solid var(--esc-line);padding-top:9px;font-size:11px}",
+      ".esc-fact{display:flex;justify-content:space-between;align-items:baseline;gap:10px}",
+      ".esc-fact span:first-child{color:var(--esc-label-3);flex-shrink:0}",
+      ".esc-fact span:last-child{text-align:right;color:var(--esc-label);overflow-wrap:anywhere}",
+      ".esc-actions{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--esc-line);padding-top:10px}",
+      ".esc-apply{background:var(--esc-accent);color:var(--esc-ink);border:none;border-radius:10px;font-family:inherit;font-weight:800;font-size:13px;line-height:1;padding:10px 14px;width:100%;cursor:pointer;letter-spacing:.04em}",
+      ".esc-apply:disabled{opacity:.45;cursor:not-allowed}",
+      ".esc-ghost{background:transparent;border:1px solid var(--esc-line-strong);color:var(--esc-label);border-radius:10px;padding:8px 12px;width:100%;font-family:inherit;font-weight:700;font-size:11.5px;line-height:1.2;letter-spacing:.04em;cursor:pointer}",
+      ".esc-ghost:hover:not(:disabled){border-color:var(--esc-accent);color:var(--esc-accent-text)}",
+      ".esc-ghost:disabled{opacity:.45}",
+      ".esc-note{margin:0;font-size:12px;line-height:1.65;color:var(--esc-label-3)}",
       ".esc-loading{font-size:13px;color:var(--esc-label-2);padding:4px 0}",
       ".esc-reload{display:flex;align-items:center;gap:12px;flex-wrap:wrap}",
-      ".esc-key{font-size:11.5px;color:var(--esc-label-3);letter-spacing:.2em;margin:6px 0 2px}",
-      ".esc-avgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(84px,100%),1fr));gap:8px}",
-      ".esc-avcell{cursor:pointer;text-align:center;padding:7px 4px;border:1.5px solid transparent;border-radius:10px;background:transparent}",
-      ".esc-avcell img{width:58px;height:58px;margin:0 auto;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))}",
-      ".esc-avcell span{display:block;font-size:11px;color:var(--esc-label-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-      ".esc-avcell:hover{border-color:var(--esc-line);background:var(--esc-panel)}",
-      ".esc-avcell.on{border-color:var(--esc-accent);background:var(--esc-panel)}",
-      ".esc-avcell.on span{color:var(--esc-accent-text);font-weight:700}",
-      ".esc-bar{position:sticky;bottom:0;z-index:2;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0 6px;border-top:1px solid var(--esc-line);background:var(--esc-panel)}",
-      ".esc-bar .pick{display:flex;align-items:center;gap:10px;min-width:0;max-width:100%;background:var(--esc-panel);border:1.5px solid var(--esc-line);border-radius:10px;padding:6px 14px;color:var(--esc-label);font-size:13px}",
-      ".esc-bar .pick img{width:38px;height:38px;flex-shrink:0}",
-      ".esc-bar .pick span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-      ".esc-bar .pick b{color:var(--esc-accent-text)}",
-      /* 原 font:800 14px/1 inherit 简写含 inherit 关键字整条声明非法被丢弃，改 longhand */
-      ".esc-apply{background:var(--esc-accent);color:var(--esc-ink);border:none;font-family:inherit;font-weight:800;font-size:14px;line-height:1;padding:11px 26px;min-width:120px;cursor:pointer;box-shadow:3px 3px 0 var(--esc-shadow);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}",
-      ".esc-apply:disabled{opacity:.5;cursor:wait}",
-      ".esc-msg{font-size:12.5px;color:var(--esc-accent-text);min-width:0;max-width:100%;word-break:break-word}",
+      ".esc-msg{font-size:11.5px;line-height:1.5;color:var(--esc-accent-text);min-width:0;max-width:100%;word-break:break-word}",
       ".esc-msg.bad{color:var(--esc-error)}",
-      /* 界面材质：平铺行，不套大框；文字走 --esc-* 跟亮暗，滑杆用 accent-color 原生双档 */
+      /* 界面材质：平铺行，即时生效；不造假聊天预览 */
       ".esc-mat{display:flex;flex-direction:column;gap:7px;max-width:620px;min-width:0}",
       ".esc-mat .esc-mat-top{display:flex;align-items:baseline;justify-content:space-between;gap:14px}",
       ".esc-mat .esc-mat-top label{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--esc-label)}",
       ".esc-mat .esc-mat-val{font:600 12px/1 ui-monospace,Consolas,monospace;color:var(--esc-label-2)}",
       ".esc-mat input[type=range]{width:100%;max-width:100%;margin:0;cursor:pointer;accent-color:var(--esc-accent)}",
       ".esc-mat .esc-mat-hint{font-size:11.5px;line-height:1.6;color:var(--esc-label-3)}",
-      ".esc-mat-reset{background:transparent;border:1.5px solid var(--esc-line-strong);color:var(--esc-label);border-radius:8px;padding:8px 18px;font-family:inherit;font-weight:700;font-size:12.5px;line-height:1;letter-spacing:.08em;cursor:pointer}",
+      ".esc-mat-reset{background:transparent;border:1px solid var(--esc-line-strong);color:var(--esc-label);border-radius:10px;padding:8px 16px;font-family:inherit;font-weight:700;font-size:12px;line-height:1.2;letter-spacing:.06em;cursor:pointer}",
       ".esc-mat-reset:hover:not(:disabled){border-color:var(--esc-accent);color:var(--esc-accent-text)}",
       ".esc-mat-reset:disabled{opacity:.55}",
+      /* 旧皮肤的 html[data-dsh-skin] button 胶囊规则不能覆盖资源卡与详情按钮。 */
+      ".esc .esc-tile.esc-tile,.esc .esc-av-tile.esc-av-tile,.esc .esc-apply.esc-apply,.esc .esc-ghost.esc-ghost,.esc .esc-mat-reset.esc-mat-reset{border-radius:10px;font-style:normal}",
+      /* 仅在显示 ZZZ 时重排宿主导航，避免手机正文被固定左栏挤成约 100px。 */
+      "@media(max-width:600px){body [role=dialog]:has(.esc){flex-direction:column!important}body [role=dialog]:has(.esc)>nav{width:100%!important;flex:0 0 auto!important;padding:12px 12px 8px!important;gap:8px!important;border-right:0!important}body [role=dialog]:has(.esc)>nav [class*=_navList]{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;overflow-x:auto!important;max-width:100%;gap:4px!important;padding:2px}body [role=dialog]:has(.esc)>nav [class*=_navList]>button{flex:0 0 auto!important;white-space:nowrap!important;max-width:none!important;padding:6px 10px!important}body [role=dialog]:has(.esc)>[class*=_content]{width:100%!important;min-height:0;flex:1 1 auto!important}body [role=dialog]:has(.esc) [class*=_header]{padding:8px 12px!important}body [role=dialog]:has(.esc) [class*=_options]{padding:0 12px 16px!important}}",
     ].join("");
     function useStyleOnce() {
       useEffect(() => {
@@ -384,6 +416,27 @@ window.__ModuleLoader__.load({
       }, []);
     }
 
+    function previewSrcOf(skin) {
+      if (!skin || !skin.preview) return "";
+      const p = skin.preview;
+      if (typeof p === "string") return p;
+      if (p && typeof p === "object") {
+        for (const k of ["dark", "light"]) if (typeof p[k] === "string" && p[k]) return p[k];
+      }
+      return "";
+    }
+    // 明暗档真实媒体：light/dark 各自取 type/src；缺档或空 src 一律视为无媒体
+    function bgSpecOf(entry, dark) {
+      const bm = entry && entry.backgroundMedia;
+      if (!bm || typeof bm !== "object") return null;
+      const spec = bm[dark ? "dark" : "light"];
+      if (!spec || typeof spec.src !== "string" || !spec.src) return null;
+      return spec;
+    }
+    function sameAv(a, b) {
+      return !!(a && b && a.dir === b.dir && a.file === b.file);
+    }
+
     function SkinCenterSection() {
       useStyleOnce();
       const TABS = [["bg", "背景"], ["av", "代理人头像"], ["mt", "界面材质"]];
@@ -393,13 +446,23 @@ window.__ModuleLoader__.load({
       const [active, setActive] = useState(ACTIVE);
       const [catalog, setCatalog] = useState(CATALOG);
       const [av, setAv] = useState(AV);
-      const [avSel, setAvSel] = useState(null);
+      const [bgSel, setBgSel] = useState(null); // 背景草稿：只改浏览项，不碰 ACTIVE/DOM/SESH/网络
+      const [avSel, setAvSel] = useState(null); // 头像草稿
+      const [avGroup, setAvGroup] = useState("all");
       const [q, setQ] = useState("");
       const [msg, setMsg] = useState(null);
       const [busy, setBusy] = useState(false);
       const [loading, setLoading] = useState(true);
       const [loadErr, setLoadErr] = useState(null);
       const [mat, setMat] = useState(MATERIAL);
+      const [dark, setDark] = useState(() => typeof document !== "undefined" && document.body ? document.body.hasAttribute("data-ds-dark-theme") : false);
+
+      const contactId = contact ? contact.id : null;
+      const liveToken = scope + "|" + (contactId || "");
+      const liveRef = useRef("");
+      const detailRef = useRef(null);
+      // 每次渲染同步刷新：异步回执只认发起时的 scope+contact，绝不写入切换后的新对象
+      liveRef.current = liveToken;
 
       // 跟随敲敲当前联系人（切换会话即更新）；会话没了自动回到全局档
       useEffect(() => {
@@ -407,7 +470,29 @@ window.__ModuleLoader__.load({
         return onContactChange(setContact);
       }, []);
       useEffect(() => { if (scope === "session" && !contact) setScope("global"); }, [scope, contact]);
-      useEffect(() => { setAvSel(null); setMsg(null); }, [contact && contact.id, scope]);
+      // scope 或真实 contact id 变化：所有草稿与提示作废，避免把旧对象的选择写到新对象
+      useEffect(() => { setBgSel(null); setAvSel(null); setMsg(null); }, [contactId, scope]);
+      // 窄窗选择资源后回到详情，避免从长头像列表手动滚回顶部寻找应用按钮。
+      useEffect(() => {
+        const selected = tab === "bg" ? bgSel : tab === "av" ? avSel : null;
+        const detail = detailRef.current;
+        if (!selected || !detail) return;
+        const root = detail.closest(".esc");
+        if (root && root.getBoundingClientRect().width < 520) {
+          detail.scrollIntoView({ block: "start", behavior: "instant" });
+          detail.focus({ preventScroll: true });
+        }
+      }, [tab, bgSel, avSel]);
+
+      // 详情预览跟随宿主明暗档；观察器只在组件存活期间存在
+      useEffect(() => {
+        if (typeof document === "undefined" || !document.body) return;
+        const read = () => setDark(document.body.hasAttribute("data-ds-dark-theme"));
+        read();
+        const mo = new MutationObserver(read);
+        mo.observe(document.body, { attributes: true, attributeFilter: ["data-ds-dark-theme"] });
+        return () => mo.disconnect();
+      }, []);
 
       // refresh 不再吞异常：两列表分开兜底，HTTP 状态与解析失败都浮出到界面，可重试
       const refresh = useCallback(async () => {
@@ -442,84 +527,122 @@ window.__ModuleLoader__.load({
       }, []);
       useEffect(() => { refresh(); }, [refresh]);
 
-      const cur = catalog.find((s) => s.id === active);
+      const cur = catalog.find((s) => s.id === active) || null;
       const isSess = scope === "session" && !!contact;
       const sessWpEntry = isSess ? sessionWallpaperOf(contact.id) : null;
       const sessAv = isSess ? sessionAvatarOf(contact.id) : null;
+      // 当前会话未手动设置时的真实自动头像（chat-icons 分配或会话 override），不是全局默认
+      // 自动分配只带 dir/file，回目录取真实名称，详情不出现 undefined
+      const autoAvRaw = isSess && contact && contact.av ? contact.av : null;
+      const autoAv = autoAvRaw
+        ? (av.catalog.find((e) => sameAv(e, autoAvRaw)) || { dir: autoAvRaw.dir, file: autoAvRaw.file, name: autoAvRaw.name || autoAvRaw.file })
+        : null;
+      const appliedAv = isSess ? (sessAv || autoAv) : (av.current || null);
+      const globalBgEntry = cur;
+      const bgEffective = isSess ? (sessWpEntry || globalBgEntry) : globalBgEntry;
+      const bgView = bgSel || bgEffective;
+      const bgStored = isSess ? sessWpEntry : globalBgEntry;
+      const bgIsApplied = !!(bgView && bgStored && bgView.id === bgStored.id);
+      const bgSessUsable = !isSess || !!(bgSel && bgSel.backgroundMedia);
+      const bgActionDisabled = busy || !bgSel || bgIsApplied || !bgSessUsable;
+      const avView = avSel || appliedAv;
+      const avIsApplied = sameAv(avView, isSess ? sessAv : av.current);
+      const avActionDisabled = busy || !avSel || avIsApplied;
       const say = (t, bad) => { setMsg({ t, bad }); };
 
+      const avCounts = useMemo(() => {
+        const c = { all: av.catalog.length, avatars: 0, "chat-icons": 0, portraits: 0 };
+        for (const e of av.catalog) if (c[e.dir] !== undefined) c[e.dir]++;
+        return c;
+      }, [av.catalog]);
       const groups = useMemo(() => {
         const g = { avatars: [], "chat-icons": [], portraits: [] };
         const s = q.trim();
         for (const e of av.catalog) {
+          if (avGroup !== "all" && e.dir !== avGroup) continue;
           if (s && !e.name.includes(s)) continue;
           (g[e.dir] || (g[e.dir] = [])).push(e);
         }
         return g;
-      }, [av, q]);
+      }, [av, avGroup, q]);
 
-      const cardHover = (on) => (ev) => {
-        const v = ev.currentTarget.querySelector("video");
-        if (!v) return;
-        if (on) { v.src = ev.currentTarget.dataset.vid; v.play().catch(() => {}); }
-        else { v.pause(); v.removeAttribute("src"); v.load(); }
-      };
       const pickSkin = async (id, name) => {
-        setBusy(true); say("换装中…");
+        const token = liveRef.current;
+        setBusy(true); setMsg(null);
         try {
-          await applySkin(id); setActive(id);
-          const wp = sessionWallpaperOf(CURRENT_CONTACT && CURRENT_CONTACT.id);
-          say(wp ? "✓ 已换上 " + name + "（当前对话仍使用其专属壁纸）" : "✓ 已换上 " + name);
+          await applySkin(id);
+          if (!running) return;
+          setActive(id); setBgSel(null);
+          if (liveRef.current === token) {
+            const wp = sessionWallpaperOf(CURRENT_CONTACT && CURRENT_CONTACT.id);
+            say(wp ? "✓ 已换上 " + name + "（当前对话仍使用其专属壁纸）" : "✓ 已换上 " + name);
+          }
+        } catch (e) {
+          if (liveRef.current === token) say("✗ " + e.message, true);
+        } finally {
+          setBusy(false);
         }
-        catch (e) { say("✗ " + e.message, true); }
-        setBusy(false);
       };
       const pickAvatar = async () => {
         if (!avSel) return;
+        const sel = avSel, token = liveRef.current;
         setBusy(true); say("应用中…");
-        try { await applyAvatar(avSel); await refresh(); say("✓ 头像已换上 " + avSel.name); setAvSel(null); }
-        catch (e) { say("✗ " + e.message, true); }
-        setBusy(false);
+        try {
+          await applyAvatar(sel);
+          if (!running) return;
+          await refresh();
+          if (!running) return;
+          if (liveRef.current === token) { say("✓ 头像已换上 " + sel.name); setAvSel(null); }
+        } catch (e) {
+          if (liveRef.current === token) say("✗ " + e.message, true);
+        } finally {
+          setBusy(false);
+        }
       };
-      // 当前对话：只写本浏览器偏好，不 POST /active、不换皮肤 CSS
-      const pickSessionWallpaper = (s) => {
-        if (!isSess) return;
+      // 显式应用背景：全局走原 pickSkin/applySkin；当前会话只写本浏览器覆盖，不 POST、不换 CSS
+      const applyBackground = () => {
+        if (!bgSel || busy || bgIsApplied) return;
+        if (!isSess) { pickSkin(bgSel.id, bgSel.name); return; }
+        if (!bgSel.backgroundMedia) { say("✗ 该主题没有背景媒体，不能作为当前对话壁纸。", true); return; }
         const rec = seshRec(contact.id, true);
         if (!rec) return;
-        rec.wallpaper = s.id;
+        rec.wallpaper = bgSel.id;
         if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
         renderBackgroundEffective();
-        say("✓ 已为「" + contact.title + "」设置壁纸 " + s.name + "（仅保存在本浏览器）");
+        setBgSel(null);
+        say("✓ 已为「" + (contact.title || contact.id) + "」设置壁纸 " + bgSel.name + "（仅保存在本浏览器）");
       };
       const resetSessionWallpaper = () => {
-        if (!isSess) return;
+        if (!isSess || busy) return;
         const rec = seshRec(contact.id, false);
         if (!rec || !rec.wallpaper) return;
         delete rec.wallpaper;
         if (!rec.avatar) delete SESH[contact.id];
         if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
         renderBackgroundEffective();
-        say("✓ 「" + contact.title + "」已恢复使用全局壁纸");
+        setBgSel(null);
+        say("✓ 「" + (contact.title || contact.id) + "」已恢复使用全局壁纸");
       };
       const pickSessionAvatar = () => {
-        if (!isSess || !avSel) return;
+        if (!isSess || !avSel || busy || avIsApplied) return;
         const rec = seshRec(contact.id, true);
         if (!rec) return;
         rec.avatar = { dir: avSel.dir, file: avSel.file, name: avSel.name };
         if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
         if (contactRefresh) contactRefresh();
-        say("✓ 已为「" + contact.title + "」设置头像 " + avSel.name + "（仅保存在本浏览器）");
+        say("✓ 已为「" + (contact.title || contact.id) + "」设置头像 " + avSel.name + "（仅保存在本浏览器）");
         setAvSel(null);
       };
       const resetSessionAvatar = () => {
-        if (!isSess) return;
+        if (!isSess || busy) return;
         const rec = seshRec(contact.id, false);
         if (!rec || !rec.avatar) return;
         delete rec.avatar;
         if (!rec.wallpaper) delete SESH[contact.id];
         if (!saveSessionPrefs(contact.id)) { say("无法保存到本浏览器，请检查存储权限。", true); return; }
         if (contactRefresh) contactRefresh();
-        say("✓ 「" + contact.title + "」已恢复自动分配头像");
+        setAvSel(null);
+        say("✓ 「" + (contact.title || contact.id) + "」已恢复自动分配头像");
       };
       const dragMat = (f, raw) => {
         // React 的 onChange 对 range 即逐拍 input 事件：拖动即时写 body 变量并落盘
@@ -537,8 +660,9 @@ window.__ModuleLoader__.load({
         say("✓ 已恢复默认材质（0.66 / 0.86 / 6px）");
       };
 
-      // tab 可访问性：roving tabindex + 方向键/Home/End 循环
+      // tab 可访问性：roving tabindex + 方向键/Home/End 循环；异步应用期间锁定
       const onTabKey = (e) => {
+        if (busy) return;
         const ids = ["bg", "av", "mt"];
         const i = ids.indexOf(tab);
         let n = -1;
@@ -552,8 +676,9 @@ window.__ModuleLoader__.load({
         const el = document.getElementById("esc-tab-" + ids[n]);
         if (el) el.focus();
       };
-      // 设置对象可访问性：radiogroup 左右键/Home/End；「当前对话」无会话时不可进入
+      // 设置对象可访问性：radiogroup 左右键/Home/End；busy 时锁定
       const onScopeKey = (e) => {
+        if (busy) return;
         let target = null;
         if (e.key === "ArrowRight" || e.key === "ArrowDown") target = scope === "session" ? "global" : null;
         else if (e.key === "ArrowLeft" || e.key === "ArrowUp") target = scope === "global" ? "session" : null;
@@ -572,8 +697,8 @@ window.__ModuleLoader__.load({
           h("span", { className: "mono" }, "// ZENLESS ZONE ZERO"),
           h("h2", null, "ZZZ"),
           h("span", { className: "cur" }, isSess
-            ? ["当前对话 ", h("b", null, contact.title || contact.id), " · 壁纸 ", h("b", null, sessWpEntry ? sessWpEntry.name : (cur ? cur.name : "宿主默认"))]
-            : ["使用中：", h("b", null, cur ? cur.name : (active || "宿主默认"))],
+            ? ["当前对话 ", h("b", null, contact.title || contact.id), " · 背景 ", h("b", null, sessWpEntry ? sessWpEntry.name : (globalBgEntry ? globalBgEntry.name : "宿主默认"))]
+            : ["当前使用 ", h("b", null, globalBgEntry ? globalBgEntry.name : (active || "宿主默认"))],
           ),
         ),
         h("div", { className: "esc-scope", role: "radiogroup", "aria-label": "设置对象", onKeyDown: onScopeKey },
@@ -583,9 +708,9 @@ window.__ModuleLoader__.load({
             className: "esc-radio" + (scope === "session" ? " on" : ""),
             "aria-checked": scope === "session" ? "true" : "false",
             tabIndex: scope === "session" ? 0 : -1,
-            disabled: !contact,
+            disabled: busy || !contact,
             title: contact ? "只为当前对话设置壁纸与头像" : "先在敲敲中打开一个对话，再回来为它单独设置",
-            onClick: () => { if (contact) setScope("session"); },
+            onClick: () => { if (!busy && contact) setScope("session"); },
           }, "当前对话", contact
             ? h("span", { className: "esc-scope-name" }, contact.title || contact.id)
             : h("span", { className: "esc-scope-name dim" }, "先打开一个对话")),
@@ -594,7 +719,8 @@ window.__ModuleLoader__.load({
             className: "esc-radio" + (scope === "global" ? " on" : ""),
             "aria-checked": scope === "global" ? "true" : "false",
             tabIndex: scope === "global" ? 0 : -1,
-            onClick: () => setScope("global"),
+            disabled: busy,
+            onClick: () => { if (!busy) setScope("global"); },
           }, "全局默认"),
           h("span", { className: "esc-scope-note" }, isSess
             ? "背景与头像只作用于当前对话（材质始终全局）；保存在本浏览器"
@@ -607,7 +733,8 @@ window.__ModuleLoader__.load({
             "aria-selected": tab === id ? "true" : "false",
             "aria-controls": "esc-panel-" + id,
             tabIndex: tab === id ? 0 : -1,
-            onClick: () => setTab(id),
+            disabled: busy,
+            onClick: () => { if (!busy) setTab(id); },
           }, name)),
         ),
       ];
@@ -622,100 +749,172 @@ window.__ModuleLoader__.load({
       }
 
       if (tab === "bg") {
+        const spec = bgSpecOf(bgView, dark);
+        const viewedNoMedia = !bgView || !bgView.backgroundMedia;
         kids.push(h("div", { key: "panel-bg", id: "esc-panel-bg", role: "tabpanel", "aria-labelledby": "esc-tab-bg", className: "esc-panel" },
           isSess ? h("p", { className: "esc-note" },
             "为「", h("b", null, contact.title || contact.id), "」选择专属壁纸：只更换本对话的背景画面，不改全局皮肤与样式；设置保存在本浏览器，不跨设备同步。") : null,
-          catalog.length ? h("div", { className: "esc-grid" },
-            catalog.map((s) => {
-              const base = `${API}/skin/${s.id}/assets`;
-              const previewFile = s.preview
-                ? (typeof s.preview.dark === "string" && s.preview.dark
-                  ? s.preview.dark
-                  : (typeof s.preview.light === "string" ? s.preview.light : ""))
-                : "";
-              const poster = previewFile ? `${base}/${previewFile}` : "";
-              const media = s.backgroundMedia && s.backgroundMedia.dark;
-              const vidSrc = media && media.type === "video" && typeof media.src === "string" ? media.src : "";
-              const vid = vidSrc ? `${base}/${vidSrc}` : "";
-              const usable = !isSess || !!s.backgroundMedia; // 会话壁纸支持图片和视频
-              const on = isSess ? !!(sessWpEntry && sessWpEntry.id === s.id) : s.id === active;
-              return h("button", {
-                key: s.id, type: "button", className: "esc-card" + (on ? " on" : ""), "data-vid": vid,
-                "aria-pressed": on ? "true" : "false",
-                onMouseEnter: usable ? cardHover(true) : undefined, onMouseLeave: usable ? cardHover(false) : undefined,
-                onClick: () => (isSess ? pickSessionWallpaper(s) : pickSkin(s.id, s.name)),
-                disabled: busy || !usable,
-                title: usable ? undefined : "该主题没有背景媒体，不能作为会话壁纸",
-              },
-                on ? h("span", { className: "esc-sticker" }, isSess ? "本对话" : "使用中") : null,
-                h("div", { className: "shot" },
-                  h("div", { className: "ph", "aria-hidden": "true" }),
-                  vid
-                    ? h("video", { muted: true, loop: true, playsInline: true, preload: "none", ...(poster ? { poster } : {}) })
-                    : poster
-                      ? h("img", { src: poster, alt: "" })
-                      : null,
-                  h("div", { className: "veil" }),
-                  h("div", { className: "nm" }, s.name, h("small", null, (s.nameEn || s.id) + " · v" + (s.version || "?"))),
-                ),
-                h("div", { className: "meta" },
-                  h("span", null, s.tagline || ""),
-                  isSess && !usable ? h("span", { className: "off" }, "无背景")
-                    : media ? h("span", { className: "live" }, vid ? "动态" : "静态") : null,
-                ),
-              );
-            }),
-          ) : h("p", { className: "esc-note" }, "当前没有可用皮肤，界面使用宿主默认外观。安装皮肤包后重新打开此页即可选择。"),
-          !isSess && catalog.length && !cur
-            ? h("p", { className: "esc-note" }, "尚未选择皮肤，当前使用宿主默认外观；点选下方卡片即可换上。")
-            : null,
-          isSess ? h("div", { className: "esc-bar" },
-            h("div", { className: "pick" },
-              h("span", null, "本对话壁纸：", h("b", null, sessWpEntry ? sessWpEntry.name : "跟随全局（" + (cur ? cur.name : "宿主默认") + "）")),
+          h("div", { className: "esc-workbench" },
+            h("div", { className: "esc-inventory" },
+              h("div", { className: "esc-inv-head" },
+                h("strong", null, "背景资源"),
+                h("span", null, catalog.length + " 项"),
+              ),
+              catalog.length ? h("div", { className: "esc-tiles" },
+                catalog.map((s) => {
+                  const base = `${API}/skin/${s.id}/assets`;
+                  const poster = previewSrcOf(s);
+                  const hasMedia = !!s.backgroundMedia;
+                  const sel = !!(bgSel && bgSel.id === s.id);
+                  const inuse = !!(bgEffective && bgEffective.id === s.id);
+                  const pressed = !!(bgView && bgView.id === s.id);
+                  const sSpec = bgSpecOf(s, dark);
+                  return h("button", {
+                    key: s.id, type: "button",
+                    className: "esc-tile" + (sel ? " sel" : "") + (inuse ? " inuse" : ""),
+                    "aria-pressed": pressed ? "true" : "false",
+                    "aria-label": s.name + (inuse ? "，使用中" : "") + (sel && !bgIsApplied ? "，待应用" : ""),
+                    onClick: () => { if (!busy) setBgSel(s); },
+                    disabled: busy,
+                    title: isSess && !hasMedia ? "该主题没有背景媒体，不能作为会话壁纸" : undefined,
+                  },
+                    inuse ? h("span", { className: "esc-badge" }, isSess ? (sessWpEntry && sessWpEntry.id === s.id ? "本对话" : "全局") : "使用中") : null,
+                    sel && !bgIsApplied ? h("span", { className: "esc-badge draft" }, "待应用") : null,
+                    h("span", { className: "thumb" },
+                      poster
+                        ? h("img", { src: `${base}/${poster}`, alt: "", loading: "lazy" })
+                        : h("span", { className: "ph", "aria-hidden": "true" }),
+                    ),
+                    h("span", { className: "nm" }, s.name),
+                    h("span", { className: "meta" },
+                      h("span", null, isSess && !hasMedia ? "无背景" : hasMedia ? "背景" : "纯色"),
+                      hasMedia ? h("span", { className: "live" }, sSpec && sSpec.type === "video" ? "动态" : "静态") : null,
+                    ),
+                  );
+                }),
+              ) : h("p", { className: "esc-note" }, "当前没有可用皮肤，界面使用宿主默认外观。安装皮肤包后重新打开此页即可选择。"),
             ),
-            h("button", { type: "button", className: "esc-mat-reset", onClick: resetSessionWallpaper, disabled: !sessWpEntry }, "使用全局壁纸"),
-            msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
-          ) : (msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null),
+            h("aside", { ref: detailRef, tabIndex: -1, className: "esc-detail", "aria-label": "背景详情" },
+              h("div", null,
+                h("span", { className: "kicker" }, "BACKGROUND"),
+                h("h3", null, bgView ? bgView.name : "无背景"),
+              ),
+              bgView ? h("div", { className: "esc-preview" },
+                spec && spec.type === "image"
+                  ? h("img", { key: "img-" + bgView.id + "-" + (dark ? "d" : "l"), src: `${API}/skin/${bgView.id}/assets/${spec.src}`, alt: bgView.name })
+                  : spec && spec.type === "video"
+                    ? h("video", {
+                      key: "vid-" + bgView.id + "-" + (dark ? "d" : "l"),
+                      src: `${API}/skin/${bgView.id}/assets/${spec.src}`,
+                      controls: true, muted: true, loop: true, playsInline: true, preload: "metadata",
+                    })
+                    : h("div", { className: "ph" }, h("span", null, viewedNoMedia ? "无背景 · 纯色主题" : "当前明暗档没有背景媒体")),
+              ) : h("div", { className: "esc-preview" }, h("div", { className: "ph" }, h("span", null, "尚无背景"))),
+              h("div", { className: "esc-facts" },
+                h("div", { className: "esc-fact" }, h("span", null, "作用对象"), h("span", null, isSess ? "当前对话「" + (contact.title || contact.id) + "」" : "全局默认")),
+                h("div", { className: "esc-fact" }, h("span", null, "当前状态"), h("span", null,
+                  isSess
+                    ? (sessWpEntry ? "本对话专属 · " + sessWpEntry.name : (globalBgEntry ? "跟随全局 · " + globalBgEntry.name : "跟随全局 · 宿主默认"))
+                    : (globalBgEntry ? "使用中 · " + globalBgEntry.name : "宿主默认外观"),
+                )),
+                bgSel ? h("div", { className: "esc-fact" }, h("span", null, "选择"), h("span", null, bgIsApplied ? "已应用" : "未应用草稿")) : null,
+              ),
+              h("div", { className: "esc-actions" },
+                h("button", { type: "button", className: "esc-apply", onClick: applyBackground, disabled: bgActionDisabled },
+                  !bgSel ? (bgEffective ? "正在使用" : "选择背景后应用") : !bgSessUsable ? "不可用于当前会话" : bgIsApplied ? "已应用" : (isSess ? "设为当前对话壁纸" : "应用此主题")),
+                isSess ? h("button", { type: "button", className: "esc-ghost", onClick: resetSessionWallpaper, disabled: busy || !sessWpEntry }, "使用全局壁纸") : null,
+                isSess && bgSel && !bgSel.backgroundMedia ? h("span", { className: "esc-msg bad" }, "该主题没有背景媒体，不能作为当前对话壁纸。") : null,
+                msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
+              ),
+              bgSel && !bgIsApplied ? h("p", { className: "esc-note" }, "点击上方「" + (isSess ? "设为当前对话壁纸" : "应用此主题") + "」后才会生效。") : null,
+            ),
+          ),
         ));
       } else if (tab === "av") {
         const avEntries = Object.entries(groups).filter(([, list]) => list.length);
+        const filteredCount = avEntries.reduce((n, [, list]) => n + list.length, 0);
+        let avStatus;
+        if (!avView) avStatus = isSess ? "等待联系人识别" : "尚未设置";
+        else if (avSel) avStatus = avIsApplied ? "已应用（无改动）" : "未应用草稿";
+        else if (isSess) avStatus = sessAv ? "本对话专属头像" : autoAv ? "自动分配（本对话）" : "等待自动分配";
+        else avStatus = av.current ? "全局默认" : "宿主默认";
         kids.push(h("div", { key: "panel-av", id: "esc-panel-av", role: "tabpanel", "aria-labelledby": "esc-tab-av", className: "esc-panel" },
           h("p", { className: "esc-note" }, isSess
             ? ["为「", h("b", null, contact.title || contact.id), "」挑选专属头像：三类素材全部可用，列表、聊天头部与消息气泡同步更换；保存在本浏览器，不影响其他对话与全局默认头像。"]
             : "默认头像用于没有联系人头像的会话；敲敲联系人按会话自动分配头像。"),
-          h("input", { className: "esc-search", placeholder: "搜索代理人…", value: q, onChange: (e) => setQ(e.target.value), "aria-label": "搜索代理人" }),
-          avEntries.length ? avEntries.flatMap(([dir, list]) => [
-            h("div", { key: "k" + dir, className: "esc-key" }, (GL[dir] || dir) + " · " + list.length),
-            h("div", { key: "g" + dir, className: "esc-avgrid" },
-              list.map((e) => {
-                const on = isSess
-                  ? !!(sessAv && sessAv.dir === e.dir && sessAv.file === e.file)
-                  : !!(av.current && av.current.dir === e.dir && av.current.file === e.file);
-                const sel = avSel && avSel.dir === e.dir && avSel.file === e.file;
-                return h("button", {
-                  key: e.dir + "/" + e.file, type: "button", className: "esc-avcell" + (sel || on ? " on" : ""),
-                  "aria-pressed": sel || on ? "true" : "false",
-                  onClick: () => setAvSel({ dir: e.dir, file: e.file, name: e.name }),
-                },
-                  h("img", { loading: "lazy", src: `${API}/avatar-img/${e.dir}/${e.file}`, alt: e.name }),
-                  h("span", null, e.name + (on ? (isSess ? " · 本对话" : " · 使用中") : "")),
-                );
-              }),
+          h("div", { className: "esc-workbench" },
+            h("div", { className: "esc-inventory" },
+              h("div", { className: "esc-inv-head" },
+                h("strong", null, "头像素材"),
+                h("span", null, filteredCount + " / " + av.catalog.length),
+              ),
+              h("div", { className: "esc-toolbar" },
+                h("input", {
+                  className: "esc-search", placeholder: "搜索代理人…", value: q,
+                  onChange: (e) => setQ(e.target.value), "aria-label": "搜索代理人", disabled: busy,
+                }),
+              ),
+              h("div", { className: "esc-filters", role: "group", "aria-label": "头像分类" },
+                [["all", "全部", avCounts.all], ["avatars", GL.avatars, avCounts.avatars], ["chat-icons", GL["chat-icons"], avCounts["chat-icons"]], ["portraits", GL.portraits, avCounts.portraits]].map(([key, label, count]) => h("button", {
+                  key, type: "button",
+                  className: "esc-chip" + (avGroup === key ? " on" : ""),
+                  "aria-pressed": avGroup === key ? "true" : "false",
+                  onClick: () => { if (!busy) setAvGroup(key); },
+                  disabled: busy,
+                }, label + " " + count)),
+              ),
+              avEntries.length ? avEntries.flatMap(([dir, list]) => [
+                h("div", { key: "k" + dir, className: "esc-key" }, (GL[dir] || dir) + " · " + list.length),
+                h("div", { key: "g" + dir, className: "esc-tiles av" },
+                  list.map((e) => {
+                    const applied = sameAv(appliedAv, e);
+                    const sel = sameAv(avSel, e);
+                    const pressed = sameAv(avView, e);
+                    return h("button", {
+                      key: e.dir + "/" + e.file, type: "button",
+                      className: "esc-av-tile" + (sel ? " sel" : "") + (applied ? " inuse" : ""),
+                      "aria-pressed": pressed ? "true" : "false",
+                      "aria-label": e.name + (applied ? "，使用中" : "") + (sel ? "，已选" : ""),
+                      onClick: () => { if (!busy) setAvSel({ dir: e.dir, file: e.file, name: e.name }); },
+                      disabled: busy,
+                      title: e.name,
+                    },
+                      h("img", { loading: "lazy", src: `${API}/avatar-img/${e.dir}/${e.file}`, alt: e.name }),
+                      h("span", null, e.name),
+                    );
+                  }),
+                ),
+              ]) : h("div", null,
+                h("p", { className: "esc-note" }, q.trim() || avGroup !== "all"
+                  ? "当前筛选没有匹配的头像。"
+                  : "当前没有可用头像素材，会话继续使用宿主默认头像。导入 .webp 头像后重新打开此页即可选择。"),
+                q.trim() || avGroup !== "all"
+                  ? h("button", { type: "button", className: "esc-mat-reset", onClick: () => { setQ(""); setAvGroup("all"); }, disabled: busy }, "清除筛选")
+                  : null,
+              ),
             ),
-          ]) : h("p", { className: "esc-note" }, q.trim() ? "没有匹配「" + q.trim() + "」的头像。" : "当前没有可用头像素材，会话继续使用宿主默认头像。导入 .webp 头像后重新打开此页即可选择。"),
-          h("div", { className: "esc-bar" },
-            avSel ? h("div", { className: "pick" },
-              h("img", { src: `${API}/avatar-img/${avSel.dir}/${avSel.file}`, alt: "" }),
-              h("span", null, "已选 ", h("b", null, avSel.name), "（" + (GL[avSel.dir] || avSel.dir) + "）"),
-            ) : (isSess && sessAv ? h("div", { className: "pick" },
-              h("img", { src: `${API}/avatar-img/${sessAv.dir}/${sessAv.file}`, alt: "" }),
-              h("span", null, "本对话头像 ", h("b", null, sessAv.name), "（" + (GL[sessAv.dir] || sessAv.dir) + "）"),
-            ) : null),
-            isSess
-              ? h("button", { type: "button", className: "esc-apply", onClick: pickSessionAvatar, disabled: !avSel }, "设为本对话头像")
-              : h("button", { type: "button", className: "esc-apply", onClick: pickAvatar, disabled: !avSel || busy }, "应用头像"),
-            isSess ? h("button", { type: "button", className: "esc-mat-reset", onClick: resetSessionAvatar, disabled: !sessAv }, "恢复自动头像") : null,
-            msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
+            h("aside", { ref: detailRef, tabIndex: -1, className: "esc-detail", "aria-label": "头像详情" },
+              h("div", null,
+                h("span", { className: "kicker" }, "AGENT AVATAR"),
+                h("h3", null, avView ? avView.name : "未选择头像"),
+              ),
+              avView
+                ? h("img", { className: "esc-av-big", src: `${API}/avatar-img/${avView.dir}/${avView.file}`, alt: avView.name })
+                : h("div", { className: "esc-av-ph" }, h("span", null, "无")),
+              h("div", { className: "esc-facts" },
+                h("div", { className: "esc-fact" }, h("span", null, "名称"), h("span", null, avView ? avView.name : "—")),
+                h("div", { className: "esc-fact" }, h("span", null, "类别"), h("span", null, avView ? (GL[avView.dir] || avView.dir) : "—")),
+                h("div", { className: "esc-fact" }, h("span", null, "作用对象"), h("span", null, isSess ? "当前对话「" + (contact.title || contact.id) + "」" : "全局默认")),
+                h("div", { className: "esc-fact" }, h("span", null, "当前状态"), h("span", null, avStatus)),
+              ),
+              h("div", { className: "esc-actions" },
+                h("button", { type: "button", className: "esc-apply", onClick: isSess ? pickSessionAvatar : pickAvatar, disabled: avActionDisabled },
+                  avSel ? (avIsApplied ? "已应用" : (isSess ? "设为本对话头像" : "应用头像")) : (appliedAv ? "正在使用" : "选择头像后应用")),
+                isSess ? h("button", { type: "button", className: "esc-ghost", onClick: resetSessionAvatar, disabled: busy || !sessAv }, "恢复自动头像") : null,
+                msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
+              ),
+              avSel && !avIsApplied ? h("p", { className: "esc-note" }, "点击上方「" + (isSess ? "设为本对话头像" : "应用头像") + "」后才会生效。") : null,
+            ),
           ),
         ));
       } else if (tab === "mt") {
@@ -735,7 +934,7 @@ window.__ModuleLoader__.load({
             }),
             h("span", { className: "esc-mat-hint" }, f.hint),
           )),
-          h("div", { className: "esc-bar" },
+          h("div", { className: "esc-actions" },
             h("button", { type: "button", className: "esc-mat-reset", onClick: resetMat }, "恢复默认材质"),
             msg ? h("span", { className: "esc-msg" + (msg.bad ? " bad" : "") }, msg.t) : null,
           ),
@@ -818,7 +1017,9 @@ window.__ModuleLoader__.load({
         const header = document.querySelector('[data-slot="conversation.header"]');
         const nav = header && header.querySelector('nav[aria-label="会话层级"]');
         const title = nav && [...nav.childNodes].filter((el) => !el.classList?.contains("zzz-contact-head-face")).map((el) => el.textContent).join("").trim();
-        if (selected && title && (title === selected.title || title.endsWith(selected.title))) current = selected;
+        const emptyConversation = !nav && document.querySelector('[data-slot="main.conversation"] [data-phase="hero"]');
+        if (selected && emptyConversation) current = selected;
+        else if (selected && title && (title === selected.title || title.endsWith(selected.title))) current = selected;
         else if (!nav || !title || (current && !title.endsWith(current.title))) current = null;
         if (current) current = { ...current, av: resolveAvatar(current.id) };
         const center = document.querySelector('[data-pane="center"], [class*="_centerCol"]');
@@ -838,13 +1039,14 @@ window.__ModuleLoader__.load({
           header?.querySelector(".zzz-contact-head-face")?.remove(); nav?.removeAttribute("data-zzz-contact-header");
         }
         // 当前联系人变化才广播 + 换有效壁纸（每 80ms 的 observer tick 只做比较，不重载媒体）
+        // av 一并带给设置页：当前会话未手动设置时显示真实自动分配头像，而不是误称跟随全局
         const prevCur = CURRENT_CONTACT;
-        const nextCur = current ? { id: current.id, title: current.title } : null;
-        if (!!prevCur !== !!nextCur || (prevCur && nextCur && (prevCur.id !== nextCur.id || prevCur.title !== nextCur.title))) notifyContact(nextCur);
+        const nextCur = current ? { id: current.id, title: current.title, av: current.av } : null;
+        if (!!prevCur !== !!nextCur || (prevCur && nextCur && (prevCur.id !== nextCur.id || prevCur.title !== nextCur.title || !sameAv(prevCur.av, nextCur.av)))) notifyContact(nextCur);
       };
       const schedule = () => { if (!stopped && timer === null) timer = setTimeout(refresh, 80); };
       const observer = new MutationObserver(schedule);
-      observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["aria-selected", "data-row-key"] });
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["aria-selected", "data-row-key", "data-phase"] });
       contactRefresh = schedule;
       schedule();
       return () => {

@@ -13,8 +13,20 @@ diagonal texture and INTER-KNOT watermark.
 Settings → ZZZ controls surface material, the global wallpaper/avatar defaults,
 and per-conversation avatar and wallpaper overrides. Knock Knock contacts bind
 each session ID to a persistent avatar shared by the session row, conversation
-header and assistant messages. Material and appearance choices are stored in
-the current browser.
+header and assistant messages. Material and conversation appearance choices are
+stored in the current browser; global theme and default avatar selections are
+saved in the configured server data directory.
+
+In the 1.5.0 development version, clicking a background or avatar selects it for
+the detail preview. It does not apply the resource until its apply button is
+pressed. The applied item and an unapplied selection have separate indicators.
+Changing the setting scope or conversation discards draft selections. Material
+sliders still apply immediately. Avatar browsing supports category filters and
+search; the resource list and detail panel stack on narrow settings content.
+Selecting a resource on narrow content brings its detail and apply action into
+view. In a narrow window, the host navigation moves above the ZZZ content.
+A conversation can explicitly pin the same background or avatar it currently
+inherits, so later default changes do not silently change that choice.
 
 ## Package contents
 
@@ -83,7 +95,7 @@ are included.
 Install the packed tarball with the normal DSH plugin mechanism, for example:
 
 ```bash
-dsh plugin --profile web add ./dsh-eridu-skincenter-1.4.0.tgz
+dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.0.tgz
 ```
 
 There is no `postinstall` network step. The plugin requires the DSH Web

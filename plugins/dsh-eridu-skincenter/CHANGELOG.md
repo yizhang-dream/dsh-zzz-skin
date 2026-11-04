@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.5.0 — Unreleased
+
+- Reorganize Settings → ZZZ around resource browsing, a separate detail preview
+  and explicit apply actions for both backgrounds and avatars.
+- Distinguish the browsed selection from the applied resource; reset drafts when
+  the setting scope or conversation changes.
+- Keep per-conversation appearance, global defaults and immediate material
+  controls separate, with layouts based on the settings content width.
+- Add avatar category filters and keep media players in the detail preview only.
+- Reposition host navigation above ZZZ on narrow windows and bring the selected
+  resource detail into view; isolate tile radii from legacy skin button rules.
+- Allow a conversation to explicitly pin its currently inherited background or
+  automatically assigned avatar.
+- Recognize a selected real empty conversation from its session row and the host
+  conversation hero, so appearance can be configured before the first message.
+
 ## 1.4.0 — 2026-11-04
 
 - Package is now self-contained: `bundle/skins/zzz-zenless`,
