@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.5.2 — Unreleased
+
+- Remove the legacy ruled-row background, borders and staggered animation from
+  nested dialog lists in both colour modes, including shortcut rows and directory
+  columns; retain the directory's native aria-current selection highlight.
+- Keep disabled shared actions legible with neutral colours while retaining
+  their native disabled state; improve dialog input placeholder contrast.
+- Restore expandable plugin and Agent card headers to their parent clipping,
+  and use normal text in shared dialog tabs.
+
 ## 1.5.1 — Unreleased
 
 - Load a scoped shared component stylesheet with the plugin, before opening

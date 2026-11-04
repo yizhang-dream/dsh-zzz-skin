@@ -36,6 +36,12 @@ skins. The stylesheet is served by the authenticated `/components.css` API and
 is removed and restored with the client lifecycle. Native OS popups and
 components that require a live model interaction remain separate coverage limits.
 
+The 1.5.2 development version removes legacy row decoration from nested lists,
+restores card header clipping, improves dialog placeholders and gives disabled
+shared actions readable neutral colours. The native disabled and selected states
+remain in control of the host. See the repository's dynamic component coverage
+record for actual inspected entries and remaining limits.
+
 ## Package contents
 
 The npm tarball is self-contained. Installing it does **not** read
@@ -103,7 +109,7 @@ are included.
 Install the packed tarball with the normal DSH plugin mechanism, for example:
 
 ```bash
-dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.1.tgz
+dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.2.tgz
 ```
 
 There is no `postinstall` network step. The plugin requires the DSH Web

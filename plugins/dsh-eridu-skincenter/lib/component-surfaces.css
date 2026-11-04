@@ -9,6 +9,8 @@ html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-
   --zzz-ui-line: rgba(255, 255, 255, .2);
   --zzz-ui-accent-text: var(--zzz-accent, #d4cf01);
   --zzz-ui-danger-ink: #14141a;
+  --zzz-ui-disabled-fill: #30343c;
+  --zzz-ui-disabled-text: #a9afb8;
   --dsw-alias-button-primary-fill: var(--zzz-accent, #d4cf01);
   --dsw-alias-button-primary-hover: color-mix(in srgb, var(--zzz-accent, #d4cf01) 86%, white);
   --dsw-alias-button-primary-dimmed: color-mix(in srgb, var(--zzz-accent, #d4cf01) 42%, transparent);
@@ -28,6 +30,8 @@ html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-
   --zzz-ui-line: rgba(26, 26, 30, .24);
   --zzz-ui-accent-text: #4f7000;
   --zzz-ui-danger-ink: #fff;
+  --zzz-ui-disabled-fill: #e5e6e8;
+  --zzz-ui-disabled-text: #626973;
   --dsw-alias-fill-tsp-secondary: rgba(26, 26, 30, .06);
   --dsw-alias-label-quaternary: #696b72;
   color-scheme: light;
@@ -57,6 +61,67 @@ html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-
   outline-offset: 2px;
 }
 
+/* Disabled actions remain legible without looking actionable. Do not fade the label with its fill. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body button:is([class*="_button_"], [class*="_primaryButton"]):disabled:not(.esc *) {
+  background: var(--zzz-ui-disabled-fill);
+  color: var(--zzz-ui-disabled-text);
+  opacity: 1;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] button:disabled:not([aria-pressed="true"]):not(.esc *) {
+  color: var(--zzz-ui-disabled-text);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+/* Retire the old substring rule on every matched level: rows, row and rowButton. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] [class*="_row"],
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body:not([data-ds-dark-theme]) [role="dialog"] [class*="_row"] {
+  border-bottom: 0;
+  background-color: transparent;
+  animation: none !important;
+  transform: none;
+}
+
+/* Model rows are cards: retain their native fill and full stroke after removing report decoration. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] [class*="_rowCard"],
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body:not([data-ds-dark-theme]) [role="dialog"] [class*="_rowCard"] {
+  background: var(--dsw-alias-settings-card-fill);
+  border: .5px solid var(--dsw-alias-settings-card-stroke);
+}
+
+/* Directory and form rows are list items, not the old ruled-report decoration. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] button[class*="_row"] {
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  animation: none !important;
+  transform: none;
+  font-style: normal;
+  font-weight: 500;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] button[class*="_row"]:hover:not(:disabled) {
+  background: var(--dsw-alias-fill-tsp-secondary);
+}
+
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] button[class*="_row"][aria-current="true"],
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] button[class*="_row"][aria-current="true"]:hover {
+  background: var(--dsw-alias-interactive-bg-active, var(--dsw-alias-interactive-bg-hover));
+}
+
+/* Expandable cards own their outer clipping; their header must not become a pill. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] button:is([class*="_cardContent"], [class*="_cardMain"]) {
+  border-radius: 0;
+}
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] [role="tab"]:not(.esc *) {
+  border-radius: 10px;
+  clip-path: none;
+  font-style: normal;
+}
+
 /* A dialog is a reusable surface, not an investigation-report illustration. */
 html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body :is([role="dialog"], [role="alertdialog"]) {
   background-image: none !important;
@@ -72,6 +137,12 @@ html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-
 }
 html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="option"][aria-selected="true"] {
   background-color: color-mix(in srgb, var(--zzz-accent, #d4cf01) 18%, transparent);
+}
+
+/* The original placeholder token is nearly black even on dark input surfaces. */
+html:is([data-dsh-skin="zzz-zenless"], [data-dsh-skin="zzz-console"], [data-dsh-skin^="zzz-eridu-"]):root body [role="dialog"] :is(input, textarea)::placeholder {
+  color: var(--zzz-ui-muted);
+  opacity: 1;
 }
 
 /* Native select stays native. Colour-scheme follows the app, not the OS default. */

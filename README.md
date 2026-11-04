@@ -32,6 +32,9 @@ The 1.5.0 development version reorganizes Settings → ZZZ into resource browsin
 a detail preview and explicit apply actions. See the [equipment-style settings record](docs-v9.8-equipment-settings.md).
 The 1.5.1 development version adds a plugin-owned shared component stylesheet for
 lazy pages and portal dialogs; see the [dynamic component coverage record](docs-v9.9-dynamic-components.md).
+Version 1.5.2 additionally fixes nested row decoration, card header clipping,
+placeholder contrast and native disabled states; the same coverage record lists
+actual inspected entries and the separate deployment status.
 The npm command above installs the published 1.4.0 version.
 
 ## What it is
