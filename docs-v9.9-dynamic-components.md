@@ -190,4 +190,26 @@
 
 浏览器解析最终CSS为32条顶层规则。最后的全屏宽度与open=true守卫已同步隔离安装并实际复验。部分控件经真实DOM调用处理函数，进入／退出全屏另由原生鼠标实际点击；未造DOM、未写单元测试或mock。分开的viewport命令不持久，本轮不宣称额外2000px或390px右工作区验收通过。审批、提问、实时模型工具卡仍不在此次覆盖内。
 
-最终包安装、当前实例替换和清理结果将在收口后追加；未执行新版npm公开发布。
+### 最终包安装与当前实例替换
+
+最终c93211包已真实安装隔离3096，268／268文件与tgz一致，内容树SHA-256 `31b286080e2825d89e728f6a7bb16c604ba093c2d40c62bbb330ed1cc5bace55`。重新加载自有浏览器后，首屏组件link1、CSS32规则、三入口14px；浅色pane伪元素为rgba(247,247,242,.66)。真实ZZZ界面材质页显示新增「右侧工作区」提示，range保持.66／.86／6。
+
+当前实例已完成1.5.2→1.5.3原子热替换，ZZZ自身disable后list404、enable后components200。宿主PID1381259未变，未重启、未强刷或操作用户窗口。插件私有Schemastery3.19及40个peer文件保留。
+
+| 生产验收 | 实际结果 |
+| --- | --- |
+| 包内容 | 1.5.3，排除运行时node_modules后268文件，与最终包内容树31b28608…一致 |
+| 公共CSS／客户端 | CSS13,618字节，ec773916…；client为1f6ca771…，与最终包一致 |
+| 认证与首屏 | 匿名401、跨站403、登录200；组件link1、原skin link2 |
+| CSS接口 | GET／HEAD200，text/css、no-store，长度和body哈希一致 |
+| 当前资源实读 | 头像GET7,918字节哈希一致；视频HEAD200、Range0—63为206／64字节并匹配 |
+| 用户数据与其他插件 | active/avatar状态哈希未变，39个本地皮肤与234个头像未改；profile package哈希不变、bundles仍33、patch回到基线 |
+| 日志 | error／fail／exception／unhandled计数0 |
+
+新备份为`/home/cvgluser/dsh-verify-zzz/prod-link-backup/pre-1.5.3-20261105-012331`，包括完整1.5.2插件及私有peer、profile配置与当时状态快照。备份tar的SHA-256为`cccf1f8aabb2313a5dff6bf2f2192b9546b8d8eb97d0b4e15175b81e30d6da42`。旧目录`.dsh-eridu-skincenter-1.5.2-old-20261105-012424`保留。以后回滚须重新核对并发状态，不能用快照覆盖用户新选择。
+
+自有IAB验证页已关闭，Chrome45188已停止、9351无监听，隧道44500已停止。隔离宿主2025910确认属于zzzverify后停止，远端3096与本地3096／3097无监听。临时token、jar、login-url和bootstrap文件已清理，日志明文token计数0；非敏感证据、fixture和回滚备份保留。
+
+源码提交`2ec65d1`已推送。GitHub的[Node22／24打包检查](https://github.com/yizhang-dream/dsh-zzz-skin/actions/runs/41877148946)截至本次记录仍排队，已后台监看；本地语法、资源打包、独立包与真实集成验证已完成。未执行新版npm公开发布；npm仍为1.4.0。已有用户页面需自行刷新一次加载1.5.3，本轮没有后台强制刷新。
+
+[本轮公开结果页](https://answers.xn--ltr42g543b.cn/2026-11-05-zzz-right-workspace.html)通过`ans publish`发布，纸张亮色、单列排布，STE检查0warnings。发布命令确认页面200及目录登记；独立HTTP取回再次确认正文标题、1.5.3热替换说明、两张明暗截图以及index链接。配图均为自有隔离会话，未发布用户截图。产品截图已目视检查；报告页未重试此前失效的IAB截图路径，不声明额外浏览器视觉验收。
