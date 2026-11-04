@@ -40,6 +40,11 @@ page, file preview and diagnostics panes), shows its guide entry as a 14 px card
 keeps the diagnostics filter portal at viewport coordinates, and bounds the
 fullscreen workspace while restoring the collapsed columns. Terminal ANSI colours
 are unchanged. See the same [dynamic component coverage record](docs-v9.9-dynamic-components.md).
+Version 1.5.4 consolidates lazy component coverage: task pages, viewport pickers,
+readable tooltips and danger/disabled controls, older local skin tokens, and
+stylesheet loading and package checks. The [installed component inventory](docs-component-inventory-2026-11-05.md)
+distinguishes source adaptation from actual UI acceptance; deployment results stay
+in the [coverage record](docs-v9.9-dynamic-components.md).
 The npm command above installs the published 1.4.0 version.
 
 ## What it is

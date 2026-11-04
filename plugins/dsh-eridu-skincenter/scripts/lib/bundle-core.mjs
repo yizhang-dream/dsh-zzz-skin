@@ -29,6 +29,16 @@ export const MANAGED_IDS = Object.freeze([
   ...Array.from({ length: 37 }, (_, i) => `zzz-eridu-${String(i + 1).padStart(2, '0')}`),
 ]);
 export const DSH_ENGINE_RANGE = '>=0.2.1-rc.2 <0.3.0';
+// Files the plugin cannot run without, on both the source tree and an installed package.
+// The shared component stylesheet is served by the plugin itself, so a missing or empty
+// file would silently drop the component layer instead of failing the build.
+export const COMPONENT_CSS_FILE = 'lib/component-surfaces.css';
+export const REQUIRED_SURFACE_FILES = [
+  'lib/index.js',
+  'lib/client.js',
+  COMPONENT_CSS_FILE,
+  'cordis.patch.yml',
+];
 export const SHARED_PACKAGES = Object.freeze({
   '@deepseek-ai/cordis': '^4.1.0',
   '@deepseek-ai/schemastery': '^3.19.0',
@@ -383,10 +393,17 @@ export function verifyPackageSurface(packageDir) {
   if (!Array.isArray(pkg.files) || !pkg.files.includes('lib/') || !pkg.files.includes('bundle/')) {
     throw new Error('files whitelist must include lib/ and bundle/');
   }
-  for (const rel of ['lib/index.js', 'lib/client.js', 'cordis.patch.yml']) {
-    if (!existsSync(join(packageDir, rel))) throw new Error(`package is missing ${rel}`);
-  }
+  assertRequiredSurfaceFiles(packageDir);
   return pkg;
+}
+
+// Presence and non-empty checks only: no CSS parsing, no rewriting of shipped files.
+export function assertRequiredSurfaceFiles(packageDir, label = 'package') {
+  for (const rel of REQUIRED_SURFACE_FILES) {
+    const abs = join(packageDir, rel);
+    if (!existsSync(abs) || !statSync(abs).isFile()) throw new Error(`${label} is missing ${rel}`);
+    if (statSync(abs).size === 0) throw new Error(`${label} has an empty ${rel}`);
+  }
 }
 
 export function verifyBundle({ packageDir, quiet = false } = {}) {

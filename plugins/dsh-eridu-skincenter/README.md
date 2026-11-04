@@ -51,6 +51,15 @@ Terminal ANSI colours are left untouched. See the
 [dynamic component coverage record](../../docs-v9.9-dynamic-components.md) for
 the inspected entries and remaining limits.
 
+The 1.5.4 development version covers task-page materials, browser and bottom
+panel chrome, non-modal viewport pickers, readable tooltips, danger actions and
+native/ARIA disabled states. Older local skins receive shared light/dark window
+tokens. Artwork tone and blur compose in both modes. Skin styles are loaded
+before committing their scope, and the existing build verifies that the shared
+component stylesheet is present and non-empty. Document paper and terminal ANSI
+colours remain native. The repository's component inventory separates source
+adaptation from UI verification.
+
 ## Package contents
 
 The npm tarball is self-contained. Installing it does **not** read
@@ -118,7 +127,7 @@ are included.
 Install the packed tarball with the normal DSH plugin mechanism, for example:
 
 ```bash
-dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.3.tgz
+dsh plugin --profile web add ./dsh-eridu-skincenter-1.5.4.tgz
 ```
 
 There is no `postinstall` network step. The plugin requires the DSH Web

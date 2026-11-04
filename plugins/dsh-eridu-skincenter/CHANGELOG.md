@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.5.4 — Unreleased
+
+- Extend shared materials to task management, browser chrome and bottom panels;
+  retain document paper, sticky reading surfaces and terminal ANSI colours.
+- Supply light and dark window tokens for older local skins, and combine artwork
+  tone filters with the material blur instead of overriding the light-mode blur.
+- Give tooltips their own opaque surface and text colours, restore danger-button
+  text contrast, and include native and ARIA disabled states in shared controls.
+- Handle non-modal viewport dialogs as a family, including usage, context,
+  date/time, document-font and diagnostic pickers; cover alert-dialog controls too.
+- Stage skin stylesheets until they load before changing the active skin scope,
+  cancel stale lifecycle work, and preserve the previous styles if loading fails.
+- Require a non-empty shared component stylesheet in source and packaged bundle
+  verification, so missing shared repairs fail the existing build checks.
+
 ## 1.5.3 — Unreleased
 
 - Share the window material with the right workspace shell, including its start

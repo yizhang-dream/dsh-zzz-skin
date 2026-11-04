@@ -5,7 +5,7 @@
 //   手动头像（三类素材全部可用）与专属壁纸；敲敲联系人 choose 优先手动头像，否则走旧自动 CONTACT_KEY；
 // 换装 UI 从「右缘入口签 + 全屏浮层」迁移为 settings.section（ctx.slots.register），
 // React 组件由宿主 require 提供，照 dsh-backend-restart 的注册样板。
-// 卸载约定：running 守卫切断所有异步回写；cleanup 撤 themeObs/bgLayer/自身 CSS/skin link，
+// 卸载约定：running 守卫切断所有异步回写；cleanup 撤 themeObs/bgLayer/自身 CSS、在用的与暂存的 skin link，
 //   仅当 html 的 data-dsh-skin 是本插件管理过的 ID 才移除，并还原启用前的 body 材质变量。
 window.__ModuleLoader__.load({
   id: "dsh-eridu-skincenter",
@@ -100,73 +100,206 @@ window.__ModuleLoader__.load({
       else document.head.appendChild(el);
     }
 
-    /* ── 免重载换肤 ──────────────────────────────────── */
-    function swapLinks(id, hasPatches) {
-      if (!running) return;
-      MANAGED_IDS.add(id);
-      const href = (f) => `${API}/skin/${id}/${f}?t=${Date.now()}`;
-      let sheet = document.querySelector('link[data-dsh-skin-link="stylesheet"][href^="' + API + '/skin/"]');
-      if (!sheet) { sheet = document.createElement("link"); sheet.rel = "stylesheet"; sheet.setAttribute("data-dsh-skin-link", "stylesheet"); mountSkinLink(sheet); }
-      sheet.href = href("stylesheet");
-      let pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
-      if (hasPatches) {
-        if (!pat) { pat = document.createElement("link"); pat.rel = "stylesheet"; pat.setAttribute("data-dsh-skin-link", "patches"); mountSkinLink(pat); }
-        pat.href = href("patches");
-      } else if (pat) pat.remove();
-      document.documentElement.setAttribute("data-dsh-skin", id);
+    /* ── 免重载换肤（新 link 暂存加载 → 就绪后原子切换） ──────────
+       旧实现先改 href 再写 data-dsh-skin：旧 CSS 已被作用域排除、新 CSS 还没到，页面会闪一下裸样式。
+       现在新 link 先以暂存标记并行加载，全部成功后在同一同步任务内晋升为在用 link、移除旧 link、
+       切换 html 属性；失败只清理暂存，旧样式继续可用。停用、重新启用、新一轮换肤都会作废旧事务，
+       晚到的请求不写 DOM。 */
+    const SKIN_LINK_ATTR = "data-dsh-skin-link";
+    const STAGING_ATTR = "data-zzz-skin-staging";
+    const LINK_LOAD_TIMEOUT = 6000; // 无回应时按失败收口，不让 UI 一直等
+    let linkTx = 0;          // 换肤事务号：新事务/停用递增，旧等待与旧结果据此作废
+    let linkTxCancel = null; // 当前等待的唤醒函数（停用或新事务可立即结束旧等待）
+    let skinCommits = 0;     // >0 表示有换肤事务占用链接切换，头像刷新不得取消它
+
+    function liveSkinLinks(slot) {
+      return Array.from(document.querySelectorAll(
+        'link[' + SKIN_LINK_ATTR + '="' + slot + '"][href^="' + API + '/skin/"]',
+      ));
     }
-    // 启动/重新启用时补回被 cleanup 撤掉的 link；首屏已注入且 id 一致就不重载
-    function ensureSkinLinks(id, hasPatches) {
-      if (!running) return;
+    function skinLinkId(el) {
+      const h = el && el.getAttribute("href");
+      if (!h || !h.startsWith(API + "/skin/")) return null;
+      return h.slice((API + "/skin/").length).split("/")[0].split("?")[0];
+    }
+    // 作废当前事务：清掉未晋升的暂存 link，并立即唤醒等待者（卸载/新一轮换肤不让旧流程挂住）
+    function cancelStagedLinks() {
+      linkTx += 1;
+      const cancel = linkTxCancel;
+      linkTxCancel = null;
+      document.querySelectorAll("link[" + STAGING_ATTR + "]").forEach((el) => el.remove());
+      if (cancel) { try { cancel(); } catch {} }
+    }
+    function waitForCssLinks(links) {
+      if (!links.length) return Promise.resolve(true);
+      return new Promise((resolve) => {
+        let left = links.length, failed = false, settled = false;
+        const teardown = () => {
+          links.forEach((l) => { l.removeEventListener("load", onLoad); l.removeEventListener("error", onError); });
+          clearTimeout(timer);
+          if (linkTxCancel === cancel) linkTxCancel = null;
+        };
+        const settle = (ok) => {
+          if (settled) return;
+          settled = true; teardown(); resolve(ok);
+        };
+        const step = () => { left -= 1; if (left <= 0) settle(!failed); };
+        const onLoad = () => step();
+        const onError = () => { failed = true; step(); };
+        const cancel = () => settle(false);
+        const timer = setTimeout(cancel, LINK_LOAD_TIMEOUT);
+        linkTxCancel = cancel;
+        links.forEach((l) => { l.addEventListener("load", onLoad); l.addEventListener("error", onError); });
+      });
+    }
+    async function commitSkinLinks(id, opts) {
+      if (!running || typeof document === "undefined" || !document.head) return false;
+      const gen = lifecycleGen;
+      const dropPatches = !!(opts && opts.dropPatches);
+      const slots = opts && Array.isArray(opts.slots)
+        ? opts.slots.slice()
+        : (dropPatches ? ["stylesheet"] : ["stylesheet", "patches"]);
+      const setAttribute = !opts || opts.attribute !== false;
       MANAGED_IDS.add(id);
-      const href = (f) => `${API}/skin/${id}/${f}?t=${Date.now()}`;
-      const ownId = (el) => {
-        const h = el && el.getAttribute("href");
-        if (!h || !h.startsWith(API + "/skin/")) return null;
-        return h.slice((API + "/skin/").length).split("/")[0].split("?")[0];
-      };
-      let sheet = document.querySelector('link[data-dsh-skin-link="stylesheet"][href^="' + API + '/skin/"]');
-      if (!sheet) {
-        sheet = document.createElement("link");
-        sheet.rel = "stylesheet";
-        sheet.setAttribute("data-dsh-skin-link", "stylesheet");
-        mountSkinLink(sheet);
-      }
-      if (ownId(sheet) !== id) sheet.href = href("stylesheet");
-      let pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
-      if (hasPatches) {
-        if (!pat) {
-          pat = document.createElement("link");
-          pat.rel = "stylesheet";
-          pat.setAttribute("data-dsh-skin-link", "patches");
-          mountSkinLink(pat);
+      if (setAttribute) skinCommits += 1;
+      try {
+        cancelStagedLinks();
+        const tx = linkTx;
+        const href = (f) => `${API}/skin/${id}/${f}?t=${Date.now()}`;
+        const previous = {};
+        const staged = {};
+        for (const slot of slots) previous[slot] = liveSkinLinks(slot);
+        for (const slot of slots) {
+          const el = document.createElement("link");
+          el.rel = "stylesheet";
+          el.setAttribute(STAGING_ATTR, slot);
+          el.setAttribute("href", href(slot === "stylesheet" ? "stylesheet" : "patches"));
+          mountSkinLink(el); // 仍插在组件链之前：皮肤 → components 顺序不变
+          staged[slot] = el;
         }
-        if (ownId(pat) !== id) pat.href = href("patches");
-      } else if (pat && ownId(pat) !== null) {
-        pat.remove();
+        const ok = await waitForCssLinks(slots.map((slot) => staged[slot]));
+        // 事务过期（停用/重新启用/新一轮换肤）：本轮结果一律不落地
+        if (tx !== linkTx || !running || gen !== lifecycleGen) {
+          Object.values(staged).forEach((el) => el.remove());
+          return false;
+        }
+        if (!ok) {
+          Object.values(staged).forEach((el) => el.remove());
+          throw new Error("皮肤样式加载失败，已保留当前样式");
+        }
+        // 同一个同步任务内：晋升新 link → 撤旧 link →（换肤时）切作用域属性；浏览器只重算一次，不闪裸样式
+        for (const slot of slots) {
+          staged[slot].setAttribute(SKIN_LINK_ATTR, slot);
+          staged[slot].removeAttribute(STAGING_ATTR);
+        }
+        for (const slot of slots) {
+          for (const el of previous[slot]) if (el !== staged[slot]) el.remove();
+        }
+        if (dropPatches) liveSkinLinks("patches").forEach((el) => el.remove());
+        if (setAttribute) document.documentElement.setAttribute("data-dsh-skin", id);
+        return true;
+      } finally {
+        if (setAttribute) skinCommits -= 1;
       }
-      document.documentElement.setAttribute("data-dsh-skin", id);
+    }
+    // 启动/重新启用：首屏已注入且 ID 一致就不重载，只补作用域属性；否则走同一原子切换
+    async function ensureSkinLinks(id, hasPatches) {
+      if (!running) return false;
+      MANAGED_IDS.add(id);
+      const sheet = liveSkinLinks("stylesheet");
+      const pat = liveSkinLinks("patches");
+      const matching = sheet.length === 1 && skinLinkId(sheet[0]) === id
+        && (hasPatches ? pat.length === 1 && skinLinkId(pat[0]) === id : pat.length === 0);
+      if (matching) {
+        if (document.documentElement.getAttribute("data-dsh-skin") !== id) {
+          document.documentElement.setAttribute("data-dsh-skin", id);
+        }
+        return true;
+      }
+      return commitSkinLinks(id, { attribute: true, dropPatches: !hasPatches });
+    }
+    let skinApplySeq = 0, avatarApplySeq = 0; // 用户操作序号：旧请求晚到只回执，不写 DOM
+    let activePost = Promise.resolve();       // /active 写入串行化：后点的皮肤必定最后落库
+    let skinPending = 0;                      // >0 表示换肤请求在途（POST 或链接事务）
+    let pendingPatchRefresh = false;          // 换肤事务期间头像变了：事务结束后补拉最新 patches
+
+    // live 层是否与某个皮肤完整一致：作用域属性 + 正在生效的 stylesheet/patches 都算
+    function liveLayerMatches(id, hasPatches) {
+      const sheet = liveSkinLinks("stylesheet");
+      const pat = liveSkinLinks("patches");
+      const attr = document.documentElement.getAttribute("data-dsh-skin") || null;
+      return attr === id && sheet.length === 1 && skinLinkId(sheet[0]) === id
+        && pat.length === (hasPatches ? 1 : 0)
+        && (!hasPatches || skinLinkId(pat[0]) === id);
+    }
+    // 只为当前 ACTIVE 补拉 patch 链（头像版本戳）；live 层与 ACTIVE 不一致时不动，交给 ensureSkinLinks
+    async function refreshPatchLayer() {
+      if (!running || !ACTIVE) return false;
+      if (document.documentElement.getAttribute("data-dsh-skin") !== ACTIVE) return false;
+      const sheet = liveSkinLinks("stylesheet");
+      if (sheet.length !== 1 || skinLinkId(sheet[0]) !== ACTIVE) return false;
+      if (!liveSkinLinks("patches").length) return false;
+      return commitSkinLinks(ACTIVE, { slots: ["patches"], attribute: false });
+    }
+    // 事务结束后补一次：不依赖换肤事务里已发出的旧 patch GET 会带上新头像戳
+    async function flushPendingPatchRefresh() {
+      if (!pendingPatchRefresh || skinPending > 0 || skinCommits > 0 || !running) return false;
+      pendingPatchRefresh = false;
+      try { return await refreshPatchLayer(); } catch { return false; }
     }
     async function applySkin(id) {
-      const r = await fetch(`${API}/active`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }), signal: runtimeSignal || undefined });
-      const j = await r.json();
-      if (!j.ok) throw new Error(j.error || "失败");
-      if (!running) return j; // 卸载后才返回：只回执，不写 DOM/状态
-      ACTIVE = id;
-      MANAGED_IDS.add(id);
-      swapLinks(id, j.hasPatches);
-      // 全局换装仍尊重当前会话的专属壁纸：有效壁纸=会话 override > 全局 ACTIVE
-      renderBackgroundEffective();
-      return j;
+      const gen = lifecycleGen;
+      const seq = ++skinApplySeq;
+      const signal = runtimeSignal || undefined;
+      skinPending += 1;
+      try {
+        const post = activePost.then(() => fetch(`${API}/active`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }), signal }));
+        activePost = post.then(() => undefined, () => undefined);
+        const r = await post;
+        const j = await r.json();
+        if (!j.ok) throw new Error(j.error || "失败");
+        // 已卸载/已重新启用，或已有更新的换肤请求：只回执，不落地
+        if (!running || gen !== lifecycleGen || seq !== skinApplySeq) return j;
+        MANAGED_IDS.add(id);
+        const committed = await commitSkinLinks(id, { attribute: true, dropPatches: !j.hasPatches });
+        if (!committed || !running || gen !== lifecycleGen || seq !== skinApplySeq) return j;
+        ACTIVE = id;
+        // 全局换装仍尊重当前会话的专属壁纸：有效壁纸=会话 override > 全局 ACTIVE
+        renderBackgroundEffective();
+        return j;
+      } finally {
+        skinPending -= 1;
+        // 本轮（无论成功、失败还是被接管）结束后补最头像戳；只在此处补，不再依赖已发出的旧 patch GET
+        flushPendingPatchRefresh();
+      }
     }
     async function applyAvatar(e) {
+      const gen = lifecycleGen;
+      const seq = ++avatarApplySeq;
       const r = await fetch(`${API}/avatar`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(e), signal: runtimeSignal || undefined });
       const j = await r.json();
       if (!j.ok) throw new Error(j.error || "失败");
-      if (!running) return j;
+      if (!running || gen !== lifecycleGen || seq !== avatarApplySeq) return j;
       AV.current = { dir: e.dir, file: e.file, name: e.name };
-      const pat = document.querySelector('link[data-dsh-skin-link="patches"][href^="' + API + '/skin/"]');
-      if (pat && ACTIVE) pat.href = `${API}/skin/${ACTIVE}/patches?t=${Date.now()}`;
+      // patches.css 带 avatar-agent.webp 版本戳。先确认 live 层与 ACTIVE 完整一致再动 patch 链：
+      // 不一致（其他标签页换肤/此前样式加载失败）时先 ensureSkinLinks 补齐；补不齐就保留旧的完整
+      // 补丁层并如实报样式错误，避免删掉在生效的旧 patches 却装上与 html 不匹配的新 ID。
+      if (!ACTIVE) return j;
+      // 换肤请求或链接事务在途：标记后由该轮事务结束时补最新头像戳
+      if (skinPending > 0 || skinCommits > 0) { pendingPatchRefresh = true; return j; }
+      const entry = CATALOG.find((s) => s.id === ACTIVE);
+      if (!entry) return j; // 目录未就绪时不动现有层
+      const hasPatches = !!entry.hasPatches;
+      try {
+        if (!liveLayerMatches(ACTIVE, hasPatches)) {
+          const ok = await ensureSkinLinks(ACTIVE, hasPatches);
+          if (!ok || !running || gen !== lifecycleGen || seq !== avatarApplySeq) return j;
+          if (skinPending > 0 || skinCommits > 0) { pendingPatchRefresh = true; return j; }
+        }
+        if (hasPatches) await refreshPatchLayer();
+      } catch (e) {
+        throw new Error("头像已保存，但皮肤样式未同步：" + (e && e.message ? e.message : e));
+      }
       return j;
     }
 
@@ -534,7 +667,32 @@ window.__ModuleLoader__.load({
           CATALOG = Array.isArray(j.skins) ? j.skins : [];
           for (const s of CATALOG) if (s && typeof s.id === "string") MANAGED_IDS.add(s.id);
           // active 必须在当前目录里：指向已下架条目时显示真实空态，不回退到不存在的 ID
-          ACTIVE = j.active && CATALOG.some((s) => s.id === j.active) ? j.active : null;
+          const wantId = j.active && CATALOG.some((s) => s.id === j.active) ? j.active : null;
+          // 服务端 active 变了（其他标签页换肤）或 live 层与它不一致（此前样式加载失败）时，
+          // 先把样式层切到该皮肤并确认成功，再更新 ACTIVE；切不齐就保留现有 ACTIVE 与实际样式，
+          // 并把样式错误如实显示出来，避免 ACTIVE 与 html/link 脱节后误删在生效的补丁层。
+          const wantEntry = wantId ? CATALOG.find((s) => s.id === wantId) : null;
+          const wantPatches = !!(wantEntry && wantEntry.hasPatches);
+          const needsSync = !!wantId && skinCommits === 0 && skinPending === 0
+            && (wantId !== ACTIVE || !liveLayerMatches(wantId, wantPatches));
+          if (needsSync) {
+            try {
+              const ok = await ensureSkinLinks(wantId, wantPatches);
+              if (!running) return;
+              // 失败可能是被本页换肤事务接管：那种情况不报样式错误
+              if (ok) {
+                ACTIVE = wantId;
+                // 同步就绪后排掉等待中的头像补拉；flush 自身只在无在途请求/事务时执行
+                flushPendingPatchRefresh();
+              } else if (skinCommits === 0 && skinPending === 0) errs.push("皮肤样式未就绪，已保留当前样式");
+            } catch (e) {
+              if (skinCommits === 0 && skinPending === 0) {
+                errs.push("皮肤样式同步失败（" + (e && e.message ? e.message : e) + "），已保留当前样式");
+              }
+            }
+          } else if (!wantId) {
+            ACTIVE = null;
+          }
         } catch (e) { if (running) errs.push("背景列表加载失败（" + (e && e.message ? e.message : e) + "）"); }
         try {
           const r = await fetch(`${API}/avatar/list`, { cache: "no-store", signal });
@@ -1120,6 +1278,9 @@ window.__ModuleLoader__.load({
         if (gen !== lifecycleGen) return; // 已有新实例接管，旧清理不得拆新状态
         if (runtimeCleanup === cleanup) runtimeCleanup = null;
         running = false; // 先断写入口：contact cleanup 与异步返回都不得复活 bg
+        // 作废换肤事务：清掉尚未晋升的暂存 link，并立刻唤醒等待者，不让旧流程挂住
+        try { cancelStagedLinks(); } catch {}
+        pendingPatchRefresh = false;
         try { ac.abort(); } catch {}
         if (runtimeSignal === ac.signal) runtimeSignal = null;
         if (onReady && typeof document !== "undefined") {
@@ -1203,14 +1364,21 @@ window.__ModuleLoader__.load({
           AV = { catalog: Array.isArray(j.catalog) ? j.catalog : [], current: j.current || null };
         } catch {}
         if (!alive()) return;
-        if (ACTIVE) {
-          const entry = CATALOG.find((s) => s.id === ACTIVE);
-          ensureSkinLinks(ACTIVE, !!(entry && entry.hasPatches));
-        }
-        // 启动恢复：先全局；联系人首轮扫描识别当前会话后自动切到其专属壁纸
+        // 启动恢复：先全局；联系人首轮扫描识别当前会话后自动切到其专属壁纸。
+        // 背景与联系人初始化不等待样式加载事务：首屏 CSS 缺失或响应慢时壁纸仍立即恢复。
         renderBackgroundEffective();
         watchTheme();
         contactRefresh?.();
+        if (ACTIVE) {
+          const skinId = ACTIVE;
+          const entry = CATALOG.find((s) => s.id === skinId);
+          // 首屏 CSS 与作用域一致时只是同步补属性；需要重载时在后台完成。事务内部按 running /
+          // lifecycleGen / linkTx 守卫，旧实例的晚到结果不写 DOM，失败则保留现状。
+          ensureSkinLinks(skinId, !!(entry && entry.hasPatches)).then((ok) => {
+            // 启动期慢 CSS 正是唯一能碰到 skinCommits 窗口的入口：事务完成后补最头像戳
+            if (ok && alive() && gen === lifecycleGen && running) flushPendingPatchRefresh();
+          }).catch(() => {});
+        }
       })();
     }
 
